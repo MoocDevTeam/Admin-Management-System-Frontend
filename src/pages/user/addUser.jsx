@@ -18,7 +18,6 @@ import toast from "react-hot-toast";
 import * as Yup from "yup";
 import postRequest from "../../request/postRequest";
 import Header from "../../components/header";
-import MoocDropzone from "../../components/moocDropzone";
 import { useState } from "react";
 import getRequest from "../../request/getRequest";
 
@@ -252,7 +251,7 @@ export default function AddUser() {
             sx={{ gridColumn: "span 4" }}
           />
 
-          <MoocDropzone avatarResult={handleAvatarResult} />
+          
         </Box>
         <Box display="flex" justifyContent="end" mt="20px">
           <Stack direction="row" spacing={2}>
