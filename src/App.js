@@ -9,8 +9,6 @@ import User from "./pages/user/index";
 import AddUser from "./pages/user/addUser";
 import Page404 from "./pages/page404";
 
-// import Menu from "./pages/menu/index";
-// import Role from "./pages/role/index";
 import { theme } from "./theme";
 
 function App() {
