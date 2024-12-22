@@ -67,7 +67,7 @@ export default function MainSidebar() {
           )}
 
           <SubMenu icon={<PeopleOutlinedIcon />} label='People Management' >
-            <MenuItem icon={<PeopleOutlinedIcon /> } component={<Link />} to='user'>User</MenuItem>
+            <MenuItem icon={<PeopleOutlinedIcon /> } component={<Link />} to='test'>Test</MenuItem>
           </SubMenu>
 
         </Menu>

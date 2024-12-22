@@ -5,13 +5,15 @@ import Dashboard from "./pages/dashboard";
 import Mainlayout from "./components/mainlayout/index";
 import { Toaster } from "react-hot-toast";
 
-import User from "./pages/user/index";
-import AddUser from "./pages/user/addUser";
+import Test from "./pages/test/index";
+import AddTest from "./pages/test/addTest";
 import Page404 from "./pages/page404";
 
 import { theme } from "./theme";
 
 function App() {
+
+  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -28,20 +30,20 @@ function App() {
             }
           />
           <Route
-            key="user"
-            path="/user"
+            key="test"
+            path="/test"
             element={
 
-              <User />
+              <Test />
 
             }
           />
 
           <Route
-            key="addUser"
-            path="/user/add"
+            key="addTest"
+            path="/test/add"
             element={
-              <AddUser />
+              <AddTest />
             }
           />
 
