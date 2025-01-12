@@ -8,8 +8,8 @@ import { Toaster } from "react-hot-toast";
 import User from "./pages/user/index";
 import Teacher from "./pages/user/teacher/index";
 import CourseList from "./pages/course/course/courseList/index";
-import CourseSingle from "./pages/course/course/courseSignle/index"
-import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle"
+import CourseSingle from "./pages/course/course/courseSingle/index";
+import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle";
 import Category from "./pages/course/category/index";
 import CourseLaunch from "./pages/course/courseLaunch/index";
 import AddUser from "./pages/user/addUser";
@@ -24,36 +24,20 @@ function App() {
       <Toaster />
       <Routes>
         <Route key="home" path="/" element={<Mainlayout />}>
-          <Route
-            key="dashboard"
-            path="/"
-            element={
-              <Dashboard />
-            }
-          />
+          <Route key="dashboard" path="/" element={<Dashboard />} />
 
-          <Route
-            key="courseList"
-            path="/course"
-            element={
-              <CourseList />
-            }
-          />
+          <Route key="courseList" path="/course" element={<CourseList />} />
 
           <Route
             key="category"
             path="/course/category"
-            element={
-              <Category />
-            }
+            element={<Category />}
           />
 
           <Route
             key="courseLaunch"
             path="/course/courseLaunch"
-            element={
-              <CourseLaunch />
-            }
+            element={<CourseLaunch />}
           />
 
           <Route
@@ -68,21 +52,9 @@ function App() {
             element={<CourseInstanceSingle />}
           />
 
-          <Route
-            key="user"
-            path="/user"
-            element={
-              <User />
-            }
-          />
+          <Route key="user" path="/user" element={<User />} />
 
-          <Route
-            key="addUser"
-            path="/user/add"
-            element={
-              <AddUser />
-            }
-          />
+          <Route key="addUser" path="/user/add" element={<AddUser />} />
 
           <Route
             key="teacher"
