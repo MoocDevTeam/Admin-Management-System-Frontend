@@ -7,7 +7,7 @@ import { Toaster } from "react-hot-toast";
 
 import User from "./pages/user/index";
 import CourseList from "./pages/course/course/courseList/index";
-import CourseSingle from "./pages/course/course/courseSignle/index";
+import CourseSingle from "./pages/course/course/courseSingle/index";
 import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle";
 import Category from "./pages/course/category/index";
 import CourseLaunch from "./pages/course/courseLaunch/index";

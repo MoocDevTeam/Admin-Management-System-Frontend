@@ -1,17 +1,59 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../../../components/header";
 import getRequest from "../../../../request/getRequest";
-import { Box, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Modal,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import FlexList from "../../../../components/course/course/FlexList";
 import CourseCard from "../../../../components/course/course/CourseCard";
 import Skeleton from "@mui/material/Skeleton";
 import toast from "react-hot-toast";
+import postRequest from "../../../../request/postRequest";
 
 export default function CourseList() {
   const [loading, setLoading] = useState(true);
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
+  const [newCourseData, setNewCourseData] = useState({
+    id: "",
+    title: "",
+    courseCode: "",
+    coverImage: "",
+    description: "",
+    categoryId: "",
+  });
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleChange = (event) => {
+    setNewCourseData({
+      ...newCourseData,
+      [event.target.name]: event.target.value,
+    });
+  };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await postRequest("/MoocCourse/add", newCourseData);
+      if (response.isSuccess) {
+        // Update the course list with the new course
+        setCourses([...courses, response.data]);
+        handleClose();
+        toast.success("Course added successfully!");
+      } else {
+        toast.error(response.message || "Failed to add course.");
+      }
+    } catch (error) {
+      toast.error("Failed to add course.");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,7 +83,92 @@ export default function CourseList() {
 
   return (
     <Box m="20px">
-      <Header title="Courses" subtitle="Managing all courses" />
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={2}
+      >
+        <Header title="Courses" subtitle="Managing all courses" />
+        <Button variant="contained" color="primary" onClick={handleOpen}>
+          Add Course
+        </Button>
+      </Stack>
+
+      <Modal open={open} onClose={handleClose}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" component="h2" marginBottom={2}>
+            Add New Course
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="ID"
+              name="id"
+              value={newCourseData.id}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Title"
+              name="title"
+              value={newCourseData.title}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Course Code"
+              name="courseCode"
+              value={newCourseData.courseCode}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Cover Image URL"
+              name="coverImage"
+              value={newCourseData.coverImage}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Category"
+              name="categoryId"
+              value={newCourseData.categoryId}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Description"
+              name="description"
+              value={newCourseData.description}
+              onChange={handleChange}
+              fullWidth
+              multiline
+              rows={4}
+              margin="normal"
+            />
+
+            <Button type="submit" variant="contained" color="primary">
+              Save
+            </Button>
+          </form>
+        </Box>
+      </Modal>
 
       {loading && (
         <FlexList>
