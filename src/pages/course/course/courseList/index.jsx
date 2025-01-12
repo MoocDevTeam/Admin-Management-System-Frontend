@@ -64,7 +64,7 @@ export default function CourseList() {
           {courses.map((course) => (
             <Link
               key={course.courseCode}
-              to={`/course/${course.title}`}
+              to={`/course/${course.id}`}
               style={{ textDecoration: "none" }}
             >
               <CourseCard
