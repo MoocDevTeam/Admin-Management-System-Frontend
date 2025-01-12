@@ -6,6 +6,7 @@ import Mainlayout from "./components/mainlayout/index";
 import { Toaster } from "react-hot-toast";
 
 import User from "./pages/user/index";
+import Teacher from "./pages/user/teacher/index";
 import CourseList from "./pages/course/course/courseList/index";
 import CourseSingle from "./pages/course/course/courseSingle/index";
 import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle";
@@ -54,6 +55,14 @@ function App() {
           <Route key="user" path="/user" element={<User />} />
 
           <Route key="addUser" path="/user/add" element={<AddUser />} />
+
+          <Route
+            key="teacher"
+            path="/user/teacher"
+            element={
+              <Teacher />
+            }
+          />
 
           <Route key="page404" path="*" element={<Page404 />} />
         </Route>
