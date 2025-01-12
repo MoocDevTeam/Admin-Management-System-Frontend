@@ -13,20 +13,21 @@ import {
   Typography,
 } from "@mui/material";
 import FlexList from "../../../../components/course/course/FlexList";
-import { Link, useParams } from "react-router-dom";
-import putRequest from "../../../../request/putRequest"; // Import putRequest
+import { Link, useNavigate, useParams } from "react-router-dom";
+import putRequest from "../../../../request/putRequest";
 import postRequest from "../../../../request/postRequest";
+import BackButton from "../../../../components/course/course/ReturnButton";
 
 export default function CourseSingle() {
   const [loading, setLoading] = useState(true);
-  const [course, setCourse] = useState(null); // Initialize as null
+  const [course, setCourse] = useState(null);
   const [error, setError] = useState("");
-  const { courseTitle } = useParams();
+  const { courseId } = useParams();
   const [open, setOpen] = useState(false);
+  const [modalClosedAfterUpdate, setModalClosedAfterUpdate] = useState(false);
 
-  // Initialize courseData after course is fetched
   const [courseData, setCourseData] = useState({
-    id: null, // Initially null
+    id: null,
     title: "",
     courseCode: "",
     coverImage: "",
@@ -34,7 +35,12 @@ export default function CourseSingle() {
   });
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = (callback) => {
+    setOpen(false);
+    if (callback) {
+      callback();
+    }
+  };
 
   const handleChange = (event) => {
     setCourseData({
@@ -45,24 +51,13 @@ export default function CourseSingle() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const updatedCourseData = {
-      id: courseData.id,
-      title: courseData.title,
-      courseCode: courseData.courseCode, // Include courseCode
-      coverImage: "xxx.png", // Include coverImage (if needed)
-      description: courseData.description,
-    };
-    delete updatedCourseData.categoryName;
 
-    console.log("before update", updatedCourseData);
     try {
-      const response = await postRequest(
-        `/MoocCourse/update`, // Use PUT request and course.id
-        updatedCourseData
-      );
+      const response = await postRequest(`/MoocCourse/update`, courseData);
       if (response.isSuccess) {
         setCourse(response.data);
-        handleClose();
+        setModalClosedAfterUpdate(true);
+        handleClose(refreshPage);
         toast.success("Course updated successfully!");
       } else {
         toast.error(response.message || "Failed to update course.");
@@ -72,31 +67,43 @@ export default function CourseSingle() {
     }
   };
 
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    if (modalClosedAfterUpdate) {
+      window.location.reload();
+      setModalClosedAfterUpdate(false);
+    }
+  }, [modalClosedAfterUpdate]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getRequest(
-          `/MoocCourse/GetByCourseName/${courseTitle}`,
+          `/MoocCourse/GetById/${courseId}`,
           null,
           setLoading
         );
 
         if (response?.isSuccess) {
-          console.log("response: ", response);
-          setCourse(response?.data || null); // Set to null if no data
-          // Update courseData after fetching the course
+          const fetchedCourse = response?.data;
+          setCourse(fetchedCourse);
+
           setCourseData({
-            id: response.data.id,
-            title: response.data.title,
-            courseCode: response.data.courseCode,
-            categoryName: response.data.categoryName,
-            description: response.data.description,
+            id: fetchedCourse.id,
+            title: fetchedCourse.title,
+            courseCode: fetchedCourse.courseCode,
+            coverImage: fetchedCourse.coverImage,
+            description: fetchedCourse.description,
           });
+
           setError("");
         } else {
           const errorMessage =
             response?.message ||
-            "An error occurred while fetching data. CourseSIngle";
+            "An error occurred while fetching data. CourseSingle";
           setError(errorMessage);
           toast.error(errorMessage);
         }
@@ -107,12 +114,14 @@ export default function CourseSingle() {
     };
 
     fetchData();
-  }, [courseTitle]); // Add courseTitle as a dependency
+  }, [courseId]);
 
   return (
     <Box m="20px">
-      <Header title="Course" subtitle="Managing single course" />
-
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Header title="Course" subtitle="Managing single course" />
+        <BackButton backgroundColor="blue" />
+      </Stack>
       {loading && <Skeleton variant="rounded" width="100%" height={100} />}
 
       {error && <Typography sx={{ marginBottom: 4 }}>{error}</Typography>}
@@ -144,10 +153,7 @@ export default function CourseSingle() {
             <Button
               variant="contained"
               sx={{
-                backgroundColor: "#0288d1", // Set the background color to blue[700]
-                "&:hover": {
-                  backgroundColor: "blue[800]", // Optionally change color on hover
-                },
+                backgroundColor: "#0288d1",
               }}
               onClick={handleOpen}
             >
@@ -156,6 +162,7 @@ export default function CourseSingle() {
           </Stack>
           <Typography variant="body1">{`Course Code: ${course.courseCode}`}</Typography>
           <Typography variant="body1">{`Description: ${course.description}`}</Typography>
+
           <Modal open={open} onClose={handleClose}>
             <Box
               sx={{
@@ -237,7 +244,7 @@ export default function CourseSingle() {
           <>
             {course?.courseInstances?.map((instance, index) => (
               <Link
-                key={course.courseCode}
+                key={instance.id} // Use instance.id as the key
                 to={`/course/${course.title}/CourseInstance/${instance.id}`}
                 style={{ textDecoration: "none" }}
               >

@@ -41,7 +41,7 @@ function App() {
 
           <Route
             key="courseSingle"
-            path="/course/:courseTitle"
+            path="/course/:courseId"
             element={<CourseSingle />}
           />
 
