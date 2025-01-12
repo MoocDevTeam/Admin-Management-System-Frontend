@@ -16,12 +16,17 @@ export default function CourseList() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getRequest("/MoocCourse/getall", null, setLoading);
+        const response = await getRequest(
+          "/MoocCourse/getall",
+          null,
+          setLoading
+        );
         if (response?.isSuccess) {
           setCourses(response?.data || []);
           setError("");
         } else {
-          const errorMessage = response?.message || "An error occurred while fetching data.";
+          const errorMessage =
+            response?.message || "An error occurred while fetching data.";
           setError(errorMessage);
           toast.error(errorMessage);
         }
@@ -46,9 +51,7 @@ export default function CourseList() {
         </FlexList>
       )}
 
-      {error && <Typography sx={{ marginBottom: 4 }}>
-        {error}
-      </Typography>}
+      {error && <Typography sx={{ marginBottom: 4 }}>{error}</Typography>}
 
       {!loading && !error && courses.length === 0 && (
         <Typography align="center" sx={{ marginBottom: 4 }}>
@@ -67,7 +70,9 @@ export default function CourseList() {
               <CourseCard
                 title={course.title}
                 category={`Categories: ${course.categoryName || "N/A"}`}
-                description={`Description: ${course.description || "No description available"}`}
+                description={`Description: ${
+                  course.description || "No description available"
+                }`}
               />
             </Link>
           ))}
