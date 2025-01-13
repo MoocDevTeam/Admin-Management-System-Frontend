@@ -1,22 +1,21 @@
-import React from "react";
-import { useState } from "react";
-import { Box, IconButton, Typography } from "@mui/material";
-import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import MenuOpen from "@mui/icons-material/MenuOpen";
-import colors from "../../theme";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
+import React from "react"
+import { useState } from "react"
+import { Box, IconButton, Typography } from "@mui/material"
+import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar"
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined"
+import MenuOpen from "@mui/icons-material/MenuOpen"
+import colors from "../../theme"
+import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined"
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
 
 export default function MainSidebar() {
-
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
     <Box>
       <Sidebar collapsed={isCollapsed}>
-        <Menu style={{height:'99vh'}}>
+        <Menu style={{ height: "99vh" }}>
           {/* LOGO AND MENU ICON */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -56,22 +55,30 @@ export default function MainSidebar() {
                   color={colors.grey[100]}
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
-                >
-                  
-                </Typography>
-                <Typography color={colors.greenAccent[500]}>
-                  
-                </Typography>
+                ></Typography>
+                <Typography color={colors.greenAccent[500]}></Typography>
               </Box>
             </Box>
           )}
 
-          <SubMenu icon={<PeopleOutlinedIcon />} label='People Management' >
-            <MenuItem icon={<PeopleOutlinedIcon /> } component={<Link />} to='user'>User</MenuItem>
+          <SubMenu icon={<PeopleOutlinedIcon />} label="People Management">
+            <MenuItem
+              icon={<PeopleOutlinedIcon />}
+              component={<Link />}
+              to="user"
+            >
+              User
+            </MenuItem>
+            <MenuItem
+              icon={<PeopleOutlinedIcon />}
+              component={<Link />}
+              to="role"
+            >
+              Role
+            </MenuItem>
           </SubMenu>
-
         </Menu>
       </Sidebar>
     </Box>
-  );
+  )
 }
