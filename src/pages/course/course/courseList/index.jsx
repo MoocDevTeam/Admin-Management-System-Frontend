@@ -16,7 +16,8 @@ import Skeleton from "@mui/material/Skeleton";
 import toast from "react-hot-toast";
 import postRequest from "../../../../request/postRequest";
 import { useDispatch, useSelector } from 'react-redux';
-import { setCourses } from '../../../../store/courseSlice';
+import { setCourses, filterCourses } from '../../../../store/courseSlice';
+import FilterDropdown from "../../../../components/course/course/FilterDropdown";
 
 export default function CourseList() {
   const [loading, setLoading] = useState(true);
@@ -44,7 +45,6 @@ export default function CourseList() {
     try {
       const response = await postRequest("/MoocCourse/add", newCourseData);
       if (response.isSuccess) {
-        // Update the course list with the new course
         setCourses([...courses, response.data]);
         handleClose();
         toast.success("Course added successfully!");
@@ -57,7 +57,7 @@ export default function CourseList() {
   };
 
   const dispatch = useDispatch();
-  const courses = useSelector((state) => state.course.courses); 
+  const courses = useSelector((state) => state.course.filteredCourses);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +68,7 @@ export default function CourseList() {
           setLoading
         );
         if (response?.isSuccess) {
-          dispatch(setCourses(response?.data)); 
+          dispatch(setCourses(response?.data));
           console.log("response.data: ", response?.data)
           setError("");
         } else {
@@ -88,13 +88,15 @@ export default function CourseList() {
 
   return (
     <Box m="20px">
+      <Header title="Courses" subtitle="Managing all courses" />
+
       <Stack
         direction="row"
-        justifyContent="space-between"
+        justifyContent="flex-end"
         alignItems="center"
         spacing={2}
       >
-        <Header title="Courses" subtitle="Managing all courses" />
+        <FilterDropdown />
         <Button variant="contained" color="primary" onClick={handleOpen}>
           Add Course
         </Button>
@@ -202,9 +204,9 @@ export default function CourseList() {
               <CourseCard
                 title={course.title}
                 category={`Categories: ${course.categoryName || "N/A"}`}
-                description={`Description: ${
-                  course.description || "No description available"
-                }`}
+                description={`Description: ${course.description || "No description available"
+                  }`}
+                imageUrl={course.coverImage}
               />
             </Link>
           ))}

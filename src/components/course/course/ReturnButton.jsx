@@ -19,11 +19,11 @@ const BackButton = ({
       color={color}
       onClick={handleGoBack}
       sx={{
-        backgroundColor: "#0288d1", // Set the background color
+        backgroundColor: "#0288d1", 
         "&:hover": {
-          backgroundColor: "#1976d2", // Slightly darker shade on hover
+          backgroundColor: "#1976d2", 
         },
-        ...sx, // Merge any other styles provided through the sx prop
+        ...sx, 
       }}
     >
       {text}
