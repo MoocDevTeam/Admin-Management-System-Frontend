@@ -15,10 +15,11 @@ import CourseCard from "../../../../components/course/course/CourseCard";
 import Skeleton from "@mui/material/Skeleton";
 import toast from "react-hot-toast";
 import postRequest from "../../../../request/postRequest";
+import { useDispatch, useSelector } from 'react-redux';
+import { setCourses } from '../../../../store/courseSlice';
 
 export default function CourseList() {
   const [loading, setLoading] = useState(true);
-  const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
   const [newCourseData, setNewCourseData] = useState({
@@ -55,6 +56,9 @@ export default function CourseList() {
     }
   };
 
+  const dispatch = useDispatch();
+  const courses = useSelector((state) => state.course.courses); 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -64,7 +68,8 @@ export default function CourseList() {
           setLoading
         );
         if (response?.isSuccess) {
-          setCourses(response?.data || []);
+          dispatch(setCourses(response?.data)); 
+          console.log("response.data: ", response?.data)
           setError("");
         } else {
           const errorMessage =
@@ -79,7 +84,7 @@ export default function CourseList() {
     };
 
     fetchData();
-  }, []);
+  }, [dispatch]);
 
   return (
     <Box m="20px">

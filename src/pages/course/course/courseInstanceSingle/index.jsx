@@ -1,41 +1,70 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../../../components/header";
+import { useParams} from "react-router-dom";
 import getRequest from "../../../../request/getRequest";
-import { Box, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
-import Skeleton from "@mui/material/Skeleton";
+import { Box} from "@mui/material";
 import toast from "react-hot-toast";
+import StyledSection from "../../../../components/course/course/StyledSection";
+import FileUploadPanel from "../../../../components/course/course/FileUploadPanel";
+import BasicStack from "../../../../components/course/course/Stack";
 
 export default function CourseInstanceSingle() {
-  const [loading, setLoading] = useState(true);
-  const [courseInstance, setCourseInstance] = useState([]);
+  const { courseId, courseInstanceId } = useParams();
+
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [course, setCourse] = useState(null)
+
+  const courseInstance = course
+    ? course.courseInstances?.find((instance) => Number(instance.id) === Number(courseInstanceId))
+    : null;
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getRequest("/", null, setLoading);
-        if (response?.isSuccess) {
-          setCourseInstance(response?.data || []);
-          setError("");
-        } else {
-          const errorMessage = response?.message || "An error occurred while fetching data.";
-          setError(errorMessage);
-          toast.error(errorMessage);
+    if (!course) {
+      const fetchCourses = async () => {
+        try {
+          const response = await getRequest(`/MoocCourse/GetByCourseName/${courseId}`, null, setLoading);
+          if (response?.isSuccess) {
+            setCourse(response.data)
+            setError("");
+          } else {
+            const errorMessage = response?.message || "An error occurred while fetching data.";
+            setError(errorMessage);
+            toast.error(errorMessage);
+          }
+        } catch (err) {
+          setError("Failed to fetch data");
+          toast.error("Failed to fetch data");
+        } finally {
+          setLoading(false);
         }
-      } catch (err) {
-        setError("Failed to fetch data");
-        toast.error("Failed to fetch data");
-      }
-    };
+      };
+      fetchCourses();
+    } else {
+      setLoading(false);
+    }
+  }, [courseId, course]);
 
-    fetchData();
-  }, []);
+  if (!courseInstance) {
+    return <div>Course Instance not found</div>;
+  }
 
   return (
     <Box m="20px">
-      <Header title="Course Instance" subtitle="Managing Course Instance" />
+      {courseInstance && <Header title={courseInstance?.description} subtitle={`Managing course version ${courseInstance?.moocCourseId}`} />}
 
+      {courseInstance &&
+        <StyledSection  sx={{ marginTop: "16px" }}>
+          <p>{`Total Sessions: ${courseInstance.totalSessions}`}</p>
+          <p>{`Start Date: ${courseInstance.startDate}`}</p>
+        </StyledSection>}
+
+      {courseInstance &&
+        <StyledSection  sx={{ marginTop: "16px" }}>
+          <BasicStack list={courseInstance.sessions} />
+        </StyledSection>}
+
+      <FileUploadPanel />
     </Box>
   );
 }
