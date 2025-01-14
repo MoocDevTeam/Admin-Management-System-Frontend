@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../../../components/header";
-import { useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import getRequest from "../../../../request/getRequest";
-import { Box} from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import toast from "react-hot-toast";
 import StyledSection from "../../../../components/course/course/StyledSection";
-import FileUploadPanel from "../../../../components/course/course/FileUploadPanel";
 import BasicStack from "../../../../components/course/course/Stack";
 
 export default function CourseInstanceSingle() {
@@ -51,20 +50,28 @@ export default function CourseInstanceSingle() {
 
   return (
     <Box m="20px">
-      {courseInstance && <Header title={courseInstance?.description} subtitle={`Managing course version ${courseInstance?.moocCourseId}`} />}
+      {courseInstance && <Header title={courseId + " " + courseInstance?.description} subtitle={`Managing course version`} />}
 
       {courseInstance &&
-        <StyledSection  sx={{ marginTop: "16px" }}>
-          <p>{`Total Sessions: ${courseInstance.totalSessions}`}</p>
-          <p>{`Start Date: ${courseInstance.startDate}`}</p>
+        <StyledSection sx={{ marginTop: "16px" }}>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
+            Details
+          </Typography>
+          {/* <Typography variant="body1">{`Total Sessions: ${courseInstance.totalSessions}`}</Typography> */}
+          <Typography variant="body1">{`Created by: faculty staff ${courseInstance.createdByUserId}`}</Typography>
+          <Typography variant="body1">{`Start Date: ${courseInstance.startDate}`}</Typography>
+          <Typography variant="body1">{`End Date: ${courseInstance.endDate}`}</Typography>
         </StyledSection>}
 
       {courseInstance &&
-        <StyledSection  sx={{ marginTop: "16px" }}>
-          <BasicStack list={courseInstance.sessions} />
-        </StyledSection>}
+          <StyledSection sx={{ marginTop: "16px", backgroundColor: "#f5f5f5" }}>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
+              Outline
+            </Typography>
+            <BasicStack list={courseInstance.sessions} sx={{ marginTop: "16px"}}/>
+          </StyledSection>
+      }
 
-      <FileUploadPanel />
     </Box>
   );
 }
