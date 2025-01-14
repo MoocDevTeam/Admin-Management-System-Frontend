@@ -27,7 +27,7 @@ const ImageBox = styled(Box)(({ theme }) => ({
 
 export default function CourseCard({ title, category, description, imageUrl }) {
   return (
-    <StyledCard style={{ width: "300px" }}>
+    <StyledCard style={{ width: "380px" }}>
       <ImageBox style={{ backgroundImage: `url(${imageUrl})` }} />
       <Box>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -36,7 +36,7 @@ export default function CourseCard({ title, category, description, imageUrl }) {
         <Typography variant="body2" color="textSecondary" gutterBottom>
           {category}
         </Typography>
-        <Typography variant="body1">{description}</Typography>
+        <Typography variant="body2" color="textSecondary">{description}</Typography>
       </Box>
     </StyledCard>
   );
