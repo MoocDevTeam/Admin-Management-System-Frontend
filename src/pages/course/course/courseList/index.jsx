@@ -15,8 +15,8 @@ import CourseCard from "../../../../components/course/course/CourseCard";
 import Skeleton from "@mui/material/Skeleton";
 import toast from "react-hot-toast";
 import postRequest from "../../../../request/postRequest";
-import { useDispatch, useSelector } from 'react-redux';
-import { setCourses, filterCourses } from '../../../../store/courseSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { setCourses, filterCourses } from "../../../../store/courseSlice";
 import FilterDropdown from "../../../../components/course/course/FilterDropdown";
 
 export default function CourseList() {
@@ -69,7 +69,6 @@ export default function CourseList() {
         );
         if (response?.isSuccess) {
           dispatch(setCourses(response?.data));
-          console.log("response.data: ", response?.data)
           setError("");
         } else {
           const errorMessage =

@@ -106,72 +106,66 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
   };
 
   return (
-    <Box m="20px">
-      <Typography variant="h6" sx={{ fontWeight: "bold", marginBottom: "16px" }}>
-        Video Upload
-      </Typography>
-
-      <Box sx={{ boxShadow: 1, padding: "8px", borderRadius: "8px" }}>
-        {uploadedUrl === "" &&
-          <>
-            <input
-              type="file"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-              id="file-upload"
-            />
-            <label htmlFor="file-upload">
-              <Button variant="outlined" component="span" startIcon={<CloudUploadIcon />} sx={{ marginBottom: "16px" }}>
-                Upload File
-              </Button>
-            </label>
-
-            {file && (
-              <Typography variant="body1" sx={{ marginBottom: "16px" }}>
-                Selected file: {file.name}
-              </Typography>
-            )}
-          </>
-        }
-
-        {loading && (
-          <Box sx={{ marginTop: "16px", display: "flex", alignItems: "center" }}>
-            <LinearProgress variant="determinate" value={displayProgress} sx={{ flexGrow: 1, marginRight: "8px" }} />
-            <Typography variant="body2">{`${Math.round(displayProgress)}%`}</Typography>
-          </Box>
-        )}
-
-        {uploadedUrl === "" &&
-          <div>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleFileUpload}
-              disabled={loading || !file}
-            >
-              {loading && <CircularProgress size={12} style={{ marginRight: 8 }} />}
-              {loading ? "Uploading..." : "Upload Now"}
+    <Box sx={{ marginBottom: "10px" }}>
+      {uploadedUrl === "" &&
+        <>
+          <input
+            type="file"
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+            id="file-upload"
+          />
+          <label htmlFor="file-upload">
+            <Button variant="outlined" component="span" startIcon={<CloudUploadIcon />} sx={{ marginBottom: "16px" }}>
+              Upload File
             </Button>
-          </div>
-        }
+          </label>
 
-        {uploadedUrl &&
-          <Typography variant="body1" sx={{ marginTop: "16px", color: "green" }}>
-            File uploaded successfully:
-            <a href={uploadedUrl} target="_blank" rel="noopener noreferrer" style={{ marginLeft: "8px" }}>
-              View File
-            </a>
-            <a
-              href={uploadedUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "red", marginLeft: "8px" }}
-            >
-              Delete
-            </a>
-          </Typography>
-        }
-      </Box>
+          {file && (
+            <Typography variant="body1" sx={{ marginBottom: "16px" }}>
+              Selected file: {file.name}
+            </Typography>
+          )}
+        </>
+      }
+
+      {loading && (
+        <Box sx={{ marginTop: "16px", display: "flex", alignItems: "center" }}>
+          <LinearProgress variant="determinate" value={displayProgress} sx={{ flexGrow: 1, marginRight: "8px" }} />
+          <Typography variant="body2">{`${Math.round(displayProgress)}%`}</Typography>
+        </Box>
+      )}
+
+      {uploadedUrl === "" &&
+        <div>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleFileUpload}
+            disabled={loading || !file}
+          >
+            {loading && <CircularProgress size={12} style={{ marginRight: 8 }} />}
+            {loading ? "Uploading..." : "Upload Now"}
+          </Button>
+        </div>
+      }
+
+      {uploadedUrl &&
+        <Typography variant="body1" sx={{ marginTop: "16px", color: "green" }}>
+          File uploaded successfully:
+          <a href={uploadedUrl} target="_blank" rel="noopener noreferrer" style={{ marginLeft: "8px" }}>
+            View File
+          </a>
+          <a
+            href={uploadedUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "red", marginLeft: "8px" }}
+          >
+            Delete
+          </a>
+        </Typography>
+      }
     </Box>
   );
 }
