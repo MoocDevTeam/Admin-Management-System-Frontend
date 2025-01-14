@@ -16,7 +16,6 @@ const FilterDropdown = () => {
   };
 
   const handleFilter = (category) => {
-    console.log("category: ", category)
     dispatch(filterCourses(category)); 
     handleClose();
   };

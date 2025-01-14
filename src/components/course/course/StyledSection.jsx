@@ -8,7 +8,7 @@ export default function StyledSection({ children, sx = {} }) {
         width: "100%",
         padding: (theme) => theme.spacing(3), 
         boxSizing: "border-box",
-        boxShadow: (theme) => theme.shadows[3], 
+        boxShadow: (theme) => theme.shadows[2], 
         borderRadius: (theme) => theme.shape.borderRadius, 
         ...sx, 
       }}
