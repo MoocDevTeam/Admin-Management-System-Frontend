@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect } from "react"
 import {
   Box,
   Button,
@@ -11,17 +11,17 @@ import {
   ListItemText,
   Checkbox,
   OutlinedInput,
-} from "@mui/material";
+} from "@mui/material"
 
-import { useFormik } from "formik";
-import toast from "react-hot-toast";
-import * as Yup from "yup";
-import postRequest from "../../request/postRequest";
-import Header from "../../components/header";
-import { useState } from "react";
-import getRequest from "../../request/getRequest";
+import { useFormik } from "formik"
+import toast from "react-hot-toast"
+import * as Yup from "yup"
+import postRequest from "../../request/postRequest"
+import Header from "../../components/header"
+import { useState } from "react"
+import getRequest from "../../request/getRequest"
 
-export default function AddUser() {
+export default function AddRole() {
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -49,7 +49,7 @@ export default function AddUser() {
         .oneOf([Yup.ref("password"), null], "Passwords must match"),
     }),
     onSubmit: async (values) => {
-      let result = await postRequest("/user/Add", {
+      let result = await postRequest("/role/Add", {
         username: values.username,
         password: values.password,
         email: values.email,
@@ -57,28 +57,28 @@ export default function AddUser() {
         gender: values.gender,
         age: values.age,
         avatar: avatarData,
-        roleIds:selectRoles
-      });
+        roleIds: selectRoles,
+      })
 
       if (result.isSuccess) {
-        toast.success("add success!");
-        formik.resetForm();
+        toast.success("add success!")
+        formik.resetForm()
         //navigate("/", { replace: true });
       } else {
-        toast.error(result.message);
+        toast.error(result.message)
       }
     },
-  });
+  })
 
-  const [avatarData, setAvatarData] = useState("");
+  const [avatarData, setAvatarData] = useState("")
   const handleAvatarResult = (result) => {
-    setAvatarData(result);
-  };
+    setAvatarData(result)
+  }
 
-  const [roles, setRoles] = useState([]);
-  const [selectRoles, setSelectRoles] = useState([]);
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
+  const [roles, setRoles] = useState([])
+  const [selectRoles, setSelectRoles] = useState([])
+  const ITEM_HEIGHT = 48
+  const ITEM_PADDING_TOP = 8
   const MenuProps = {
     PaperProps: {
       style: {
@@ -86,34 +86,32 @@ export default function AddUser() {
         width: 250,
       },
     },
-  };
+  }
   const handleChangeRole = (event) => {
     const {
       target: { value },
-    } = event;
+    } = event
     setSelectRoles(
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
-    );
-  };
+    )
+  }
 
   const renderValueRole = (valueArray) => {
     return roles
       .filter((x) => valueArray.indexOf(x.id) !== -1)
       .map((x) => x.roleName)
-      .join(", ");
+      .join(", ")
     // return roles.map((value) => valueArray.find(x=>x===value.id)).map(x=>x.name).join(', ')
-  };
-
- 
+  }
 
   return (
     <Box m="20px">
       <Header
-        title="CREATE USER"
-        subtitle="Create a New User Profile"
-        url="/user"
-        urltitle={"UserList"}
+        title="CREATE ROLE"
+        subtitle="Create a New Role"
+        url="/role"
+        urltitle={"RoleList"}
       />
       <form onSubmit={formik.handleSubmit}>
         <Box
@@ -250,8 +248,6 @@ export default function AddUser() {
             autoFocus
             sx={{ gridColumn: "span 4" }}
           />
-
-          
         </Box>
         <Box display="flex" justifyContent="end" mt="20px">
           <Stack direction="row" spacing={2}>
@@ -265,5 +261,5 @@ export default function AddUser() {
         </Box>
       </form>
     </Box>
-  );
+  )
 }

@@ -15,7 +15,6 @@ import { getAccessName } from '../util/access';
 export default function MainSidebar({ userName }) {
 
   const [isCollapsed, setIsCollapsed] = useState(false);
-
   const dispatch = useDispatch();
   const { user, status, error } = useSelector((state) => state.user);
 
@@ -29,6 +28,7 @@ export default function MainSidebar({ userName }) {
     <Box>
       <Sidebar collapsed={isCollapsed}>
         <Menu style={{ height: '99vh' }}>
+
           {/* LOGO AND MENU ICON */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -63,6 +63,7 @@ export default function MainSidebar({ userName }) {
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
+
               {status === 'loading' && (<LoadingSpinner />)}
               {status === 'failed' && (
                 <Alert severity="error">{error || 'Failed to load user data'}</Alert>
@@ -84,12 +85,24 @@ export default function MainSidebar({ userName }) {
             </Box>
           )}
 
-          <SubMenu icon={<PeopleOutlinedIcon />} label='People Management' >
-            <MenuItem icon={<PeopleOutlinedIcon />} component={<Link />} to='user'>User</MenuItem>
+          <SubMenu icon={<PeopleOutlinedIcon />} label="People Management">
+            <MenuItem
+              icon={<PeopleOutlinedIcon />}
+              component={<Link />}
+              to="user"
+            >
+              User
+            </MenuItem>
+            <MenuItem
+              icon={<PeopleOutlinedIcon />}
+              component={<Link />}
+              to="role"
+            >
+              Role
+            </MenuItem>
           </SubMenu>
-
         </Menu>
       </Sidebar>
     </Box>
-  );
+  )
 }
