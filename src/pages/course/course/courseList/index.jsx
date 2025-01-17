@@ -96,7 +96,7 @@ export default function CourseList() {
         spacing={2}
       >
         <FilterDropdown />
-        <Button variant="contained" color="primary" onClick={handleOpen}>
+        <Button variant="contained" color="secondary" onClick={handleOpen}>
           Add Course
         </Button>
       </Stack>

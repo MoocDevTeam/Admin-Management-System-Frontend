@@ -1,4 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import postRequest from "../request/postRequest";
+import getRequest  from "../request/getRequest";
 
 const initialState = {
   courses: [], 
@@ -20,7 +22,7 @@ const courseSlice = createSlice({
     filterCourses: (state, action) => {
       const category = action.payload;
       state.filteredCourses =
-        category === "all"
+        category === "All"
           ? state.courses 
           : state.courses.filter((course) => course.categoryName === category);
     },

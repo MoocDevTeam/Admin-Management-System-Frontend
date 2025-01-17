@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import getRequest from "../../../../request/getRequest";
-import StyledSection from "../../../../components/course/course/StyledSection";
+import StyledSection from "../../../../components/course/shared/StyledSection";
 import Header from "../../../../components/header";
 import Skeleton from "@mui/material/Skeleton";
 import toast from "react-hot-toast";
@@ -13,10 +13,9 @@ import {
   Typography,
 } from "@mui/material";
 import FlexList from "../../../../components/course/course/FlexList";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import putRequest from "../../../../request/putRequest";
+import { Link, useParams } from "react-router-dom";
 import postRequest from "../../../../request/postRequest";
-import BackButton from "../../../../components/course/course/ReturnButton";
+import BackButton from "../../../../components/course/shared/ReturnButton";
 
 export default function CourseSingle() {
   const [loading, setLoading] = useState(true);
@@ -120,7 +119,7 @@ export default function CourseSingle() {
     <Box m="20px">
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Header title="Course" subtitle="Managing single course" />
-        <BackButton backgroundColor="blue" />
+        <BackButton />
       </Stack>
       {loading && <Skeleton variant="rounded" width="100%" height={100} />}
 
@@ -152,9 +151,7 @@ export default function CourseSingle() {
             </Typography>
             <Button
               variant="contained"
-              sx={{
-                backgroundColor: "#0288d1",
-              }}
+              color="secondary"
               onClick={handleOpen}
             >
               Edit
@@ -223,7 +220,7 @@ export default function CourseSingle() {
             marginBottom: "16px",
           }}
         >
-          Course Publish
+          Publish
         </Typography>
         {loading && (
           <FlexList>
@@ -244,7 +241,7 @@ export default function CourseSingle() {
           <>
             {course?.courseInstances?.map((instance, index) => (
               <Link
-                key={instance.id} // Use instance.id as the key
+                key={instance.id} 
                 to={`/course/${course.title}/CourseInstance/${instance.id}`}
                 style={{ textDecoration: "none" }}
               >

@@ -3,9 +3,9 @@ import { Button } from "@mui/material";
 
 const BackButton = ({
   variant = "contained",
-  color = "primary", // Use MUI's 'primary' color
+  color = "secondary", 
   text = "Back",
-  sx, // Add sx prop for custom styles
+  sx, 
 }) => {
   const navigate = useNavigate();
 
@@ -19,9 +19,8 @@ const BackButton = ({
       color={color}
       onClick={handleGoBack}
       sx={{
-        backgroundColor: "#0288d1", 
         "&:hover": {
-          backgroundColor: "#1976d2", 
+          backgroundColor: "secondary", 
         },
         ...sx, 
       }}

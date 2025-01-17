@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, LinearProgress, Button } from "@mui/material";
 import { CloudUpload as CloudUploadIcon } from "@mui/icons-material";
 import toast from "react-hot-toast";
-import { uploadFile } from "../../../request/uploadFile";
+import { uploadFile } from "../../../../request/uploadFile";
 import CircularProgress from "@mui/material/CircularProgress";
 import * as signalR from "@microsoft/signalr";
 
@@ -140,7 +140,7 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
         <div>
           <Button
             variant="contained"
-            color="primary"
+            color="secondary"
             onClick={handleFileUpload}
             disabled={loading || !file}
           >
