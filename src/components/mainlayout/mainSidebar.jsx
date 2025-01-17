@@ -1,21 +1,34 @@
-import React from "react"
-import { useState } from "react"
-import { Box, IconButton, Typography } from "@mui/material"
-import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar"
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined"
-import MenuOpen from "@mui/icons-material/MenuOpen"
-import colors from "../../theme"
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined"
+import React from "react";
+import { useState, useEffect } from "react";
+import { Alert, Box, IconButton, Typography } from "@mui/material";
+import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import MenuOpen from "@mui/icons-material/MenuOpen";
+import colors from "../../theme";
+import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
+import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { fetchUserByName } from "../../store/userSlice";
+import LoadingSpinner from "../loadingSpinner";
+import { getAccessName } from '../util/access';
 
-import { Link } from "react-router-dom"
+export default function MainSidebar({ userName }) {
 
-export default function MainSidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const dispatch = useDispatch();
+  const { user, status, error } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (userName) {
+      dispatch(fetchUserByName(userName));
+    }
+  }, [dispatch, userName]);
 
   return (
     <Box>
       <Sidebar collapsed={isCollapsed}>
-        <Menu style={{ height: "99vh" }}>
+        <Menu style={{ height: '99vh' }}>
+
           {/* LOGO AND MENU ICON */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -32,7 +45,7 @@ export default function MainSidebar() {
                 alignItems="center"
                 ml="15px"
               >
-                <Typography color={colors.grey[100]}>ADMINIS</Typography>
+                <Typography color={colors.grey[100]}>{user ? getAccessName(user.access) : ''}</Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
                 </IconButton>
@@ -50,14 +63,25 @@ export default function MainSidebar() {
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
-              <Box textAlign="center">
-                <Typography
-                  color={colors.grey[100]}
-                  fontWeight="bold"
-                  sx={{ m: "10px 0 0 0" }}
-                ></Typography>
-                <Typography color={colors.greenAccent[500]}></Typography>
-              </Box>
+
+              {status === 'loading' && (<LoadingSpinner />)}
+              {status === 'failed' && (
+                <Alert severity="error">{error || 'Failed to load user data'}</Alert>
+              )}
+              {status === 'succeeded' && (
+                <Box textAlign="center">
+                  <Typography
+                    color={colors.grey[100]}
+                    fontWeight="bold"
+                    sx={{ m: "10px 0 0 0" }}
+                  >
+                    {user.userName || 'n/a'}
+                  </Typography>
+                  <Typography color={colors.greenAccent[500]}>
+                    {user.email || 'n/a'}
+                  </Typography>
+                </Box>
+              )}
             </Box>
           )}
 
