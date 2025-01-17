@@ -11,6 +11,8 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
 import { useNavigate } from "react-router-dom"
 import postRequest from "../../request/postRequest"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faGraduationCap } from "@fortawesome/free-solid-svg-icons"
 const LoginPage = () => {
   const [formData, setFormData] = useState({ username: "", password: "" })
   const navigate = useNavigate()
@@ -31,20 +33,41 @@ const LoginPage = () => {
   }
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="md">
       <CssBaseline />
       <Box
         sx={{
-          marginTop: 8,
+          marginTop: 20,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-          <LockOutlinedIcon />
+        <Typography
+          sx={{
+            fontSize: "3rem",
+            fontWeight: "bold",
+            color: "#B771E5",
+          }}
+          component="h1"
+          variant="h1"
+        >
+          MOOC Administration System
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          marginTop: 10,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Avatar sx={{ size: "5rem", m: 1, bgcolor: "#AEEA94" }}>
+          {/* <LockOutlinedIcon /> */}
+          <FontAwesomeIcon icon={faGraduationCap} size="lg" />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography sx={{ fontSize: "2rem" }} component="h1" variant="h5">
           Sign In
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
@@ -76,7 +99,13 @@ const LoginPage = () => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{
+              fontSize: "1.5rem",
+              mt: 3,
+              mb: 2,
+              backgroundColor: "#4635B1",
+              ":hover": { backgroundColor: "#FFFBCA", color: "#000" },
+            }}
           >
             Sign In
           </Button>
