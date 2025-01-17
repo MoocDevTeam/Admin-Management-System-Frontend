@@ -17,13 +17,13 @@ function App() {
       <CssBaseline />
       <Toaster />
       <Routes>
+        <Route Key="login" path="/login" element={<LoginPage />} />
         <Route key="home" path="/" element={<Mainlayout />}>
           <Route key="dashboard" path="/" element={<Dashboard />} />
           <Route key="user" path="/user" element={<User />} />
           <Route key="role" path="/role" element={<Role />} />
           <Route key="addUser" path="/user/add" element={<AddUser />} />
           <Route key="page404" path="*" element={<Page404 />} />
-          <Route Key="login" path="/login" element={<LoginPage />} />
         </Route>
       </Routes>
     </ThemeProvider>

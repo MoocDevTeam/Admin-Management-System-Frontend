@@ -1,10 +1,9 @@
-import React from "react";
-import MainSidebar from "./mainSidebar";
-import Topbar from "./topbar";
-import { Outlet } from "react-router-dom";
+import React from "react"
+import MainSidebar from "./mainSidebar"
+import Topbar from "./topbar"
+import { Outlet } from "react-router-dom"
 export default function Mainlayout() {
-  const userName = "user1"; // Should from login
-
+  const userName = "admin" // Should from login
   return (
     <div className="app">
       <MainSidebar userName={userName} />
@@ -13,5 +12,5 @@ export default function Mainlayout() {
         <Outlet />
       </main>
     </div>
-  );
+  )
 }
