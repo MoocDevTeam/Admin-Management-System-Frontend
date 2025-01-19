@@ -95,12 +95,10 @@ export default function Role() {
         param
       )
       if (result.status === 200) {
-        console.log("get data from backend is: ", result)
         setPageData(result.data)
       } else {
         setPageData({ items: [], total: 0 })
       }
-      console.log("=========", result)
     }
 
     let filterPagedResultRequestDto = {
@@ -109,7 +107,7 @@ export default function Role() {
       PageSize: pageSearch.pageSize,
       Sorting: "",
     }
-    // setPageData({ items: rows, total: 26 })
+    //setPageData({ items: rows, total: 26 })
     getUser(filterPagedResultRequestDto)
   }, [pageSearch])
 

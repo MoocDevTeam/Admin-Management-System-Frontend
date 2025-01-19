@@ -9,6 +9,7 @@ import AddUser from "./pages/user/addUser"
 import Page404 from "./pages/page404"
 import Role from "./pages/role/index"
 import { theme } from "./theme"
+import LoginPage from "./pages/login/login"
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <CssBaseline />
       <Toaster />
       <Routes>
+        <Route Key="login" path="/login" element={<LoginPage />} />
         <Route key="home" path="/" element={<Mainlayout />}>
           <Route key="dashboard" path="/" element={<Dashboard />} />
           <Route key="user" path="/user" element={<User />} />
