@@ -4,7 +4,12 @@ import getRequest from "../../../../request/getRequest";
 import {
   Box,
   Button,
+  Chip,
+  FormControl,
+  IconButton,
+  InputAdornment,
   Modal,
+  OutlinedInput,
   Stack,
   TextField,
   Typography,
@@ -17,14 +22,21 @@ import toast from "react-hot-toast";
 import postRequest from "../../../../request/postRequest";
 import { useDispatch, useSelector } from "react-redux";
 import { setCourses, filterCourses } from "../../../../store/courseSlice";
-import FilterDropdown from "../../../../components/course/course/FilterDropdown";
 
+import FilterDropdown from "../../../../components/course/course/FilterDropdown";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import RssFeedRoundedIcon from "@mui/icons-material/RssFeedRounded";
+import { createSlice } from "@reduxjs/toolkit";
 export default function CourseList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
+  const [selectedChip, setSelectedChip] = React.useState(null);
+  const [categoryNames, setCategoryNames] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
+
   const [newCourseData, setNewCourseData] = useState({
-    id: "",
+    // id: "",
     title: "",
     courseCode: "",
     coverImage: "",
@@ -69,6 +81,15 @@ export default function CourseList() {
         );
         if (response?.isSuccess) {
           dispatch(setCourses(response?.data));
+          console.log("all courses", response?.data);
+          //show category names
+          const categoryNames = []; // This is now local to useEffect
+          response?.data.forEach((course) => {
+            if (!categoryNames.includes(course.categoryName)) {
+              categoryNames.push(course.categoryName);
+            }
+          });
+          setCategoryNames(categoryNames); // Update the component's state
           setError("");
         } else {
           const errorMessage =
@@ -85,9 +106,52 @@ export default function CourseList() {
     fetchData();
   }, [dispatch]);
 
+  const handleChipClick = (chipIndex) => {
+    setSelectedChip(chipIndex);
+    let filteredCourses = [];
+    if (chipIndex === null) {
+      filteredCourses = courses; //  "All Courses" show all courses
+    } else {
+      const selectedCategoryName = categoryNames[chipIndex];
+      filteredCourses = courses.filter(
+        (course) => course.categoryName === selectedCategoryName
+      );
+    }
+    setFilteredCourses(filteredCourses); // Update local state
+  };
+
   return (
     <Box m="20px">
       <Header title="Courses" subtitle="Managing all courses" />
+
+      <Box
+        sx={{
+          display: "inline-flex",
+          flexDirection: "row",
+          gap: 3,
+          overflow: "auto",
+        }}
+      >
+        <Chip
+          onClick={() => handleChipClick(null)}
+          size="medium"
+          label="All Courses"
+        />
+        {categoryNames.map(
+          (
+            categoryName,
+            index // 使用 categoryNames 渲染 Chip
+          ) => (
+            <Chip
+              key={index}
+              label={categoryName}
+              variant={selectedChip === index ? "outlined" : "filled"}
+              onClick={() => handleChipClick(index)}
+              sx={{ marginRight: 1 }}
+            />
+          )
+        )}
+      </Box>
 
       <Stack
         direction="row"
@@ -118,14 +182,14 @@ export default function CourseList() {
             Add New Course
           </Typography>
           <form onSubmit={handleSubmit}>
-            <TextField
+            {/* <TextField
               label="ID"
               name="id"
               value={newCourseData.id}
               onChange={handleChange}
               fullWidth
               margin="normal"
-            />
+            /> */}
             <TextField
               label="Title"
               name="title"
@@ -194,23 +258,48 @@ export default function CourseList() {
 
       {!loading && !error && courses.length > 0 && (
         <FlexList>
-          {courses.map((course) => (
-            <Link
-              key={course.courseCode}
-              to={`/course/${course.id}`}
-              style={{ textDecoration: "none" }}
-            >
-              <CourseCard
-                title={course.title}
-                category={`Categories: ${course.categoryName || "N/A"}`}
-                description={`Description: ${course.description || "No description available"
+          {filteredCourses.map((course, index) => {
+            console.log("Mapped course:", course); // Log the course object
+            return (
+              <Link
+                key={course.courseCode}
+                to={`/course/${course.id}`}
+                style={{ textDecoration: "none" }}
+              >
+                <CourseCard
+                  title={course.title}
+                  category={`Categories: ${course.categoryName || "N/A"}`}
+                  description={`Description: ${
+                    course.description || "No description available"
                   }`}
-                imageUrl={course.coverImage}
-              />
-            </Link>
-          ))}
+                  imageUrl={course.coverImage}
+                />
+              </Link>
+            );
+          })}
         </FlexList>
       )}
     </Box>
+  );
+}
+
+export function Search() {
+  return (
+    <FormControl sx={{ width: { xs: "100%", md: "25ch" } }} variant="outlined">
+      <OutlinedInput
+        size="small"
+        id="search"
+        placeholder="Search…"
+        sx={{ flexGrow: 1 }}
+        startAdornment={
+          <InputAdornment position="start" sx={{ color: "text.primary" }}>
+            <SearchRoundedIcon fontSize="small" />
+          </InputAdornment>
+        }
+        inputProps={{
+          "aria-label": "search",
+        }}
+      />
+    </FormControl>
   );
 }
