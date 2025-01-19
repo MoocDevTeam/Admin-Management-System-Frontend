@@ -8,6 +8,8 @@ import {
   FormControl,
   IconButton,
   InputAdornment,
+  InputLabel,
+  MenuItem,
   Modal,
   OutlinedInput,
   Stack,
@@ -22,6 +24,7 @@ import toast from "react-hot-toast";
 import postRequest from "../../../../request/postRequest";
 import { useDispatch, useSelector } from "react-redux";
 import { setCourses, filterCourses } from "../../../../store/courseSlice";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 import FilterDropdown from "../../../../components/course/course/FilterDropdown";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -31,17 +34,16 @@ export default function CourseList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
-  const [selectedChip, setSelectedChip] = React.useState(null);
+  const [selectedChip, setSelectedChip] = useState(null);
   const [categories, setCategories] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
-
+  const [selectCatetory, setSelectCatetory] = useState("");
   const [newCourseData, setNewCourseData] = useState({
-    // id: "",
     title: "",
     courseCode: "",
     coverImage: "",
     description: "",
-    categoryId: "",
+    categoryId: 1,
   });
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -51,15 +53,16 @@ export default function CourseList() {
       ...newCourseData,
       [event.target.name]: event.target.value,
     });
+    console.log("newCourseData", newCourseData);
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const response = await postRequest("/MoocCourse/add", newCourseData);
       if (response.isSuccess) {
+        toast.success("Course added successfully!");
         setCourses([...courses, response.data]);
         handleClose();
-        toast.success("Course added successfully!");
       } else {
         toast.error(response.message || "Failed to add course.");
       }
@@ -94,13 +97,14 @@ export default function CourseList() {
               )
             ) {
               uniqueCategories.push({
-                id: course.id,
+                id: course.categoryId,
                 categoryName: course.categoryName,
               });
             }
           });
 
           setCategories(uniqueCategories); // Update the component's state
+          console.log("categories", categories);
           setError("");
         } else {
           const errorMessage =
@@ -133,14 +137,17 @@ export default function CourseList() {
 
   return (
     <Box m="20px">
+      {/* Title */}
       <Header title="Courses" subtitle="Managing all courses" />
 
+      {/* Filter chips */}
       <Box
         sx={{
           display: "inline-flex",
           flexDirection: "row",
           gap: 3,
           overflow: "auto",
+          marginBottom: 2,
         }}
       >
         <Chip
@@ -160,18 +167,69 @@ export default function CourseList() {
         ))}
       </Box>
 
+      {/* Filter button and Add course button */}
       <Stack
         direction="row"
         justifyContent="flex-end"
         alignItems="center"
         spacing={2}
       >
-        <FilterDropdown />
+        {/* <FilterDropdown /> */}
         <Button variant="contained" color="secondary" onClick={handleOpen}>
           Add Course
         </Button>
       </Stack>
 
+      {/* Course card list */}
+      {loading && (
+        <FlexList>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton key={index} variant="rounded" width={300} height={100} />
+          ))}
+        </FlexList>
+      )}
+
+      {error && <Typography sx={{ marginBottom: 4 }}>{error}</Typography>}
+
+      {/* Error message of Course card */}
+      {!loading && !error && courses.length === 0 && (
+        <Typography align="center" sx={{ marginBottom: 4 }}>
+          No courses available at the moment.
+        </Typography>
+      )}
+
+      {!loading && !error && courses.length > 0 && (
+        <FlexList
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "stretch",
+          }}
+        >
+          {" "}
+          {filteredCourses.map((course, index) => {
+            return (
+              // To courseSingle
+              <Link
+                key={course.courseCode}
+                to={`/course/${course.id}`}
+                style={{ textDecoration: "none", display: "flex" }}
+              >
+                <CourseCard
+                  title={course.title}
+                  category={`Categories: ${course.categoryName || "N/A"}`}
+                  description={`Description: ${
+                    course.description || "No description available"
+                  }`}
+                  imageUrl={course.coverImage}
+                />
+              </Link>
+            );
+          })}
+        </FlexList>
+      )}
+
+      {/* Popup add course page */}
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
@@ -221,14 +279,27 @@ export default function CourseList() {
               fullWidth
               margin="normal"
             />
-            <TextField
-              label="Category"
-              name="categoryId"
-              value={newCourseData.categoryId}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="category-select-label">Category</InputLabel>
+              <Select
+                labelId="category-select-label"
+                name="categoryId"
+                value={newCourseData.categoryId}
+                onChange={(event) =>
+                  setNewCourseData({
+                    ...newCourseData,
+                    categoryId: event.target.value,
+                  })
+                }
+              >
+                {categories.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    {category.categoryName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <TextField
               label="Description"
               name="description"
@@ -246,46 +317,6 @@ export default function CourseList() {
           </form>
         </Box>
       </Modal>
-
-      {loading && (
-        <FlexList>
-          {Array.from({ length: 6 }).map((_, index) => (
-            <Skeleton key={index} variant="rounded" width={300} height={100} />
-          ))}
-        </FlexList>
-      )}
-
-      {error && <Typography sx={{ marginBottom: 4 }}>{error}</Typography>}
-
-      {!loading && !error && courses.length === 0 && (
-        <Typography align="center" sx={{ marginBottom: 4 }}>
-          No courses available at the moment.
-        </Typography>
-      )}
-
-      {!loading && !error && courses.length > 0 && (
-        <FlexList>
-          {filteredCourses.map((course, index) => {
-            // console.log("Mapped course:", course); // Log the course object
-            return (
-              <Link
-                key={course.courseCode}
-                to={`/course/${course.id}`}
-                style={{ textDecoration: "none" }}
-              >
-                <CourseCard
-                  title={course.title}
-                  category={`Categories: ${course.categoryName || "N/A"}`}
-                  description={`Description: ${
-                    course.description || "No description available"
-                  }`}
-                  imageUrl={course.coverImage}
-                />
-              </Link>
-            );
-          })}
-        </FlexList>
-      )}
     </Box>
   );
 }
