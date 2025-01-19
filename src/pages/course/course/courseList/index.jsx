@@ -32,7 +32,7 @@ export default function CourseList() {
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedChip, setSelectedChip] = React.useState(null);
-  const [categoryNames, setCategoryNames] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
 
   const [newCourseData, setNewCourseData] = useState({
@@ -81,17 +81,26 @@ export default function CourseList() {
         );
         if (response?.isSuccess) {
           dispatch(setCourses(response?.data));
-          setFilteredCourses(courses); // initializing course list
+          setFilteredCourses(response?.data); // initializing course list
+
           // console.log("all courses", response?.data);
 
           //show category names
-          const categoryNames = []; // This is now local to useEffect
+          const uniqueCategories = [];
           response?.data.forEach((course) => {
-            if (!categoryNames.includes(course.categoryName)) {
-              categoryNames.push(course.categoryName);
+            if (
+              !uniqueCategories.some(
+                (item) => item.categoryName === course.categoryName
+              )
+            ) {
+              uniqueCategories.push({
+                id: course.id,
+                categoryName: course.categoryName,
+              });
             }
           });
-          setCategoryNames(categoryNames); // Update the component's state
+
+          setCategories(uniqueCategories); // Update the component's state
           setError("");
         } else {
           const errorMessage =
@@ -114,7 +123,7 @@ export default function CourseList() {
     if (chipIndex === null) {
       filteredCourses = courses; //  "All Courses" show all courses
     } else {
-      const selectedCategoryName = categoryNames[chipIndex];
+      const selectedCategoryName = categories[chipIndex]?.categoryName;
       filteredCourses = courses.filter(
         (course) => course.categoryName === selectedCategoryName
       );
@@ -138,21 +147,17 @@ export default function CourseList() {
           onClick={() => handleChipClick(null)}
           size="medium"
           label="All Courses"
+          variant={selectedChip == null ? "filled" : "outlined"}
         />
-        {categoryNames.map(
-          (
-            categoryName,
-            index // 使用 categoryNames 渲染 Chip
-          ) => (
-            <Chip
-              key={index}
-              label={categoryName}
-              variant={selectedChip === index ? "outlined" : "filled"}
-              onClick={() => handleChipClick(index)}
-              sx={{ marginRight: 1 }}
-            />
-          )
-        )}
+        {categories.map((category, index) => (
+          <Chip
+            key={category.id || index}
+            label={category.categoryName}
+            variant={selectedChip === index ? "filled" : "outlined"}
+            onClick={() => handleChipClick(index)}
+            sx={{ marginRight: 1 }}
+          />
+        ))}
       </Box>
 
       <Stack
