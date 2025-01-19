@@ -1,31 +1,55 @@
-import { useState, useEffect } from "react";
-import getRequest from "../../../../request/getRequest";
-import StyledSection from "../../../../components/course/course/StyledSection";
-import Header from "../../../../components/header";
-import Skeleton from "@mui/material/Skeleton";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   Box,
   Button,
+  Chip,
   Modal,
   Stack,
   TextField,
   Typography,
+  Skeleton,
 } from "@mui/material";
-import FlexList from "../../../../components/course/course/FlexList";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import putRequest from "../../../../request/putRequest";
+import StyledSection from "../../../../components/course/shared/StyledSection";
+import Header from "../../../../components/header";
+import BackButton from "../../../../components/course/shared/ReturnButton";
+import getRequest from "../../../../request/getRequest";
 import postRequest from "../../../../request/postRequest";
-import BackButton from "../../../../components/course/course/ReturnButton";
+import colors from "../../../../theme";
+
+function useCourse(courseId) {
+  return useQuery(["course", courseId], () => getRequest(`/MoocCourse/GetById/${courseId}`));
+}
+
+function useUpdateCourse(courseId) {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (courseData) => postRequest(`/MoocCourse/update`, courseData),
+    {
+      onSuccess: (data) => {
+        if (data.isSuccess) {
+          queryClient.invalidateQueries(["course", courseId]);
+          toast.success("Course updated successfully!");
+        } else {
+          toast.error(data.message || "Failed to update course.");
+        }
+      },
+      onError: () => {
+        toast.error("Failed to update course.");
+      },
+    }
+  );
+}
 
 export default function CourseSingle() {
-  const [loading, setLoading] = useState(true);
-  const [course, setCourse] = useState(null);
-  const [error, setError] = useState("");
   const { courseId } = useParams();
-  const [open, setOpen] = useState(false);
-  const [modalClosedAfterUpdate, setModalClosedAfterUpdate] = useState(false);
+  const { data, isLoading, error } = useCourse(courseId);
+  const updateCourseMutation = useUpdateCourse(courseId);
 
+  const [modalOpen, setModalOpen] = useState(false);
   const [courseData, setCourseData] = useState({
     id: null,
     title: "",
@@ -34,13 +58,18 @@ export default function CourseSingle() {
     description: "",
   });
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = (callback) => {
-    setOpen(false);
-    if (callback) {
-      callback();
-    }
+  const handleOpen = () => {
+    setCourseData({
+      id: data?.data?.id,
+      title: data?.data?.title || "",
+      courseCode: data?.data?.courseCode || "",
+      coverImage: data?.data?.coverImage || "",
+      description: data?.data?.description || "",
+    });
+    setModalOpen(true);
   };
+
+  const handleClose = () => setModalOpen(false);
 
   const handleChange = (event) => {
     setCourseData({
@@ -49,121 +78,43 @@ export default function CourseSingle() {
     });
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-
-    try {
-      const response = await postRequest(`/MoocCourse/update`, courseData);
-      if (response.isSuccess) {
-        setCourse(response.data);
-        setModalClosedAfterUpdate(true);
-        handleClose(refreshPage);
-        toast.success("Course updated successfully!");
-      } else {
-        toast.error(response.message || "Failed to update course.");
-      }
-    } catch (error) {
-      toast.error("Failed to update course.");
-    }
+    updateCourseMutation.mutate(courseData);
+    handleClose();
   };
-
-  const refreshPage = () => {
-    window.location.reload();
-  };
-
-  useEffect(() => {
-    if (modalClosedAfterUpdate) {
-      window.location.reload();
-      setModalClosedAfterUpdate(false);
-    }
-  }, [modalClosedAfterUpdate]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getRequest(
-          `/MoocCourse/GetById/${courseId}`,
-          null,
-          setLoading
-        );
-
-        if (response?.isSuccess) {
-          const fetchedCourse = response?.data;
-          setCourse(fetchedCourse);
-
-          setCourseData({
-            id: fetchedCourse.id,
-            title: fetchedCourse.title,
-            courseCode: fetchedCourse.courseCode,
-            coverImage: fetchedCourse.coverImage,
-            description: fetchedCourse.description,
-          });
-
-          setError("");
-        } else {
-          const errorMessage =
-            response?.message ||
-            "An error occurred while fetching data. CourseSingle";
-          setError(errorMessage);
-          toast.error(errorMessage);
-        }
-      } catch (err) {
-        setError("Failed to fetch data");
-        toast.error("Failed to fetch data");
-      }
-    };
-
-    fetchData();
-  }, [courseId]);
 
   return (
     <Box m="20px">
       <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Header title="Course" subtitle="Managing single course" />
-        <BackButton backgroundColor="blue" />
+        <Header title={data?.data?.title || "Loading..."} subtitle="Managing single course" />
+        <BackButton />
       </Stack>
-      {loading && <Skeleton variant="rounded" width="100%" height={100} />}
-
-      {error && <Typography sx={{ marginBottom: 4 }}>{error}</Typography>}
-
-      {!loading && !error && course && (
+      {isLoading && <Skeleton variant="rounded" width="100%" height={100} />}
+      {error && <Typography sx={{ marginBottom: 4 }}>{error.message || "Error fetching course."}</Typography>}
+      {!isLoading && !error && data && (
         <StyledSection>
-          <Typography
-            variant="h4"
-            sx={{
-              fontWeight: "bold",
-              marginBottom: "16px",
-            }}
-          >
-            {course.title}
-          </Typography>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography
-              variant="subtitle1"
-              sx={{
-                marginBottom: "8px",
-              }}
-            >
-              {`Categories: ${course.categoryName}`}
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: "16px" }}>
+              Meta Data
             </Typography>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#0288d1",
-              }}
-              onClick={handleOpen}
-            >
+            <Button variant="contained" color="secondary" onClick={handleOpen}>
               Edit
             </Button>
-          </Stack>
-          <Typography variant="body1">{`Course Code: ${course.courseCode}`}</Typography>
-          <Typography variant="body1">{`Description: ${course.description}`}</Typography>
+          </Box>
+          <Typography variant="body1">{`Course Code: ${data.data.courseCode}`}</Typography>
+          <Typography variant="body1">{`Description: ${data.data.description}`}</Typography>
+          <Typography variant="subtitle1">
+            {`Categories: `}
+            <Chip
+              sx={{ borderRadius: "8px" }}
+              color={colors.primary[400]}
+              label={data.data.categoryName}
+              size="small"
+            />
+          </Typography>
 
-          <Modal open={open} onClose={handleClose}>
+          <Modal open={modalOpen} onClose={handleClose}>
             <Box
               sx={{
                 position: "absolute",
@@ -214,44 +165,30 @@ export default function CourseSingle() {
           </Modal>
         </StyledSection>
       )}
-
       <StyledSection sx={{ marginTop: "16px" }}>
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: "bold",
-            marginBottom: "16px",
-          }}
-        >
-          Course Publish
+        <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: "16px" }}>
+          Publish Version
         </Typography>
-        {loading && (
-          <FlexList>
-            {Array.from({ length: 6 }).map((_, index) => (
-              <Skeleton
-                key={index}
-                variant="rounded"
-                width={300}
-                height={100}
-              />
+        {isLoading && <Skeleton variant="rounded" width="100%" height={200} />}
+        {error && <Typography sx={{ marginBottom: 4 }}>{error.message || "Error fetching course instances."}</Typography>}
+        {!isLoading && !error && data && (
+          <Box component="ul" sx={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {data.data.courseInstances?.map((instance) => (
+              <Box component="li" key={instance.id} sx={{ marginBottom: "8px" }}>
+                <Link to={`/course/${data.data.title}/CourseInstance/${instance.id}`} style={{ textDecoration: "none" }}>
+                  <Chip
+                    sx={{
+                      borderRadius: "8px",
+                      backgroundColor: colors.blueAccent[600],
+                      color: "white",
+                    }}
+                    label={instance.description}
+                    size="small"
+                  />
+                </Link>
+              </Box>
             ))}
-          </FlexList>
-        )}
-
-        {error && <Typography sx={{ marginBottom: 4 }}>{error}</Typography>}
-
-        {!loading && !error && course && (
-          <>
-            {course?.courseInstances?.map((instance, index) => (
-              <Link
-                key={instance.id} // Use instance.id as the key
-                to={`/course/${course.title}/CourseInstance/${instance.id}`}
-                style={{ textDecoration: "none" }}
-              >
-                <p key={index}>{instance.description}</p>
-              </Link>
-            ))}
-          </>
+          </Box>
         )}
       </StyledSection>
     </Box>
