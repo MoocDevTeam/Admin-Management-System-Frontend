@@ -81,7 +81,9 @@ export default function CourseList() {
         );
         if (response?.isSuccess) {
           dispatch(setCourses(response?.data));
-          console.log("all courses", response?.data);
+          setFilteredCourses(courses); // initializing course list
+          // console.log("all courses", response?.data);
+
           //show category names
           const categoryNames = []; // This is now local to useEffect
           response?.data.forEach((course) => {
@@ -259,7 +261,7 @@ export default function CourseList() {
       {!loading && !error && courses.length > 0 && (
         <FlexList>
           {filteredCourses.map((course, index) => {
-            console.log("Mapped course:", course); // Log the course object
+            // console.log("Mapped course:", course); // Log the course object
             return (
               <Link
                 key={course.courseCode}
