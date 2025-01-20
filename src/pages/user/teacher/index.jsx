@@ -2,10 +2,9 @@ import Header from "../../../components/header";
 import { Box, Button, Stack, Avatar } from "@mui/material";
 import TeacherList from "./teacherList";
 import React,{ useState, useEffect } from "react";
-import { TocTwoTone } from "@mui/icons-material";
 import getRequest from "../../../request/getRequest";
-import { preconnect } from "react-dom";
 import colors from "../../../theme";
+import dayjs from "dayjs";
 
 export default function Teacher() {
   //set default page size
@@ -13,12 +12,10 @@ export default function Teacher() {
     pageSize: 100,
     page:1
   });
-  //get base url for Api
-  const baseUrl = process.env.REACT_APP_BASE_API_URL;
 
-  //Get page data to display
-  //by default it is empty before fetching data
-  const [pageData, setPageData] = useState({items:[], total:0});
+  const [pageData, setPageData] = useState({items:[], total:0});  //Get page data to display by default it is empty before fetching data
+
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);  //set default row selected to empty array
 
   //Set up setPaginationModel
   const handlePaginationModel = (e) => {
@@ -28,11 +25,8 @@ export default function Teacher() {
       pageSize: e.pageSize, 
     }));
   }
-  //set default row selected to empty array
-  const [rowSelectionModel, setRowSelectionModel] = useState([]);
 
-
-  //fetche data and rerender when pageSearch change
+  //fetche data and rerender when pageSearch changes
   useEffect(() => {
     let getTeacher = async (param) => {
       let result = await getRequest("/teacher/GetByPage", param);
@@ -74,12 +68,6 @@ export default function Teacher() {
       flex: 1,
       cellClassName: "department-column--cell"
     },
-    // {
-    //   field: "introduction",
-    //   headerName: "Introduction",
-    //   flex: 1,
-    //   cellClassName: "introduction-column--cell"
-    // },
     {
       field:"expertise",
       headerName: "Expertise",
@@ -109,7 +97,8 @@ export default function Teacher() {
       field: "createdAt",
       headerName: "Created Date",
       flex: 1,
-      cellClassName: "createdAt-column--cell"
+      cellClassName: "createdAt-column--cell",
+      valueFormatter: (params) => dayjs(params.value).format("DD/MM/YYYY")
     },
     {
       field: "updatedByUserId",
@@ -121,7 +110,8 @@ export default function Teacher() {
       field: "updatedAt",
       headerName: "Updated Date",
       flex: 1,
-      cellClassName: "updatedAt-column--cell"
+      cellClassName: "updatedAt-column--cell",
+      valueFormatter: (params) => dayjs(params.value).format("DD/MM/YYYY")
     },
     {
       field: "operation",
@@ -139,10 +129,6 @@ export default function Teacher() {
     }
 
   ]
-
-
-  
-
 
   return (
     <Box m="20px">
