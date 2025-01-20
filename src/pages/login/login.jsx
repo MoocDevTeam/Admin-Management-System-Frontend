@@ -8,7 +8,7 @@ import {
   Avatar,
   CssBaseline,
 } from "@mui/material"
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
+//import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
 import { useNavigate } from "react-router-dom"
 import postRequest from "../../request/postRequest"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -24,11 +24,11 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     console.log("Form Data:", formData)
-    let token = await postRequest(
+    let res = await postRequest(
       "http://localhost:9000/api/Auth/login",
       formData
     )
-    console.log("result", token)
+    localStorage.setItem("token", res.token)
     navigate("/")
   }
 
