@@ -29,10 +29,6 @@ export default function CourseList() {
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [open, setOpen] = useState(false);
-  const [selectedChip, setSelectedChip] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [filteredCourses, setFilteredCourses] = useState([]);
-  const [selectCatetory, setSelectCatetory] = useState("");
   const [newCourseData, setNewCourseData] = useState({
     title: "",
     courseCode: "",
@@ -40,13 +36,10 @@ export default function CourseList() {
     description: "",
     categoryId: 1,
   });
-
-  // Pop up page for adding course
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  // handle add course form
   const handleChange = (event) => {
+    //
     const { name, value } = event.target;
     setNewCourseData({
       ...newCourseData,
@@ -56,8 +49,6 @@ export default function CourseList() {
     });
     console.log("newCourseData", newCourseData);
   };
-
-  // Submit add course form
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -73,11 +64,8 @@ export default function CourseList() {
       toast.error("Failed to add course.");
     }
   };
-
   const dispatch = useDispatch();
-  const courses = useSelector((state) => state.course.courses);
-
-  // Fetch data from back end when loading page
+  const courses = useSelector((state) => state.course.filteredCourses);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -89,7 +77,6 @@ export default function CourseList() {
         if (response?.isSuccess) {
           dispatch(setCourses(response?.data));
           setFilteredCourses(response?.data);
-          // store category name and id in list
           const uniqueCategories = [];
           response?.data.forEach((course) => {
             if (
@@ -102,11 +89,9 @@ export default function CourseList() {
                 categoryName: course.categoryName,
               });
             }
-
             console.log("categories", categories);
           });
           setCategories(uniqueCategories);
-
           setError("");
         } else {
           setError(
@@ -119,8 +104,6 @@ export default function CourseList() {
     };
     fetchData();
   }, [dispatch]);
-
-  // Chip for choosing category
   const handleChipClick = (chipIndex) => {
     setSelectedChip(chipIndex);
     const filtered =
@@ -132,8 +115,6 @@ export default function CourseList() {
           );
     setFilteredCourses(filtered);
   };
-
-  // Search by course name
   const handleSearchChange = (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
@@ -143,15 +124,12 @@ export default function CourseList() {
         course.categoryName.toLowerCase().includes(query)
     );
     setFilteredCourses(filtered);
-
   };
-
   return (
     <Box m="20px">
       <Typography variant="h4" gutterBottom>
         Courses
       </Typography>
-
       {/* Chips and Search Bar */}
       <Box display="flex" alignItems="center" mb={2}>
         <Box
@@ -179,9 +157,7 @@ export default function CourseList() {
           onChange={handleSearchChange}
           sx={{ ml: 2, width: 300 }}
         />
-
       </Box>
-
       {/* Filter button and Add course button */}
       <Stack
         direction="row"
@@ -194,10 +170,7 @@ export default function CourseList() {
           Add Course
         </Button>
       </Stack>
-
-
       {/* Course List */}
-
       {loading && (
         <FlexList>
           {Array.from({ length: 6 }).map((_, index) => (
@@ -205,14 +178,10 @@ export default function CourseList() {
           ))}
         </FlexList>
       )}
-
-
       {error && <Typography color="error">{error}</Typography>}
-
       {!loading && !error && filteredCourses.length === 0 && (
         <Typography>No courses found.</Typography>
       )}
-
       {!loading && !error && filteredCourses.length > 0 && (
         <FlexList>
           {filteredCourses.map((course) => (
@@ -231,9 +200,7 @@ export default function CourseList() {
           ))}
         </FlexList>
       )}
-
-      {/* Pop up add course page */}
-
+      {/* Popup add course page */}
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
@@ -279,7 +246,6 @@ export default function CourseList() {
               <InputLabel id="category-select-label">Category</InputLabel>
               <Select
                 labelId="category-select-label"
-
                 id="category-select"
                 name="categoryId"
                 value={newCourseData.categoryId}
@@ -288,7 +254,6 @@ export default function CourseList() {
               >
                 {categories.map((category) => (
                   <MenuItem key={category.categoryId} value={category.id}>
-
                     {category.categoryName}
                   </MenuItem>
                 ))}
@@ -311,26 +276,5 @@ export default function CourseList() {
         </Box>
       </Modal>
     </Box>
-  );
-}
-
-export function Search() {
-  return (
-    <FormControl sx={{ width: { xs: "100%", md: "25ch" } }} variant="outlined">
-      <OutlinedInput
-        size="small"
-        id="search"
-        placeholder="Search…"
-        sx={{ flexGrow: 1 }}
-        startAdornment={
-          <InputAdornment position="start" sx={{ color: "text.primary" }}>
-            <SearchRoundedIcon fontSize="small" />
-          </InputAdornment>
-        }
-        inputProps={{
-          "aria-label": "search",
-        }}
-      />
-    </FormControl>
   );
 }
