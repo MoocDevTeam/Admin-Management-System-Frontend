@@ -11,6 +11,7 @@ import {
   TextField,
   Typography,
   Skeleton,
+  useTheme,
 } from "@mui/material";
 import StyledSection from "../../../../components/course/shared/StyledSection";
 import Header from "../../../../components/header";
@@ -45,6 +46,7 @@ function useUpdateCourse(courseId) {
 }
 
 export default function CourseSingle() {
+  const theme = useTheme();
   const { courseId } = useParams();
   const { data, isLoading, error } = useCourse(courseId);
   const updateCourseMutation = useUpdateCourse(courseId);
@@ -107,8 +109,12 @@ export default function CourseSingle() {
           <Typography variant="subtitle1">
             {`Categories: `}
             <Chip
-              sx={{ borderRadius: "8px" }}
-              color={colors.primary[400]}
+              sx={{
+                borderRadius: "8px",
+                border: `1px solid ${colors.greenAccent[500]}`,
+                backgroundColor: colors.greenAccent[900],
+              }}
+
               label={data.data.categoryName}
               size="small"
             />
@@ -179,8 +185,13 @@ export default function CourseSingle() {
                   <Chip
                     sx={{
                       borderRadius: "8px",
-                      backgroundColor: colors.blueAccent[600],
-                      color: "white",
+                      border: `1px solid ${colors.blueAccent[500]}`,
+                      backgroundColor: colors.blueAccent[900],
+                      color: "Black",
+                      "&:hover": {
+                        transform: "scale(1.02)",
+                        boxShadow: theme.shadows[4],
+                      },
                     }}
                     label={instance.description}
                     size="small"
