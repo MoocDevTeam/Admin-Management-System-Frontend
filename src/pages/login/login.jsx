@@ -28,8 +28,9 @@ const LoginPage = () => {
       "http://localhost:9000/api/Auth/login",
       formData
     )
-    localStorage.setItem("access_token", res.token)
-    navigate("/")
+    localStorage.setItem("access_token", res.token);
+    localStorage.setItem("userName", formData.username);
+    navigate("/");
   }
 
   return (
