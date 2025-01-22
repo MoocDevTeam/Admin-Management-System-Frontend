@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, Typography, styled, Box } from "@mui/material";
 
+
 const StyledCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(1),
   boxShadow: theme.shadows[2],
@@ -25,7 +26,10 @@ const ImageBox = styled(Box)(({ theme }) => ({
   backgroundPosition: "center",
 }));
 
+
+
 export default function CourseCard({ title, category, description, imageUrl }) {
+
   return (
     <StyledCard style={{ width: "380px" }}>
       <ImageBox style={{ backgroundImage: `url(${imageUrl})` }} />
