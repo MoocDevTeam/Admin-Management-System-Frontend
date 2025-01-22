@@ -14,17 +14,6 @@ const courseSlice = createSlice({
   reducers: {
     setCourses: (state, action) => {
       state.courses = action.payload; 
-      state.filteredCourses = action.payload;
-    },
-    setCourse: (state, action) => {
-      state.course = action.payload; 
-    },
-    filterCourses: (state, action) => {
-      const category = action.payload;
-      state.filteredCourses =
-        category === "All"
-          ? state.courses 
-          : state.courses.filter((course) => course.categoryName === category);
     },
   },
 });
