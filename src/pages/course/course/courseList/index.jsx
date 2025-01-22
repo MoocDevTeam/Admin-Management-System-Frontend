@@ -23,7 +23,7 @@ import Skeleton from "@mui/material/Skeleton";
 import toast from "react-hot-toast";
 import postRequest from "../../../../request/postRequest";
 import { useDispatch, useSelector } from "react-redux";
-import { setCourses, filterCourses } from "../../../../store/courseSlice";
+import { setCourses } from "../../../../store/courseSlice";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 import FilterDropdown from "../../../../components/course/course/FilterDropdown";
@@ -72,7 +72,7 @@ export default function CourseList() {
   };
 
   const dispatch = useDispatch();
-  const courses = useSelector((state) => state.course.filteredCourses);
+  const courses = useSelector((state) => state.course.courses);
 
   useEffect(() => {
     const fetchData = async () => {
