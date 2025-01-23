@@ -14,12 +14,13 @@ export const fetchUserByName = createAsyncThunk(
     return rejectWithValue(response.message)
   }
 )
+const userNameFromLocalStorage = localStorage.getItem("username") || "admin";
 
 const userSlice = createSlice({
   name: "user",
   initialState: {
     user: {
-      userName: "admin",
+      userName: userNameFromLocalStorage,
       password: "",
       email: "admin@demo.com",
       age: 30,

@@ -10,6 +10,7 @@ import Page404 from "./pages/page404"
 import Role from "./pages/role/index"
 import { theme } from "./theme"
 import LoginPage from "./pages/login/login"
+import UserProfile from "./pages/profile/userProfile"
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route key="user" path="/user" element={<User />} />
           <Route key="role" path="/role" element={<Role />} />
           <Route key="addUser" path="/user/add" element={<AddUser />} />
+          <Route key="profile" path="/profile" element={<UserProfile />} />
           <Route key="page404" path="*" element={<Page404 />} />
         </Route>
       </Routes>

@@ -3,7 +3,8 @@ import MainSidebar from "./mainSidebar"
 import Topbar from "./topbar"
 import { Outlet } from "react-router-dom"
 export default function Mainlayout() {
-  const userName = "admin" // Should from login
+  const userName = localStorage.getItem('userName');
+
   return (
     <div className="app">
       <MainSidebar userName={userName} />

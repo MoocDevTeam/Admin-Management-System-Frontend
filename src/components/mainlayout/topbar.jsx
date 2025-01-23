@@ -5,11 +5,13 @@ import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import { useNavigate } from 'react-router-dom';
 
 export default function Topbar() {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
+  const navigate = useNavigate();
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -19,14 +21,24 @@ export default function Topbar() {
     setAnchorEl(null);
   };
 
+  const handleProfileNavigate = () => {
+    navigate('/profile');  // Navigate to the UserProfile page
+  };
+
   const handleProfileClick = () => {
     console.log('Profile clicked'); //should open profile route
     handleMenuClose();
+    handleProfileNavigate();
   }
+
+
 
   const handleLogoutClick = () => {
     console.log('Logout clicked'); // should clear JWT token
     handleMenuClose();
+    localStorage.removeItem('access_token');  // Remove token from localStorage
+    localStorage.removeItem('userName');  // Remove username from localStorage
+    navigate('/login');  // Navigate to login page
   }
 
   return (
