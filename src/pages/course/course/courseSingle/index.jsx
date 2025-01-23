@@ -25,6 +25,7 @@ import postRequest from "../../../../request/postRequest";
 import colors from "../../../../theme";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentCategories } from "../../../../store";
+import EditCourseModal from "../editCourse";
 
 function useCourse(courseId) {
   return useQuery(["course", courseId], () =>
@@ -32,33 +33,10 @@ function useCourse(courseId) {
   );
 }
 
-function useUpdateCourse(courseId) {
-  const queryClient = useQueryClient();
-
-  return useMutation(
-    (courseData) => postRequest(`/MoocCourse/update`, courseData),
-    {
-      onSuccess: (data) => {
-        if (data.isSuccess) {
-          queryClient.invalidateQueries(["course", courseId]);
-          toast.success("Course updated successfully!");
-        } else {
-          toast.error(data.message || "Failed to update course.");
-        }
-      },
-      onError: () => {
-        toast.error("Failed to update course.");
-      },
-    }
-  );
-}
-
 export default function CourseSingle() {
   const theme = useTheme();
   const { courseId } = useParams();
   const { data, isLoading, error } = useCourse(courseId);
-  const updateCourseMutation = useUpdateCourse(courseId);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [courseData, setCourseData] = useState({
     id: null,
@@ -66,10 +44,11 @@ export default function CourseSingle() {
     courseCode: "",
     coverImage: "",
     description: "",
+    categoryId: 1,
   });
 
   const categories = useSelector((state) => state.category.currentCategories);
-  console.log("course single currentCategories", categories);
+  // console.log("course single currentCategories", categories);
 
   const handleOpen = () => {
     setCourseData({
@@ -83,19 +62,6 @@ export default function CourseSingle() {
   };
 
   const handleClose = () => setModalOpen(false);
-
-  const handleChange = (event) => {
-    setCourseData({
-      ...courseData,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    updateCourseMutation.mutate(courseData);
-    handleClose();
-  };
 
   return (
     <Box m="20px">
@@ -125,6 +91,7 @@ export default function CourseSingle() {
             >
               Meta Data
             </Typography>
+
             <Button variant="contained" color="secondary" onClick={handleOpen}>
               Edit
             </Button>
@@ -145,71 +112,12 @@ export default function CourseSingle() {
           </Typography>
 
           <Modal open={modalOpen} onClose={handleClose}>
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: 400,
-                bgcolor: "background.paper",
-                boxShadow: 24,
-                p: 4,
-              }}
-            >
-              <Typography variant="h6" component="h2" marginBottom={2}>
-                Edit Course
-              </Typography>
-              <form onSubmit={handleSubmit}>
-                <TextField
-                  label="Title"
-                  name="title"
-                  value={courseData.title}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                />
-                <TextField
-                  label="Course Code"
-                  name="courseCode"
-                  value={courseData.courseCode}
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                />
-                <TextField
-                  label="Description"
-                  name="description"
-                  value={courseData.description}
-                  onChange={handleChange}
-                  fullWidth
-                  multiline
-                  rows={4}
-                  margin="normal"
-                />
-                <FormControl fullWidth margin="normal">
-                  <InputLabel id="category-select-label">Category</InputLabel>
-                  <Select
-                    labelId="category-select-label"
-                    id="category-select"
-                    name="categoryId"
-                    value={categories.id}
-                    onChange={handleChange}
-                    label="Category"
-                  >
-                    {categories.map((category) => (
-                      <MenuItem key={category.id} value={category.id}>
-                        {category.categoryName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <Button type="submit" variant="contained" color="primary">
-                  Save Changes
-                </Button>
-              </form>
-            </Box>
+            <EditCourseModal
+              courseId={courseId}
+              courseDataInput={courseData}
+              categories={categories}
+              handleClose={handleClose}
+            />
           </Modal>
         </StyledSection>
       )}
