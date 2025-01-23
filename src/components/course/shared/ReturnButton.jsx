@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const BackButton = ({
   variant = "contained",
-  color = "secondary", 
+  color = "secondary",
   text = "Back",
-  sx, 
+  sx,
 }) => {
   const navigate = useNavigate();
 
@@ -18,11 +19,12 @@ const BackButton = ({
       variant={variant}
       color={color}
       onClick={handleGoBack}
+      startIcon={<ArrowBackIcon />}
       sx={{
         "&:hover": {
-          backgroundColor: "secondary", 
+          backgroundColor: "secondary",
         },
-        ...sx, 
+        ...sx,
       }}
     >
       {text}
