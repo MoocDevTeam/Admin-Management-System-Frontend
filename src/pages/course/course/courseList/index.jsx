@@ -21,6 +21,9 @@ import { setCourses } from "../../../../store/courseSlice";
 import getRequest from "../../../../request/getRequest";
 import CourseCard from "../../../../components/course/course/CourseCard";
 import FlexList from "../../../../components/course/course/FlexList";
+import { setCurrentCategories } from "../../../../store/categorySlice";
+import { configureStore } from "@reduxjs/toolkit";
+
 export default function CourseList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -36,6 +39,10 @@ export default function CourseList() {
     description: "",
     categoryId: 1,
   });
+
+  const dispatch = useDispatch();
+  const courses = useSelector((state) => state.course.filteredCourses);
+  const categoryLocal = useSelector((state) => state.category.setCategories);
 
   // Pop up page add course control
   const handleOpen = () => setOpen(true);
@@ -70,9 +77,6 @@ export default function CourseList() {
     }
   };
 
-  const dispatch = useDispatch();
-  const courses = useSelector((state) => state.course.filteredCourses);
-
   // fetch data from backend
   useEffect(() => {
     const fetchData = async () => {
@@ -98,9 +102,10 @@ export default function CourseList() {
                 categoryName: course.categoryName,
               });
             }
-            console.log("categories", categories);
           });
+          dispatch(setCurrentCategories(uniqueCategories));
           setCategories(uniqueCategories);
+          console.log("categories", categories);
           setError("");
         } else {
           setError(
@@ -108,7 +113,7 @@ export default function CourseList() {
           );
         }
       } catch (err) {
-        setError("Failed to fetch data");
+        setError("Failed to fetch data", err);
       }
     };
     fetchData();
