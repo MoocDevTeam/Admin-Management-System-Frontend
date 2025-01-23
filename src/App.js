@@ -4,15 +4,13 @@ import { Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/dashboard";
 import Mainlayout from "./components/mainlayout/index";
 import { Toaster } from "react-hot-toast";
-
-import User from "./pages/user/index";
 import Teacher from "./pages/user/teacher/index";
 import CourseList from "./pages/course/course/courseList/index";
 import CourseSingle from "./pages/course/course/courseSingle/index";
 import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle";
 import Category from "./pages/course/category/index";
 import CourseLaunch from "./pages/course/courseLaunch/index";
-import AddUser from "./pages/user/addUser";
+
 import Page404 from "./pages/page404";
 
 import { theme } from "./theme";
@@ -51,10 +49,6 @@ function App() {
             path="/course/:courseId/CourseInstance/:courseInstanceId"
             element={<CourseInstanceSingle />}
           />
-
-          <Route key="user" path="/user" element={<User />} />
-
-          <Route key="addUser" path="/user/add" element={<AddUser />} />
 
           <Route
             key="teacher"
