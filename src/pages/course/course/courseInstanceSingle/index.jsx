@@ -2,13 +2,14 @@ import React from "react";
 import Header from "../../../../components/header";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
 import colors from "../../../../theme";
 import toast from "react-hot-toast";
 import StyledSection from "../../../../components/course/shared/StyledSection";
 import SessionStack from "../../../../components/course/course/SessionStack";
 import formatToAustralianDate from "../../../../utils/formatToAustralianDate";
 import getRequest from "../../../../request/getRequest";
+import StyledBreadcrumbs from "../../../../components/course/course/session/courseInstance/Breadcrumbs";
 
 export default function CourseInstanceSingle() {
   const { courseId, courseInstanceId } = useParams();
@@ -20,7 +21,8 @@ export default function CourseInstanceSingle() {
   } = useQuery(
     ["courseInstance", courseId, courseInstanceId],
     async () => {
-      const response = await getRequest(`/MoocCourse/GetByCourseName/${courseId}`);
+      const response = await getRequest(`/MoocCourse/GetById/${courseId}`);
+      console.log("response: ", response.data)
       if (!response.isSuccess) {
         throw new Error(response.message || "Failed to fetch data.");
       }
@@ -29,7 +31,7 @@ export default function CourseInstanceSingle() {
       );
     },
     {
-      enabled: !!courseId && !!courseInstanceId, 
+      enabled: !!courseId && !!courseInstanceId,
       onError: (err) => {
         toast.error(err.message || "Failed to fetch course instance data.");
       },
@@ -51,9 +53,11 @@ export default function CourseInstanceSingle() {
   return (
     <Box m="20px">
       <Header
-        title={courseId}
-        subtitle={`Managing ${courseId} ${courseInstance?.description.toLowerCase()}`}
+        title={courseInstance?.moocCourseTitle}
+        subtitle={`Managing ${courseInstance?.moocCourseTitle} ${courseInstance?.description.toLowerCase()}`}
       />
+
+      <StyledBreadcrumbs courseId={courseId} courseInstance={courseInstance} />
 
       <StyledSection sx={{ marginTop: "16px" }}>
         <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>

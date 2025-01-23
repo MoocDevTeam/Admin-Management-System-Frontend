@@ -137,15 +137,8 @@ export default function CourseSingle() {
         {!isLoading && !error && data && (
           <Box component="ul" sx={{ listStyle: "none", padding: 0, margin: 0 }}>
             {data.data.courseInstances?.map((instance) => (
-              <Box
-                component="li"
-                key={instance.id}
-                sx={{ marginBottom: "8px" }}
-              >
-                <Link
-                  to={`/course/${data.data.title}/CourseInstance/${instance.id}`}
-                  style={{ textDecoration: "none" }}
-                >
+              <Box component="li" key={instance.id} sx={{ marginBottom: "8px" }}>
+                <Link to={`/course/${courseId}/CourseInstance/${instance.id}`} style={{ textDecoration: "none" }}>
                   <Chip
                     sx={{
                       borderRadius: "8px",
