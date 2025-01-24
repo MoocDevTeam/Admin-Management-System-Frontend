@@ -1,12 +1,46 @@
-import React from "react";
-import { Box, IconButton, InputBase } from "@mui/material";
+import React, { useState } from "react";
+import { Box, IconButton, Menu, MenuItem } from "@mui/material";
 import colors from "../../theme";
-import SearchIcon from "@mui/icons-material/Search";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import { useNavigate } from 'react-router-dom';
+
 export default function Topbar() {
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const isMenuOpen = Boolean(anchorEl);
+  const navigate = useNavigate();
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleProfileNavigate = () => {
+    navigate('/profile');  // Navigate to the UserProfile page
+  };
+
+  const handleProfileClick = () => {
+    console.log('Profile clicked'); //should open profile route
+    handleMenuClose();
+    handleProfileNavigate();
+  }
+
+
+
+  const handleLogoutClick = () => {
+    console.log('Logout clicked'); // should clear JWT token
+    handleMenuClose();
+    localStorage.removeItem('access_token');  // Remove token from localStorage
+    localStorage.removeItem('userName');  // Remove username from localStorage
+    navigate('/login');  // Navigate to login page
+  }
+
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
       <Box
@@ -27,9 +61,27 @@ export default function Topbar() {
         <IconButton>
           <SettingsOutlinedIcon />
         </IconButton>
-        <IconButton>
+        <IconButton onClick={handleMenuOpen}>
           <PersonOutlinedIcon />
         </IconButton>
+
+        {/* Dropdown menu */}
+        <Menu
+          anchorEl={anchorEl}
+          open={isMenuOpen}
+          onClose={handleMenuClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
+          <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+        </Menu>
       </Box>
     </Box>
   );
