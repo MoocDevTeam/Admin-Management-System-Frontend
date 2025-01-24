@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, LinearProgress, Button } from "@mui/material";
 import { CloudUpload as CloudUploadIcon } from "@mui/icons-material";
 import toast from "react-hot-toast";
-import { uploadFile } from "../../../../request/uploadFile";
+import { uploadFile } from "../../../../../request/uploadFile";
 import CircularProgress from "@mui/material/CircularProgress";
 import * as signalR from "@microsoft/signalr";
 
