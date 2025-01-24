@@ -20,6 +20,7 @@ import UserProfile from "./pages/profile/userProfile";
 import Questions from "./pages/exam/questions";
 import Exams from "./pages/exam/exams";
 import ExamPublish from "./pages/exam/publish";
+import AddTeacher from "./pages/user/teacher/addTeacher";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
             element={<CourseInstanceSingle />}
           />
 
+          //Route for teacher
           <Route
             key="teacher"
             path="/user/teacher"
@@ -67,6 +69,7 @@ function App() {
               <Teacher />
             }
           />
+          <Route key="addTeacher" path="/user/teacher/add" element={<AddTeacher/>}/>
 
           <Route
             key="questions"
