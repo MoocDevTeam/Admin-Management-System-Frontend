@@ -42,7 +42,7 @@ export default function CourseList() {
   });
 
   const dispatch = useDispatch();
-  const courses = useSelector((state) => state.course.filteredCourses);
+  const courses = useSelector((state) => state.course.courses);
   const categoryLocal = useSelector((state) => state.category.setCategories);
 
   // Pop up page add course control
