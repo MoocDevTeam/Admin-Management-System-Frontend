@@ -26,6 +26,8 @@ import colors from "../../../../theme";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentCategories } from "../../../../store";
 import EditCourseModal from "../editCourse";
+import deleteRequest from "../../../../request/delRequest";
+import { useNavigate } from "react-router-dom";
 
 function useCourse(courseId) {
   return useQuery(["course", courseId], () =>
@@ -49,7 +51,7 @@ export default function CourseSingle() {
 
   const categories = useSelector((state) => state.category.currentCategories);
   // console.log("course single currentCategories", categories);
-
+  const navigate = useNavigate();
   const handleOpen = () => {
     setCourseData({
       id: data?.data?.id,
@@ -63,15 +65,31 @@ export default function CourseSingle() {
 
   const handleClose = () => setModalOpen(false);
 
+  const handleDelete = async () => {
+    try {
+      const response = await deleteRequest(
+        `/MoocCourse/delete/${data.data.id}`
+      );
+      if (response?.isSuccess) {
+        toast.success("Course deleted successfully!");
+        navigate(-1);
+      } else {
+        toast.error(response?.message || "Failed to delete the course.");
+      }
+    } catch (err) {
+      toast.error("An error occurred during deletion.");
+    }
+  };
+
   return (
     <Box m="20px">
-      <BackButton />
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Header
           title={data?.data?.title || "Loading..."}
           subtitle="Managing single course"
         />
       </Stack>
+      <BackButton />
       {isLoading && <Skeleton variant="rounded" width="100%" height={100} />}
       {error && (
         <Typography sx={{ marginBottom: 4 }}>
@@ -91,10 +109,26 @@ export default function CourseSingle() {
             >
               Meta Data
             </Typography>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleOpen}
+              >
+                Edit
+              </Button>
 
-            <Button variant="contained" color="secondary" onClick={handleOpen}>
-              Edit
-            </Button>
+              {(!data.data.courseInstances ||
+                data.data.courseInstances.length === 0) && (
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleDelete} // 添加删除操作的回调函数
+                >
+                  Delete
+                </Button>
+              )}
+            </Box>
           </Box>
           <Typography variant="body1">{`Course Code: ${data.data.courseCode}`}</Typography>
           <Typography variant="body1">{`Description: ${data.data.description}`}</Typography>
@@ -137,8 +171,15 @@ export default function CourseSingle() {
         {!isLoading && !error && data && (
           <Box component="ul" sx={{ listStyle: "none", padding: 0, margin: 0 }}>
             {data.data.courseInstances?.map((instance) => (
-              <Box component="li" key={instance.id} sx={{ marginBottom: "8px" }}>
-                <Link to={`/course/${courseId}/CourseInstance/${instance.id}`} style={{ textDecoration: "none" }}>
+              <Box
+                component="li"
+                key={instance.id}
+                sx={{ marginBottom: "8px" }}
+              >
+                <Link
+                  to={`/course/${courseId}/CourseInstance/${instance.id}`}
+                  style={{ textDecoration: "none" }}
+                >
                   <Chip
                     sx={{
                       borderRadius: "8px",
