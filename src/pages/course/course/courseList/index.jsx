@@ -24,7 +24,6 @@ import FlexList from "../../../../components/course/course/FlexList";
 import { setCurrentCategories } from "../../../../store/categorySlice";
 import { configureStore } from "@reduxjs/toolkit";
 import AddCourseModal from "../addCourseModal";
-
 export default function CourseList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -40,15 +39,12 @@ export default function CourseList() {
     description: "",
     categoryId: 1,
   });
-
   const dispatch = useDispatch();
   const courses = useSelector((state) => state.course.courses);
   const categoryLocal = useSelector((state) => state.category.setCategories);
-
   // Pop up page add course control
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
   // fetch data from backend
   useEffect(() => {
     const fetchData = async () => {
@@ -89,7 +85,6 @@ export default function CourseList() {
     };
     fetchData();
   }, [dispatch]);
-
   // click chip for different category
   const handleChipClick = (chipIndex) => {
     setSelectedChip(chipIndex);
@@ -102,7 +97,6 @@ export default function CourseList() {
           );
     setFilteredCourses(filtered);
   };
-
   //search for course title
   const handleSearchChange = (event) => {
     const query = event.target.value.toLowerCase();
@@ -114,16 +108,20 @@ export default function CourseList() {
     );
     setFilteredCourses(filtered);
   };
-
   return (
     <Box m="20px">
       <Typography variant="h4" gutterBottom>
         Courses
       </Typography>
       {/* Chips and Search Bar */}
-      <Box display="flex" alignItems="center" mb={2}>
+      <Box display="flex" alignItems="center" mb={2} flexWrap="wrap">
         <Box
-          sx={{ display: "flex", gap: 2, overflow: "auto", flexWrap: "wrap" }}
+          sx={{
+            display: "flex",
+            gap: 2,
+            flexWrap: "wrap",
+            alignItems: "center",
+          }}
         >
           <Chip
             onClick={() => handleChipClick(null)}
@@ -145,7 +143,7 @@ export default function CourseList() {
           placeholder="Search by Course Title"
           value={searchQuery}
           onChange={handleSearchChange}
-          sx={{ ml: 2, width: 300 }}
+          sx={{ ml: 2, width: 300, height: 40, marginTop: 1 }}
         />
       </Box>
       {/* Filter button and Add course button */}

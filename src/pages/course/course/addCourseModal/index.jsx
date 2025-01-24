@@ -3,6 +3,7 @@ import postRequest from "../../../../request/postRequest";
 import toast from "react-hot-toast";
 import { setCourses } from "../../../../store/courseSlice";
 import { useDispatch, useSelector } from "react-redux";
+import CloseIcon from "@mui/icons-material/Close";
 
 import {
   Box,
@@ -13,6 +14,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  IconButton,
 } from "@mui/material";
 
 export default function AddCourseModal({
@@ -59,6 +61,16 @@ export default function AddCourseModal({
         p: 4,
       }}
     >
+      <IconButton
+        onClick={handleClose}
+        sx={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+        }}
+      >
+        <CloseIcon />
+      </IconButton>
       <Typography variant="h6" component="h2" marginBottom={2}>
         Add New Course
       </Typography>

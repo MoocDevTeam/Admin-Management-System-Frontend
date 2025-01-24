@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import postRequest from "../../../../request/postRequest";
 import toast from "react-hot-toast";
 import { useState } from "react";
-
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Box,
   Button,
@@ -13,6 +13,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  IconButton,
 } from "@mui/material";
 
 function useUpdateCourse(courseId) {
@@ -48,7 +49,7 @@ export default function EditCourseModal({
     event.preventDefault();
     updateCourseMutation.mutate(courseData, {
       onSuccess: () => {
-        handleClose(); // 调用父组件的关闭方法
+        handleClose();
       },
     });
   };
@@ -73,6 +74,16 @@ export default function EditCourseModal({
         p: 4,
       }}
     >
+      <IconButton
+        onClick={handleClose}
+        sx={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+        }}
+      >
+        <CloseIcon />
+      </IconButton>
       <Typography variant="h6" component="h2" marginBottom={2}>
         Edit Course
       </Typography>

@@ -66,18 +66,25 @@ export default function CourseSingle() {
   const handleClose = () => setModalOpen(false);
 
   const handleDelete = async () => {
-    try {
-      const response = await deleteRequest(
-        `/MoocCourse/delete/${data.data.id}`
-      );
-      if (response?.isSuccess) {
-        toast.success("Course deleted successfully!");
-        navigate(-1);
-      } else {
-        toast.error(response?.message || "Failed to delete the course.");
+    // Not allow delete course unless all course instance is deleted
+    if (!data.data.courseInstances || data.data.courseInstances.length === 0) {
+      try {
+        const response = await deleteRequest(
+          `/MoocCourse/delete/${data.data.id}`
+        );
+        if (response?.isSuccess) {
+          toast.success("Course deleted successfully!");
+          navigate(-1);
+        } else {
+          toast.error(response?.message || "Failed to delete the course.");
+        }
+      } catch (err) {
+        toast.error("An error occurred during deletion.");
       }
-    } catch (err) {
-      toast.error("An error occurred during deletion.");
+    } else {
+      toast.error(
+        `The course cannot be deleted because it still has ${data.data.courseInstances.length} instance(s). Please delete all instances first.`
+      );
     }
   };
 
@@ -89,7 +96,9 @@ export default function CourseSingle() {
           subtitle="Managing single course"
         />
       </Stack>
-      <BackButton />
+      <Box sx={{ marginBottom: 3 }}>
+        <BackButton />
+      </Box>
       {isLoading && <Skeleton variant="rounded" width="100%" height={100} />}
       {error && (
         <Typography sx={{ marginBottom: 4 }}>
@@ -102,32 +111,28 @@ export default function CourseSingle() {
             display="flex"
             justifyContent="space-between"
             alignItems="center"
+            sx={{ mb: 2 }}
           >
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: "bold", marginBottom: "16px" }}
-            >
+            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
               Meta Data
             </Typography>
-            <Box display="flex" alignItems="center" gap={1}>
+            <Box display="flex" alignItems="center" gap={2}>
               <Button
                 variant="contained"
                 color="secondary"
                 onClick={handleOpen}
+                sx={{ px: 3 }}
               >
                 Edit
               </Button>
-
-              {(!data.data.courseInstances ||
-                data.data.courseInstances.length === 0) && (
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={handleDelete} // 添加删除操作的回调函数
-                >
-                  Delete
-                </Button>
-              )}
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleDelete}
+                sx={{ px: 3 }}
+              >
+                Delete
+              </Button>
             </Box>
           </Box>
           <Typography variant="body1">{`Course Code: ${data.data.courseCode}`}</Typography>
@@ -144,7 +149,6 @@ export default function CourseSingle() {
               size="small"
             />
           </Typography>
-
           <Modal open={modalOpen} onClose={handleClose}>
             <EditCourseModal
               courseId={courseId}
