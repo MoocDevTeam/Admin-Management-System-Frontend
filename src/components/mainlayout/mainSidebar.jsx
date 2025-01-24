@@ -28,7 +28,7 @@ export default function MainSidebar({ userName }) {
     <Box>
       <Sidebar collapsed={isCollapsed}>
         <Menu style={{ height: '99vh' }}>
-
+          
           {/* LOGO AND MENU ICON */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -100,7 +100,39 @@ export default function MainSidebar({ userName }) {
             >
               Role
             </MenuItem>
+            <MenuItem
+              icon={<PeopleOutlinedIcon />}
+              component={<Link />}
+              to="user/teacher"
+            >
+              Teacher
+            </MenuItem>
           </SubMenu>
+
+          <SubMenu icon={<PeopleOutlinedIcon />} label="Course Management">
+            <MenuItem
+              icon={<PeopleOutlinedIcon />}
+              component={<Link />}
+              to="course"
+            >
+              Courses
+            </MenuItem>
+            <MenuItem
+              icon={<PeopleOutlinedIcon />}
+              component={<Link />}
+              to="/course/category"
+            >
+              Categories
+            </MenuItem>
+            <MenuItem
+              icon={<PeopleOutlinedIcon />}
+              component={<Link />}
+              to="/course/courseLaunch"
+            >
+              Course Launch
+            </MenuItem>
+          </SubMenu>
+
         </Menu>
       </Sidebar>
     </Box>
