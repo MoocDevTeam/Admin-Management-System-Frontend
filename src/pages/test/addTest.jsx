@@ -18,11 +18,10 @@ import toast from "react-hot-toast";
 import * as Yup from "yup";
 import postRequest from "../../request/postRequest";
 import Header from "../../components/header";
-import MoocDropzone from "../../components/moocDropzone";
 import { useState } from "react";
 import getRequest from "../../request/getRequest";
 
-export default function AddUser() {
+export default function AddTest() {
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -111,10 +110,10 @@ export default function AddUser() {
   return (
     <Box m="20px">
       <Header
-        title="CREATE USER"
-        subtitle="Create a New User Profile"
-        url="/user"
-        urltitle={"UserList"}
+        title="CREATE Test"
+        subtitle="Create a New Test Profile"
+        url="/test"
+        urltitle={"TestList"}
       />
       <form onSubmit={formik.handleSubmit}>
         <Box
@@ -252,12 +251,12 @@ export default function AddUser() {
             sx={{ gridColumn: "span 4" }}
           />
 
-          <MoocDropzone avatarResult={handleAvatarResult} />
+          
         </Box>
         <Box display="flex" justifyContent="end" mt="20px">
           <Stack direction="row" spacing={2}>
             <Button type="submit" color="secondary" variant="contained">
-              Create New User
+              Create New Test
             </Button>
             <Button type="cancle" color="secondary" variant="contained">
               Cancel

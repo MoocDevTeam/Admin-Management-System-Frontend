@@ -3,7 +3,7 @@ import { Box, Button, Stack, Avatar } from "@mui/material";
 import Header from "../../components/header";
 import colors from "../../theme";
 import AlterDialog from "../../components/alterDialog";
-import UserList from "./userList";
+import TestList from "./testList";
 
 import { useEffect } from "react";
 import getRequest from "../../request/getRequest";
@@ -12,7 +12,7 @@ import deleteRequest from "../../request/delRequest";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-export default function User() {
+export default function Test() {
   const [pageSearch, setpageSearch] = useState({
     pageSize: 100,
     page: 1,
@@ -123,7 +123,7 @@ export default function User() {
 
   const navigate = useNavigate();
   function handleAddUser() {
-    navigate("/user/add");
+    navigate("/test/add");
   }
   const [alertMessage, setAlartMessage] = useState("");
 
@@ -145,7 +145,7 @@ export default function User() {
     }
 
     let ids = rowSelectionModel.join(",");
-    let result = await deleteRequest(`/user/Delete/${ids}`);
+    let result = await deleteRequest(`/test/Delete/${ids}`);
     if (result.isSuccess) {
       toast.success("delete success!");
     } else {
@@ -160,7 +160,7 @@ export default function User() {
   return (
     <>
       <Box m="20px">
-        <Header title="Users" subtitle="Managing the User Members" />
+        <Header title="Tests" subtitle="Managing the Test Members" />
         <Box
           m="40px 0 0 0"
           minHeight={'500px'}
@@ -195,7 +195,7 @@ export default function User() {
             <Stack direction="row" spacing={2} justifyContent="flex-end">
 
               <Button variant="contained" onClick={handleAddUser}>
-                Add User
+                Add Test
               </Button>
 
 
@@ -209,12 +209,12 @@ export default function User() {
 
             </Stack>
           </Box>
-          <UserList
+          <TestList
             columns={columns}
             pageData={pageData}
             setPaginationModel={handlePaginationModel}
             setRowSelectionModel={setRowSelectionModel}
-          ></UserList>
+          ></TestList>
         </Box>
         <AlterDialog
         title="Warning"
