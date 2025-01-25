@@ -10,8 +10,8 @@ import FileIcon from "@mui/icons-material/InsertDriveFile";
 import Divider from "@mui/material/Divider";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
-import FileUploadPanel from "./session/FileUploadPanel"
-import EditModal from "./session/EditModal";
+import FileUploadPanel from "./FileUploadPanel";
+import EditModal from "./EditModal";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,

@@ -6,10 +6,10 @@ import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
 import colors from "../../../../theme";
 import toast from "react-hot-toast";
 import StyledSection from "../../../../components/course/shared/StyledSection";
-import SessionStack from "../../../../components/course/course/SessionStack";
+import SessionStack from "../../../../components/course/course/courseInstance/session/SessionStack";
 import formatToAustralianDate from "../../../../utils/formatToAustralianDate";
 import getRequest from "../../../../request/getRequest";
-import StyledBreadcrumbs from "../../../../components/course/course/session/courseInstance/Breadcrumbs";
+import StyledBreadcrumbs from "../../../../components/course/course/courseInstance/Breadcrumbs";
 
 export default function CourseInstanceSingle() {
   const { courseId, courseInstanceId } = useParams();
