@@ -32,7 +32,7 @@ import { useNavigate } from "react-router-dom";
 import QuestionForm from './questionForm';
 import DeleteConfirmDialog from './deleteConfirmDialog';
 
-// 行组件
+// row component
 function Row({ row, onEdit, selected, onSelect }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -57,7 +57,7 @@ function Row({ row, onEdit, selected, onSelect }) {
                   <TableCell sx={{ 
                     width: '52%', 
                     pl: 4,
-                    pr: 4  // 添加右侧padding
+                    pr: 4
                   }}>Explanation</TableCell>
                   <TableCell sx={{ 
                     width: '15%',
@@ -78,10 +78,10 @@ function Row({ row, onEdit, selected, onSelect }) {
                       sx={{ 
                         height: '48px', 
                         verticalAlign: 'middle',
-                        pl: 4,  // 左侧padding
-                        pr: 4,  // 右侧padding
-                        width: '52%',  // 固定宽度
-                        maxWidth: '52%',  // 最大宽度
+                        pl: 4,  
+                        pr: 4,  
+                        width: '52%',  
+                        maxWidth: '52%', 
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap'
@@ -93,13 +93,13 @@ function Row({ row, onEdit, selected, onSelect }) {
                       height: '48px', 
                       verticalAlign: 'middle', 
                       pl: 3,
-                      width: '15%'  // 固定宽度
+                      width: '15%' 
                     }}>
                       <Box sx={{ 
                         minHeight: '32px', 
                         display: 'flex', 
                         alignItems: 'center',
-                        justifyContent: 'flex-start'  // 左对齐
+                        justifyContent: 'flex-start'
                       }}>
                         {option.correct && (
                           <Chip 
@@ -148,10 +148,10 @@ function Row({ row, onEdit, selected, onSelect }) {
     }
   };
 
-  // 编辑按钮的处理函数
+  // the edit button
   const handleEdit = (e) => {
     e.stopPropagation();
-    onEdit(row);  // 调用父组件传入的处理函数
+    onEdit(row);  // call the parent component's handleEdit function
   };
 
   return (
@@ -236,7 +236,12 @@ export default function Questions() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  // 模拟数据
+  // TODO: Replace mockData with API calls
+  // Expected API endpoints:
+  // GET /api/questions - fetch questions list with pagination
+  // POST /api/questions - create new question
+  // PUT /api/questions/:id - update question
+  // DELETE /api/questions/:id - delete question
   const mockData = {
     items: [
       { 
@@ -340,7 +345,11 @@ export default function Questions() {
     total: 5
   };
 
-  // 添加分页状态
+  // TODO: Implement pagination with API
+  // Expected query parameters:
+  // page: current page number
+  // pageSize: number of items per page
+  // Example: GET /api/questions?page=1&pageSize=10
   const [pageSearch, setPageSearch] = useState({
     page: 1,
     pageSize: 10,
@@ -355,19 +364,23 @@ export default function Questions() {
   const handleQuestionSubmit = async (data, mode) => {
     try {
       if (mode === 'add') {
-        // 调用创建API
+        // TODO: Implement API integration
+        // API endpoint: POST /api/questions
         // const response = await api.post('/questions', data);
         console.log('Creating new question:', data);
       } else {
-        // 调用更新API
+        // TODO: Implement API integration
+        // API endpoint: PUT /api/questions/${data.id}
         // const response = await api.put(`/questions/${data.id}`, data);
         console.log('Updating question:', data);
       }
       
-      // 刷新题目列表
-      // fetchQuestions();
+      // TODO: Implement API integration
+      // API endpoint: GET /api/questions
+      // const response = await api.get('/questions');
+      console.log('Refreshing questions list');
       
-      // 关闭对应的modal
+      // close the corresponding modal
       if (mode === 'add') {
         setAddModalOpen(false);
       } else {
@@ -514,7 +527,9 @@ export default function Questions() {
         open={deleteDialogOpen}
         onClose={(confirmed) => {
           if (confirmed) {
-            // TODO: 刷新题目列表
+            // TODO: Implement API integration
+            // API endpoint: DELETE /api/questions
+            // await Promise.all(selectedItems.map(id => api.delete(`/questions/${id}`)));
             // fetchQuestions();
             setSelectedItems([]);
           }

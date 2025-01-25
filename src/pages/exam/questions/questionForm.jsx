@@ -17,7 +17,15 @@ import {
 } from '@mui/material';
 import Header from "../../../components/header";
 
+// TODO: API Integration Points:
+// POST /api/questions - Create new question
+// PUT /api/questions/:id - Update existing question
+// Expected response: { id: string, ...questionData }
+// Expected error format: { message: string }
+
 export default function QuestionForm({ open, onClose, question = null, mode = 'add' }) {
+  // TODO: Initial form data structure should match API response format
+  // This structure will be used for both creating and updating questions
   const [formData, setFormData] = useState(question || {
     id: "",
     title: "",
@@ -44,7 +52,15 @@ export default function QuestionForm({ open, onClose, question = null, mode = 'a
   // 添加一个 useEffect 来监听 open 状态
   useEffect(() => {
     if (open) {
-      // 当 modal 打开时，重置表单数据和 alert 状态
+      // TODO: If editing, fetch full question details from API
+      // const fetchQuestionDetails = async () => {
+      //   if (mode === 'edit' && question?.id) {
+      //     const response = await api.get(`/questions/${question.id}`);
+      //     setFormData(response.data);
+      //   }
+      // };
+      // fetchQuestionDetails();
+
       setFormData(question || {
         id: "",
         title: "",
@@ -72,6 +88,14 @@ export default function QuestionForm({ open, onClose, question = null, mode = 'a
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // TODO: Implement API integration
+      // if (mode === 'add') {
+      //   const response = await api.post('/questions', formData);
+      //   formData.id = response.data.id;
+      // } else {
+      //   await api.put(`/questions/${formData.id}`, formData);
+      // }
+
       setAlert({
         open: true,
         message: mode === 'add' ? 'Question added successfully!' : 'Question updated successfully!',

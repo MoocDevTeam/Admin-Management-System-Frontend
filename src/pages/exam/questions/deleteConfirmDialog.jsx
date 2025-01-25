@@ -13,7 +13,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 export default function DeleteConfirmDialog({ open, onClose, selectedCount }) {
   const handleConfirm = async () => {
     try {
-      // TODO: 调用删除API
+      // TODO: call delete api
       // await api.delete('/questions', { ids: selectedItems });
       console.log('Deleting questions');
       onClose(true);
