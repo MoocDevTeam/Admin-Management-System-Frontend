@@ -49,7 +49,7 @@ export default function QuestionForm({ open, onClose, question = null, mode = 'a
     severity: 'success'
   });
 
-  // 添加一个 useEffect 来监听 open 状态
+  // add a useEffect to listen to the open state
   useEffect(() => {
     if (open) {
       // TODO: If editing, fetch full question details from API
@@ -114,7 +114,7 @@ export default function QuestionForm({ open, onClose, question = null, mode = 'a
     }
   };
 
-  // 从 edit.jsx 复制过来的 renderQuestionContent 函数
+  // copy from edit.jsx
   const renderQuestionContent = () => {
     switch (formData.type) {
       case "Choice Question":
