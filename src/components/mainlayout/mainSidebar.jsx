@@ -11,6 +11,10 @@ import { Link } from "react-router-dom";
 import { fetchUserByName } from "../../store/userSlice";
 import LoadingSpinner from "../loadingSpinner";
 import { getAccessName } from '../util/access';
+import QuizIcon from '@mui/icons-material/Quiz';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import PublishIcon from '@mui/icons-material/Publish';
 
 export default function MainSidebar({ userName }) {
 
@@ -130,6 +134,30 @@ export default function MainSidebar({ userName }) {
               to="/course/courseLaunch"
             >
               Course Launch
+            </MenuItem>
+          </SubMenu>
+
+          <SubMenu icon={<QuizIcon />} label="Exam Management">
+            <MenuItem
+              icon={<AssignmentIcon />}
+              component={<Link />}
+              to="/exam/questions"
+            >
+              Questions
+            </MenuItem>
+            <MenuItem
+              icon={<ListAltIcon />}
+              component={<Link />}
+              to="/exam/exams"
+            >
+              Exams
+            </MenuItem>
+            <MenuItem
+              icon={<PublishIcon />}
+              component={<Link />}
+              to="/exam/publish"
+            >
+              Publish
             </MenuItem>
           </SubMenu>
 
