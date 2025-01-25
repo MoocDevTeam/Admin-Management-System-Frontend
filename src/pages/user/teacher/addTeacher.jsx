@@ -18,31 +18,29 @@ import { DatePicker } from "@mui/lab";
 import { AdatpterDayjs } from "@mui/lab/AdapterDayjs";
 import { LocaliztionProvider } from "@mui/lab/LocalizationProvider";
 import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../../components/header";
 import { Form } from "react-router-dom";
 import postRequest from "../../../request/postRequest";
 import toast from "react-hot-toast";
 
 export default function AddTeacher() {
-  //set the initial userId to null
-  const [userId, setUserId] = useState(null);
-  const [username, setUsername] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // //set the initial userId to null
+  // const [userId, setUserId] = useState(null);
+  // const [username, setUsername] = useState(null);
 
   //set the initial search type to id
   const [searchType, setSearchType] = useState("id");
   const [searchInput, setSearchInput] = useState("");
 
-  //handle the search dialog open
-
-  //handle the search dialog open
-  const handleSearchOpen = () => setIsDialogOpen(true); // open the search dialog
-  const handleSearchClose = () => setIsDialogOpen(false); // close the search dialog
+  //Get userId from the search dialog
+  const location = useLocation();
+  const userId = location.state?.userId;
 
   //set the initial values for the form
   const formik = useFormik({
     initialValues: {
+      userId: userId,
       title: "",
       department: "",
       introduction: "",
@@ -53,6 +51,8 @@ export default function AddTeacher() {
     },
 
     validationSechema: Yup.object({
+      userId: Yup.string()
+        .required("Required"),
       title: Yup.string()
         .min(3, "Must be 3 characters or more")
         .max(30, "Must be 100 characters or less")
@@ -100,7 +100,7 @@ export default function AddTeacher() {
 
   const navigate = useNavigate();
   const handleOnClose = () => {
-    navigate("/teacher");
+    navigate("/user/teacher");
   };
 
   return (
@@ -112,38 +112,22 @@ export default function AddTeacher() {
           gap={"30px"}
           gridTemplateColumns="repeat(4, minmax(0, 1fr))"
         >
-          <Box
-          sx={{ gridColumn: "span 2" }}
-          >
+
           <TextField
             fullWidth
-            label={`Search by ${searchType === "id" ? "ID" : "Username"}`}
             variant="filled"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            sx={{ gridColumn: "span 1" }}
-          />
-          <FormControl fullWidth sx={{ gridColumn: "span 1" }}>
-            <InputLabel id="search-type-label">Search By</InputLabel>
-            <Select
-              labelId="search-type-label"
-              value={searchType}
-              onChange={(e) => setSearchType(e.target.value)}
-            >
-              <MenuItem value="id">ID</MenuItem>
-              <MenuItem value="username">User Name</MenuItem>
-            </Select>
-          </FormControl>
-          <Button
-            variant="contained"
-            color="secondary"
-            // onClick={handleSearch}
-            sx={{ gridColumn: "span 1" }}
-          >
-            Search
-          </Button>
-          </Box>
-
+            type="text"
+            label="User ID"
+            name="userId"
+            autoComplete="off"
+            onChange={formik.handleChange}
+            value={userId}
+            error={formik.touched.userId && Boolean(formik.errors.userId)}
+            helperText={formik.touched.userId && formik.errors.userId}
+            autoFocus
+            slotProps={{ readOnly: true }}
+            sx={{ gridColumn: "span 4" }}
+          ></TextField>
           <TextField
             fullWidth
             variant="filled"
@@ -261,7 +245,7 @@ export default function AddTeacher() {
             </Button>
             <Button
               type="cancel"
-              // onClick={handleOnClose}
+              onClick={handleOnClose}
               variant="contained"
               color="secondary"
             >
