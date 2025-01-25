@@ -2,7 +2,7 @@ import React from "react";
 
 import { DataGrid } from "@mui/x-data-grid";
 
-export default function UserList(props) {
+export default function TestList(props) {
   return (
     <>
       <DataGrid style={{minHeight:'480px'}}
