@@ -6,7 +6,7 @@ import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
 import colors from "../../../../theme";
 import toast from "react-hot-toast";
 import StyledSection from "../../../../components/course/shared/StyledSection";
-import SessionStack from "../../../../components/course/course/courseInstance/session/SessionStack";
+import SessionList from "../../../../components/course/course/courseInstance/session/SessionList";
 import formatToAustralianDate from "../../../../utils/formatToAustralianDate";
 import getRequest from "../../../../request/getRequest";
 import StyledBreadcrumbs from "../../../../components/course/course/courseInstance/Breadcrumbs";
@@ -71,10 +71,7 @@ export default function CourseInstanceSingle() {
       </StyledSection>
 
       <StyledSection sx={{ marginTop: "16px", backgroundColor: colors.primary[400] }}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-          Outline
-        </Typography>
-        <SessionStack sessions={courseInstance.sessions} sx={{ marginTop: "16px" }} />
+        <SessionList sessions={courseInstance.sessions} />
       </StyledSection>
     </Box>
   );

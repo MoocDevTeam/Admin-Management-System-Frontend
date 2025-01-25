@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, LinearProgress, Button } from "@mui/material";
 import { CloudUpload as CloudUploadIcon } from "@mui/icons-material";
 import toast from "react-hot-toast";
-import { uploadFile } from "../../../../../request/uploadFile";
+import { uploadFile } from "../../../../../../request/uploadFile";
 import CircularProgress from "@mui/material/CircularProgress";
 import * as signalR from "@microsoft/signalr";
 
@@ -106,9 +106,10 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
   };
 
   return (
-    <Box sx={{ marginBottom: "10px" }}>
+    <Box sx={{ marginBottom: "0px" }}>
+      <h3>Add New</h3>
       {uploadedUrl === "" &&
-        <>
+        <Box sx={{display: "flex", paddingLeft: "10px"}}>
           <input
             type="file"
             onChange={handleFileChange}
@@ -116,28 +117,28 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
             id="file-upload"
           />
           <label htmlFor="file-upload">
-            <Button variant="outlined" component="span" startIcon={<CloudUploadIcon />} sx={{ marginBottom: "16px" }}>
+            <Button variant="outlined" component="span" startIcon={<CloudUploadIcon />} sx={{ marginBottom: "8px" }}>
               Upload File
             </Button>
           </label>
 
           {file && (
-            <Typography variant="body1" sx={{ marginBottom: "16px" }}>
+            <Typography variant="body1" sx={{ marginBottom: "8px", lineHeight: "33px", marginLeft: "10px" }}>
               Selected file: {file.name}
             </Typography>
           )}
-        </>
+        </Box>
       }
 
       {loading && (
-        <Box sx={{ marginTop: "16px", display: "flex", alignItems: "center" }}>
-          <LinearProgress variant="determinate" value={displayProgress} sx={{ flexGrow: 1, marginRight: "8px" }} />
+        <Box sx={{ margin: "0px", display: "flex", alignItems: "center" }}>
+          <LinearProgress variant="determinate" value={displayProgress} sx={{ flexGrow: 1, margin: "8px" }} />
           <Typography variant="body2">{`${Math.round(displayProgress)}%`}</Typography>
         </Box>
       )}
 
       {uploadedUrl === "" &&
-        <div>
+        <Box sx={{paddingLeft: "10px"}}>
           <Button
             variant="contained"
             color="secondary"
@@ -147,7 +148,7 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
             {loading && <CircularProgress size={12} style={{ marginRight: 8 }} />}
             {loading ? "Uploading..." : "Upload Now"}
           </Button>
-        </div>
+        </Box>
       }
 
       {uploadedUrl &&
