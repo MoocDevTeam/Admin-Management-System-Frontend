@@ -31,7 +31,7 @@ export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
   const navigate = useNavigate();
   const handleConfirm = () => { 
     if(userdata.id){
-      navigate('/user/teacher/add');
+      navigate('/user/teacher/add', {state: {userId: userdata.id}});
     } else {
       alert('Please select a user');
     }
