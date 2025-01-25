@@ -11,7 +11,7 @@ import Teacher from "./pages/user/teacher/index";
 import CourseList from "./pages/course/course/courseList/index";
 import CourseSingle from "./pages/course/course/courseSingle/index";
 import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle";
-import Category from "./pages/course/category/index";
+import CategoryTree from "./pages/course/category/categoryTree";
 import CourseLaunch from "./pages/course/courseLaunch/index";
 import Page404 from "./pages/page404";
 import { theme } from "./theme";
@@ -39,7 +39,7 @@ function App() {
           <Route
             key="category"
             path="/course/category"
-            element={<Category />}
+            element={<CategoryTree />}
           />
 
           <Route
