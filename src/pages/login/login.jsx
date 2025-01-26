@@ -15,60 +15,57 @@ import {
   Checkbox,
   IconButton,
 } from "@mui/material"
-//import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
 import { Link as RouterLink, useNavigate } from "react-router-dom"
-import postRequest from "../../request/postRequest"
+import { useFormik } from "formik"
+import * as Yup from "yup"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons"
 import { Visibility, VisibilityOff } from "@mui/icons-material"
+import postRequest from "../../request/postRequest"
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({ username: "", password: "" })
-  const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [checked, setChecked] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-
   const navigate = useNavigate()
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData({ ...formData, [name]: value })
-  }
-  const handleChecked = (e) => {
-    setChecked(e.target.checked)
-  }
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!formData.username || !formData.password) {
-      setError("Username and password are required!")
-      return
-    }
-    setIsLoading(true)
-    setError(null)
-    try {
-      console.log("Form Data:", formData)
-      let res = await postRequest(
-        "http://localhost:9000/api/Auth/login",
-        formData
-      )
-      console.log("res", res)
 
-      if (res && res.isSuccess === true) {
-        localStorage.setItem("access_token", res.message)
-        localStorage.setItem("userName", formData.username)
-        navigate("/")
-      } else {
-        setError("Invalid username or password")
-        navigate("/login")
+  const loginValidationSchema = Yup.object({
+    username: Yup.string()
+      .required("Username is required!")
+      .min(4, "Password must be at least 4 characters long"),
+    password: Yup.string()
+      .required("Password is required!")
+      .min(6, "Password must be at least 6 characters long"),
+  })
+
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+      rememberMe: false,
+    },
+    loginValidationSchema,
+    onSubmit: async (values) => {
+      setIsLoading(true)
+      try {
+        const res = await postRequest("http://localhost:9000/api/Auth/login", {
+          username: values.username,
+          password: values.password,
+        })
+        if (res && res.isSuccess === true) {
+          localStorage.setItem("access_token", res.message)
+          localStorage.setItem("userName", values.username)
+          navigate("/")
+        } else {
+          formik.setFieldError("username", "Invalid username or password")
+        }
+      } catch (error) {
+        console.error("Login error:", error)
+        formik.setFieldError("username", "An error occurred. Please try again.")
+      } finally {
+        setIsLoading(false)
       }
-    } catch (err) {
-      console.error("Login error:", err)
-      setError("An error occurred. Please try again later.")
-      navigate("/login")
-    } finally {
-      setIsLoading(false)
-    }
-  }
+    },
+  })
 
   return (
     <Box
@@ -132,48 +129,41 @@ const LoginPage = () => {
             </Typography>
             <Box
               component="form"
-              onSubmit={handleSubmit}
+              onSubmit={formik.handleSubmit}
               noValidate
               sx={{ mt: 1, mx: "auto", px: 16 }}
             >
-              {error && (
-                <Typography
-                  sx={{
-                    fontSize: "1.5rem",
-                    color: "red",
-                    mb: 2,
-                    textAlign: "center",
-                  }}
-                  component="h1"
-                  variant="h5"
-                >
-                  {error}
-                </Typography>
-              )}
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                aria-label="Enter your username"
                 placeholder="Enter your username"
                 id="username"
-                // label="Username"
                 name="username"
                 autoComplete="off"
                 autoFocus
-                value={formData.username}
-                onChange={handleChange}
+                value={formik.values.username}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.username && Boolean(formik.errors.username)
+                }
+                helperText={
+                  formik.touched.username && formik.errors.username
+                    ? "wrong username" + formik.errors.username
+                    : ""
+                }
                 InputProps={{
                   sx: {
+                    marginBottom: 2,
                     borderRadius: 5,
                     border: "2px solid #000",
                     input: {
                       color: "#FFFBCA",
                       fontSize: "2rem",
                       "&::placeholder": {
-                        fontSize: "1rem",
+                        fontSize: "2rem",
                         color: "#FFFBCA",
-                        // fontStyle: "italic",
                         fontWeight: "bold",
                       },
                     },
@@ -184,28 +174,33 @@ const LoginPage = () => {
                 margin="normal"
                 required
                 fullWidth
-                aria-label="Enter your password"
                 placeholder="Enter your password"
                 name="password"
-                // label="Password"
                 type={showPassword ? "text" : "password"}
                 id="password"
                 autoComplete="on"
-                value={formData.password}
-                onChange={handleChange}
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.password && Boolean(formik.errors.password)
+                }
+                helperText={
+                  formik.touched.password && formik.errors.password
+                    ? "wrong password" + formik.errors.password
+                    : ""
+                }
                 InputProps={{
                   sx: {
                     borderRadius: 5,
+                    marginBottom: 2,
                     border: "2px solid #000",
-
                     input: {
                       color: "#FFFBCA",
                       fontSize: "2rem",
-
                       "&::placeholder": {
-                        fontSize: "1rem",
+                        fontSize: "2rem",
                         color: "#FFFBCA",
-                        // fontStyle: "italic",
                         fontWeight: "bold",
                       },
                     },
@@ -224,11 +219,13 @@ const LoginPage = () => {
                 control={
                   <Checkbox
                     sx={{
-                      "& .MuiSvgIcon-root": { fontSize: 32, color: "#000" },
+                      "&.MuiSvgIcon-root": { fontSize: 32, color: "#000" },
+                      "&.Mui-checked": { color: "#FFFBCA" },
                     }}
-                    checked={checked}
-                    onChange={handleChecked}
-                    color="primary"
+                    name="rememberMe"
+                    checked={formik.values.rememberMe}
+                    onChange={formik.handleChange}
+                    color="default"
                   />
                 }
                 label="Remember me"
@@ -268,7 +265,7 @@ const LoginPage = () => {
                 justifyContent="space-between"
                 sx={{ mt: 1, fontSize: "1rem" }}
               >
-                <Grid item sx={{ ml: 1 }}>
+                <Grid item>
                   <Link
                     sx={{ textDecoration: "none" }}
                     component={RouterLink}
@@ -289,7 +286,7 @@ const LoginPage = () => {
                     </Typography>
                   </Link>
                 </Grid>
-                <Grid item sx={{ mr: 1 }}>
+                <Grid item>
                   <Link
                     sx={{ textDecoration: "none" }}
                     component={RouterLink}
