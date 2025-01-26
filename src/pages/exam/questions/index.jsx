@@ -401,7 +401,6 @@ export default function Questions() {
     }}>
       <Header title="Questions Bank" subtitle="Manage your exam questions" />
       
-      // Content container with flex layout
       <Box sx={{ 
         flex: 1,  // Take remaining space
         display: 'flex', 
@@ -430,7 +429,6 @@ export default function Questions() {
           </Stack>
         </Box>
 
-        // Table container with flex layout
         <TableContainer 
           component={Paper} 
           sx={{ 
