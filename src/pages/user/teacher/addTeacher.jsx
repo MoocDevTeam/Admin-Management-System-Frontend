@@ -1,6 +1,8 @@
-import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   Box,
   Button,
@@ -10,32 +12,23 @@ import {
   FormControl,
   MenuItem,
   Stack,
-  ListItemText,
-  Checkbox,
-  OutlinedInput,
 } from "@mui/material";
-import { DatePicker } from "@mui/lab";
-import { AdatpterDayjs } from "@mui/lab/AdapterDayjs";
-import { LocaliztionProvider } from "@mui/lab/LocalizationProvider";
 import dayjs from "dayjs";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../../components/header";
-import { Form } from "react-router-dom";
 import postRequest from "../../../request/postRequest";
 import toast from "react-hot-toast";
 
 export default function AddTeacher() {
-  // //set the initial userId to null
-  // const [userId, setUserId] = useState(null);
-  // const [username, setUsername] = useState(null);
-
-  //set the initial search type to id
-  const [searchType, setSearchType] = useState("id");
-  const [searchInput, setSearchInput] = useState("");
 
   //Get userId from the search dialog
   const location = useLocation();
   const userId = location.state?.userId;
+
+  const navigate = useNavigate();
+  const handleOnClose = () => {
+    navigate("/user/teacher");
+  };
 
   //set the initial values for the form
   const formik = useFormik({
@@ -50,7 +43,7 @@ export default function AddTeacher() {
       isActive: false,
     },
 
-    validationSechema: Yup.object({
+    validationSchema: Yup.object({
       userId: Yup.string()
         .required("Required"),
       title: Yup.string()
@@ -78,7 +71,8 @@ export default function AddTeacher() {
     }),
 
     onSubmit: async (values) => {
-      let result = await postRequest("/teacher/Add", {
+       let result = await postRequest("/teacher/Add", {
+        userId: values.userId,
         title: values.title,
         department: values.department,
         introduction: values.introduction,
@@ -87,21 +81,19 @@ export default function AddTeacher() {
         hiredDate: values.hiredDate,
         isActive: values.isActive,
       });
+      console.log("result", result);
+      console.log("values", values);
 
+      //If the request is successful, navigate to the teacher page
       if (result.isSuccess) {
         toast.success("add success!");
         formik.resetForm();
-        //navigate("/", { replace: true });
+        navigate("/user/teacher");
       } else {
         toast.error(result.message);
       }
     },
   });
-
-  const navigate = useNavigate();
-  const handleOnClose = () => {
-    navigate("/user/teacher");
-  };
 
   return (
     <Box m="20px">
@@ -124,7 +116,6 @@ export default function AddTeacher() {
             value={userId}
             error={formik.touched.userId && Boolean(formik.errors.userId)}
             helperText={formik.touched.userId && formik.errors.userId}
-            autoFocus
             slotProps={{ readOnly: true }}
             sx={{ gridColumn: "span 4" }}
           ></TextField>
@@ -155,7 +146,6 @@ export default function AddTeacher() {
               formik.touched.department && Boolean(formik.errors.department)
             }
             helperText={formik.touched.department && formik.errors.department}
-            autoFocus
             sx={{ gridColumn: "span 4" }}
           />
           <TextField
@@ -173,7 +163,6 @@ export default function AddTeacher() {
             helperText={
               formik.touched.introduction && formik.errors.introduction
             }
-            autoFocus
             sx={{ gridColumn: "span 4" }}
           />
           <TextField
@@ -187,7 +176,6 @@ export default function AddTeacher() {
             value={formik.values.expertise}
             error={formik.touched.expertise && Boolean(formik.errors.expertise)}
             helperText={formik.touched.expertise && formik.errors.expertise}
-            autoFocus
             sx={{ gridColumn: "span 4" }}
           />
           <TextField
@@ -201,23 +189,32 @@ export default function AddTeacher() {
             value={formik.values.office}
             error={formik.touched.office && Boolean(formik.errors.office)}
             helperText={formik.touched.office && formik.errors.office}
-            autoFocus
             sx={{ gridColumn: "span 4" }}
           />
-          <TextField
-            fullWidth
-            variant="filled"
-            type="text"
+
+          {/* pick a date */}
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
             label="Hired Date"
-            name="hiredDate"
-            autoComplete="off"
-            onChange={formik.handleChange}
-            value={formik.values.hiredDate}
+            format="DD/MM/YYYY"
+            // inputFormat="DD/MM/YYYY"
+            onChange={(value) => {
+              if(value&&value.isValid()){
+                const formattedDate = value.toISOString();
+                formik.setFieldValue("hiredDate", formattedDate);
+              }}}
+            value={formik.values.hiredDate ? dayjs(formik.values.hiredDate) : null}
+            renderInput={params => (
+              <TextField
+                {...params}
+              />
+            )}
             error={formik.touched.hiredDate && Boolean(formik.errors.hiredDate)}
             helperText={formik.touched.hiredDate && formik.errors.hiredDate}
-            autoFocus
-            sx={{ gridColumn: "span 4" }}
           />
+          </LocalizationProvider>
+
+
           <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
             <InputLabel id="teacher-status-select-label">
               Active Status

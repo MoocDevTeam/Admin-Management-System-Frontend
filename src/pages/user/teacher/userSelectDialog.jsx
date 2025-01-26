@@ -15,15 +15,16 @@ import getRequest from '../../../request/getRequest';
 import { useNavigate } from 'react-router-dom';
 
 export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
-  const [userdata, setUserdata] = useState(null); // 初始为空，方便判断是否有搜索结果
+  //set the default state for the user data
+  const [userdata, setUserdata] = useState(null); 
   const [input, setInput] = useState('');
 
-  // 更新用户数据
+  //update the user data by adding the username to the data
   const handleSetUserData = (data, username) => {
     setUserdata({...data, username});
   };
 
-  // 更新输入框内容
+  // update the input value
   const handleSetInput = (e) => {
     setInput(e.target.value);
   };
@@ -38,7 +39,7 @@ export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
   };
   
 
-  // 搜索用户
+  // search for the user by name
   const searchUser = async (name) => {
     if (!name.trim()) {
       alert('Please enter a valid name');
@@ -53,8 +54,7 @@ export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
         handleSetUserData(result.data);
         handleSetUserData(result.data, name);
       } else {
-        alert('User not found');
-        setUserdata(null); // 清空之前的搜索结果
+        setUserdata(null); // clear the user data when no user is found
       }
     } catch (error) {
       console.error('Error searching user:', error);
@@ -65,7 +65,7 @@ export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="md">
       <Box p={4}>
-        {/* 搜索区域 */}
+        {/* search section */}
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={9}>
             <TextField
@@ -86,19 +86,17 @@ export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
               sx={{
                 height: '50px'
               }}
-              
-              
             >
               Search
             </Button>
           </Grid>
         </Grid>
 
-        {/* 搜索结果区域 */}
+        {/* search result */}
         {userdata && (
           <Box mt={4} >
-            <Typography variant="h6" gutterBottom>
-              Search Result
+            <Typography variant="h4" gutterBottom>
+              User Information:
             </Typography>
             <Card
               sx={{
@@ -116,7 +114,7 @@ export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
                   image={
                     userdata.image ||
                     'https://mui.com/static/images/cards/contemplative-reptile.jpg'
-                  } // 动态显示图片或占位符
+                  } // default image this part will be modified later when user can offer the own avatar url
                   alt="User Image"
                 />
                 <CardContent>
@@ -157,7 +155,7 @@ export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
           </Box>
         )}
 
-        {/* 无结果提示 */}
+        {/* Result display for bad request */}
         {!userdata && (
           <Box mt={4} textAlign="center">
             <Typography variant="body1" color="textSecondary">
