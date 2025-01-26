@@ -31,6 +31,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate } from "react-router-dom";
 import QuestionForm from './questionForm';
 import DeleteConfirmDialog from './deleteConfirmDialog';
+import TablePagination from '../../../components/tablePagination';
 
 // row component
 function Row({ row, onEdit, selected, onSelect }) {
@@ -360,7 +361,7 @@ export default function Questions() {
     setEditModalOpen(true);
   };
 
-  // 处理添加和更新的回调
+  // handle question edit and add
   const handleQuestionSubmit = async (data, mode) => {
     try {
       if (mode === 'add') {
@@ -391,11 +392,22 @@ export default function Questions() {
     }
   };
 
+// Main container with fixed height and flex column layout
   return (
-    <Box m="20px">
+    <Box m="20px" sx={{ 
+      height: 'calc(100vh - 140px)', // Fixed height based on viewport
+      display: 'flex', 
+      flexDirection: 'column'
+    }}>
       <Header title="Questions Bank" subtitle="Manage your exam questions" />
       
-      <Box m="40px 0 0 0">
+      <Box sx={{ 
+        flex: 1,  // Take remaining space
+        display: 'flex', 
+        flexDirection: 'column',
+        mt: 4
+      }}>
+        {/* Buttons container */}
         <Box sx={{ mb: 2 }}>
           <Stack direction="row" spacing={2} justifyContent="flex-end">
             <Button
@@ -417,8 +429,15 @@ export default function Questions() {
           </Stack>
         </Box>
 
-        <TableContainer component={Paper}>
+        <TableContainer 
+          component={Paper} 
+          sx={{ 
+            flex: 1, // Take remaining space
+            overflow: 'auto' // Enable vertical scrolling
+          }}
+        >
           <Table>
+            {/* Table header */}
             <TableHead>
               <TableRow sx={{ backgroundColor: colors.blueAccent[700] }}>
                 <TableCell padding="checkbox">
@@ -461,38 +480,24 @@ export default function Questions() {
                 ))}
             </TableBody>
           </Table>
-          <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end' }}>
-            <Stack spacing={2} direction="row" alignItems="center">
-              <Typography variant="body2" color="text.secondary">
-                Rows per page:
-              </Typography>
-              <Select
-                value={pageSearch.pageSize}
-                onChange={(e) => setPageSearch(prev => ({...prev, pageSize: e.target.value}))}
-                size="small"
-              >
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={25}>25</MenuItem>
-              </Select>
-              <Typography variant="body2" color="text.secondary">
-                {`${(pageSearch.page - 1) * pageSearch.pageSize + 1}-${Math.min(pageSearch.page * pageSearch.pageSize, mockData.total)} of ${mockData.total}`}
-              </Typography>
-              <IconButton 
-                onClick={() => setPageSearch(prev => ({...prev, page: prev.page - 1}))}
-                disabled={pageSearch.page === 1}
-              >
-                <KeyboardArrowLeftIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => setPageSearch(prev => ({...prev, page: prev.page + 1}))}
-                disabled={pageSearch.page * pageSearch.pageSize >= mockData.total}
-              >
-                <KeyboardArrowRightIcon />
-              </IconButton>
-            </Stack>
-          </Box>
         </TableContainer>
+        
+        {/* Pagination container */}
+        <Box sx={{ 
+          bgcolor: 'background.paper',
+          borderTop: 1,
+          borderColor: 'divider'
+        }}>
+
+          {/* Pagination component */}
+          <TablePagination
+            pageSize={pageSearch.pageSize}
+            page={pageSearch.page}
+            total={mockData.total}
+            onPageChange={(newPage) => setPageSearch(prev => ({...prev, page: newPage}))}
+            onPageSizeChange={(newPageSize) => setPageSearch(prev => ({...prev, pageSize: newPageSize}))}
+          />
+        </Box>
       </Box>
 
       {/* Add Question Modal */}
