@@ -5,42 +5,59 @@ import toast from "react-hot-toast";
 import { uploadFile } from "../../../../../../request/uploadFile";
 import CircularProgress from "@mui/material/CircularProgress";
 import * as signalR from "@microsoft/signalr";
+import { v4 as uuidv4 } from 'uuid';
 
-export default function FileUploadPanel({ courseId, courseInstanceId }) {
+export default function FileUploadPanel({ courseId, courseInstanceId, sessionId }) {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadedUrl, setUploadedUrl] = useState("");
   const [connection, setConnection] = useState(null);
   const [displayProgress, setDisplayProgress] = useState(0);
+  const [uploadId, setUploadId] = useState(null);
 
-  let baseUrl = process.env.REACT_APP_BASE_API_URL;
+  const baseUrl = process.env.REACT_APP_BASE_API_URL;
 
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${baseUrl}/fileUploadHub`, {
-        withCredentials: true,
-      })
+      .withUrl(`${baseUrl}/fileUploadHub`, { withCredentials: true })
       .build();
-
-    newConnection.on("ReceiveProgressUpdate", (percentage) => {
-      setProgress(percentage);
-    });
-
+  
     newConnection.start()
       .then(() => {
         console.log("Connected to SignalR hub");
+  
+        newConnection.invoke("JoinGroup", uploadId)
+          .then(() => console.log(`Joined group: ${uploadId}`))
+          .catch((err) => console.error("Error joining group: ", err));
       })
-      .catch((err) => console.error("SignalR Connection Error: ", err.toString()));
-
+      .catch((err) => console.error("SignalR Connection Error: ", err));
+  
     setConnection(newConnection);
-
+  
     return () => {
       if (newConnection) {
         newConnection.stop();
       }
     };
-  }, []);
+  }, [uploadId]); 
+  
+
+  useEffect(() => {
+    if (!connection || !uploadId) return;
+
+    const onProgressUpdate = (data) => {
+      if (data.uploadId === uploadId) {
+        setProgress(data.percentage);
+      }
+    };
+
+    connection.on("ReceiveProgressUpdate", onProgressUpdate);
+
+    return () => {
+      connection.off("ReceiveProgressUpdate", onProgressUpdate);
+    };
+  }, [connection, uploadId]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -51,23 +68,6 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
 
     return () => clearInterval(interval);
   }, [progress, displayProgress]);
-
-  useEffect(() => {
-    if (progress === 100) {
-      setTimeout(() => setLoading(false), 500);
-    }
-  }, [progress]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (displayProgress < progress) {
-        setDisplayProgress((prev) => Math.min(prev + 1, progress));
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [progress, displayProgress]);
-
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -84,20 +84,20 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
       return;
     }
 
+    const newUploadId = uuidv4();
+    setUploadId(newUploadId);
+
     setLoading(true);
 
     try {
-      const fileUrl = await uploadFile(file, "video", `${baseUrl}/api/FileUpload/UploadFile/upload`, (percent) => {
+      const fileUrl = await uploadFile(file, "video", `${baseUrl}/api/FileUpload/UploadFile/upload`, sessionId, (percent) => {
         setProgress(percent);
-      });
+      }, newUploadId);
 
       setProgress(100);
       setDisplayProgress(100);
-      setTimeout(() => {
-        setUploadedUrl(fileUrl);
-        toast.success("File uploaded successfully!");
-      }, 500);
-
+      setUploadedUrl(fileUrl);
+      toast.success("File uploaded successfully!");
     } catch (error) {
       toast.error("File upload failed!");
     } finally {
@@ -108,8 +108,8 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
   return (
     <Box sx={{ marginBottom: "0px" }}>
       <h3>Add New</h3>
-      {uploadedUrl === "" &&
-        <Box sx={{display: "flex", paddingLeft: "10px"}}>
+      {uploadedUrl === "" && (
+        <Box sx={{ display: "flex", paddingLeft: "10px" }}>
           <input
             type="file"
             onChange={handleFileChange}
@@ -128,7 +128,7 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
             </Typography>
           )}
         </Box>
-      }
+      )}
 
       {loading && (
         <Box sx={{ margin: "0px", display: "flex", alignItems: "center" }}>
@@ -137,8 +137,8 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
         </Box>
       )}
 
-      {uploadedUrl === "" &&
-        <Box sx={{paddingLeft: "10px"}}>
+      {uploadedUrl === "" && (
+        <Box sx={{ paddingLeft: "10px" }}>
           <Button
             variant="contained"
             color="secondary"
@@ -149,24 +149,16 @@ export default function FileUploadPanel({ courseId, courseInstanceId }) {
             {loading ? "Uploading..." : "Upload Now"}
           </Button>
         </Box>
-      }
+      )}
 
-      {uploadedUrl &&
+      {uploadedUrl && (
         <Typography variant="body1" sx={{ marginTop: "16px", color: "green" }}>
           File uploaded successfully:
           <a href={uploadedUrl} target="_blank" rel="noopener noreferrer" style={{ marginLeft: "8px" }}>
             View File
           </a>
-          <a
-            href={uploadedUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: "red", marginLeft: "8px" }}
-          >
-            Delete
-          </a>
         </Typography>
-      }
+      )}
     </Box>
   );
 }

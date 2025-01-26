@@ -1,6 +1,5 @@
 import React from 'react'
 import { List, ListItemButton, ListItemText, ListItemIcon, Divider, Box, Typography } from "@mui/material";
-import FileIcon from "@mui/icons-material/InsertDriveFile";
 import FileUploadPanel from './FileUploadPanel';
 import { useTheme } from "@mui/material/styles";
 import Link from '@mui/material/Link';
@@ -8,7 +7,7 @@ import Link from '@mui/material/Link';
 
 function VideoManagement({ session, onClose, title }) {
   const theme = useTheme();
-
+  console.log("session?.id: ", session?.id)
   return (
     <Box
       sx={{
@@ -22,12 +21,12 @@ function VideoManagement({ session, onClose, title }) {
       <Typography variant="h5" sx={{ fontWeight: "bold" }}>Videos</Typography>
       {session?.media?.map((item, index) => {
         return (
-          <List key={index} sx={{ paddingLeft: "10px" }}>
+          <List key={index} sx={{ padding: "10px" }}>
             <ListItemButton
               component={Link}
-              href={item.filePath || "#"} // 链接地址
-              target="_blank" // 新窗口打开
-              underline="none" // 去掉下划线
+              href={item.filePath || "#"}
+              target="_blank"
+              underline="none"
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -37,18 +36,19 @@ function VideoManagement({ session, onClose, title }) {
                 },
               }}
             >
-              <ListItemIcon>
-                <FileIcon />
-              </ListItemIcon>
-              <ListItemText
+              <img
+                src={`../../../../../../../../assets/video.png`}
+                alt="Video Icon"
+                style={{ width: 24, height: 24 }}
+              />
+              <ListItemText sx={{ marginLeft: "10px" }}
                 primary={item.fileName || "Untitled File"}
               />
             </ListItemButton>
-            <Divider />
           </List>
         )
       })}
-      <FileUploadPanel />
+      <FileUploadPanel sessionId={session?.id} />
     </Box>
   );
 }
