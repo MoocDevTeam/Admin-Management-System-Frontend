@@ -1,10 +1,11 @@
 import Header from "../../../components/header";
-import { Box, Button, Stack, Avatar } from "@mui/material";
+import { Box, Button, Stack, Dialog, Typography } from "@mui/material";
 import TeacherList from "./teacherList";
 import React,{ useState, useEffect } from "react";
 import getRequest from "../../../request/getRequest";
 import colors from "../../../theme";
 import dayjs from "dayjs";
+import { UserSelectDialog } from "./userSelectDialog";
 
 export default function Teacher() {
   //set default page size
@@ -16,6 +17,23 @@ export default function Teacher() {
   const [pageData, setPageData] = useState({items:[], total:0});  //Get page data to display by default it is empty before fetching data
 
   const [rowSelectionModel, setRowSelectionModel] = useState([]);  //set default row selected to empty array
+
+  //Set dialog open state
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  //Handle search dialog open
+  const handleSearchOpen = () => setIsDialogOpen(true);
+  const handleSearchClose = () => setIsDialogOpen(false);
+
+  //Set a state to store the selected user id
+  const [selectedUserId, setSelectedUserId] = useState(null);
+
+  //Set a method to handle the user select
+  const handleSetSelectdUserId = (id) => {
+    setSelectedUserId(id);
+  }
+
+
 
   //Set up setPaginationModel
   const handlePaginationModel = (e) => {
@@ -46,6 +64,10 @@ export default function Teacher() {
     getTeacher(filterPagedResultRequestDto);
   }, [pageSearch]);
 
+  //add teacher by openning the dialog to retrieve user id
+  const handleAddTeacher = () => {
+    handleSearchOpen();
+  }
 
   //set teacherlist columns
   const columns = [
@@ -167,7 +189,7 @@ export default function Teacher() {
         <Box sx={{ mb: "15px" }}>
           <Stack direction="row" spacing={2} justifyContent="flex-end">
 
-          <Button variant="contained">
+          <Button variant="contained" onClick={handleSearchOpen}>
             ADD TEACHER
           </Button>
 
@@ -183,11 +205,12 @@ export default function Teacher() {
           pageData={pageData}
           setPaginationModel={handlePaginationModel}
           setRowSelectionModel={setRowSelectionModel}
-      ></TeacherList>
+        >
+        </TeacherList>
 
       </Box>
 
-      
+      <UserSelectDialog isOpen={isDialogOpen} onClose={handleSearchClose} onUserIdObtained={handleSetSelectdUserId}/>
     </Box>
   );
 }
