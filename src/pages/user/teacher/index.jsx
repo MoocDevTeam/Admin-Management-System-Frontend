@@ -6,6 +6,8 @@ import getRequest from "../../../request/getRequest";
 import colors from "../../../theme";
 import dayjs from "dayjs";
 import { UserSelectDialog } from "./userSelectDialog";
+import deleteRequest from "../../../request/delRequest";
+import toast from "react-hot-toast";
 
 export default function Teacher() {
   //set default page size
@@ -33,7 +35,30 @@ export default function Teacher() {
     setSelectedUserId(id);
   }
 
-
+  //set up method to delete teacher
+  const handleDeleteTeacher = async () => {
+    console.log("Delete teacher");
+    if(rowSelectionModel.length === 0){
+      alert("Please select a teacher to delete");
+      return;
+    } else {
+      for (const id of rowSelectionModel){
+        try{
+          const result = await deleteRequest(`/teacher/Delete/${id}`);
+          if(result.status === 200){
+            toast("Teacher deleted successfully");
+            console.log(`deleted teacher with id: ${id}`)
+          } else {
+            toast("Failed to delete teacher");
+          }
+        } catch(error){
+          console.error("Error deleting teacher", error);
+          toast("Failed to delete teacher");
+      }
+    }
+    setPageSearch((preState) => ({...preState, page: 1}));
+    }
+  }
 
   //Set up setPaginationModel
   const handlePaginationModel = (e) => {
@@ -193,7 +218,7 @@ export default function Teacher() {
             ADD TEACHER
           </Button>
 
-          <Button color="secondary" variant="contained">
+          <Button color="secondary" variant="contained" onClick={handleDeleteTeacher}>
             DELETE
           </Button>
           
