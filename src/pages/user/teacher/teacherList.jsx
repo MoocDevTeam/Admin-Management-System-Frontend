@@ -15,6 +15,7 @@ export default function TeacherList(props) {
         onPaginationModelChange={props.setPaginationModel}
         onRowSelectionModelChange={(newRowSelectionModel) => {
           props.setRowSelectionModel(newRowSelectionModel);
+          console.log(newRowSelectionModel);
         }}
       />
     </>

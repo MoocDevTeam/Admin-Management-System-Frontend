@@ -15,6 +15,11 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import PublishIcon from '@mui/icons-material/Publish';
+import CastForEducationIcon from '@mui/icons-material/CastForEducation';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import CategoryIcon from '@mui/icons-material/Category';
+import SchoolIcon from '@mui/icons-material/School';
 
 export default function MainSidebar({ userName }) {
 
@@ -105,7 +110,7 @@ export default function MainSidebar({ userName }) {
               Role
             </MenuItem>
             <MenuItem
-              icon={<PeopleOutlinedIcon />}
+              icon={<CastForEducationIcon />}
               component={<Link />}
               to="user/teacher"
             >
@@ -113,23 +118,23 @@ export default function MainSidebar({ userName }) {
             </MenuItem>
           </SubMenu>
 
-          <SubMenu icon={<PeopleOutlinedIcon />} label="Course Management">
+          <SubMenu icon={<AutoStoriesIcon />} label="Course Management">
             <MenuItem
-              icon={<PeopleOutlinedIcon />}
+              icon={<MenuBookIcon />}
               component={<Link />}
               to="course"
             >
               Courses
             </MenuItem>
             <MenuItem
-              icon={<PeopleOutlinedIcon />}
+              icon={<CategoryIcon />}
               component={<Link />}
               to="/course/category"
             >
               Categories
             </MenuItem>
             <MenuItem
-              icon={<PeopleOutlinedIcon />}
+              icon={<SchoolIcon />}
               component={<Link />}
               to="/course/courseLaunch"
             >
