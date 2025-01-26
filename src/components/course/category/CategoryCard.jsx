@@ -26,18 +26,18 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
 
   const dispatch = useDispatch();
   const { currentCategories } = useSelector((state) => state.category);
- 
+
 
   const handleDelete = async () => {
 
     const category = currentCategories.find((cat) => cat.id === categoryId);
-   
+
     if (category && category.childrenCategories?.length > 0) {
       toast.error("Cannot delete a category that has subcategories.");
       return;
     }
-    
-      try {
+
+    try {
       const response = await deleteRequest(`/Category/Delete/${categoryId}`);
       console.log("Delete Response:", response);
       if (response.isSuccess) {
@@ -52,7 +52,7 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
       console.error("Error in catch block:", error);
       toast.error("Failed to delete category.");
     }
-    
+
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -67,7 +67,6 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
 
   return (
     <Card sx={{ maxWidth: 300 }}>
-
       <CardHeader
         action={
           <><IconButton
@@ -96,11 +95,11 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
                 },
               }}
             >
-              <MenuItem onClick={()=>dispatch(
+              <MenuItem onClick={() => dispatch(
                 openModal({
-                  isEdit:true,
-                  selectedCategory:{
-                    id:categoryId,
+                  isEdit: true,
+                  selectedCategory: {
+                    id: categoryId,
                     categoryName,
                     description,
                     imageUrl
@@ -109,7 +108,8 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
 
               )} >Edit</MenuItem>
               <MenuItem onClick={handleDelete}>Delete</MenuItem>
-            </Menu></>
+            </Menu>
+          </>
         }
         title={categoryName}
         subheader={`Includes a total of ${subCategoryCounts} subcategories`}
@@ -133,5 +133,5 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
 
 }
 
-      
+
 
