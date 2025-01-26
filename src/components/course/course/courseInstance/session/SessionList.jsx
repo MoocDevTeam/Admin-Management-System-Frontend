@@ -86,17 +86,15 @@ export default function SessionList({ sessions, sx = {} }) {
                   onClose={handleCloseVideoPanel}
                   title={session.title}
                 />
-                {openEditPanelIndex === index && (
-                  <EditModal
-                    onClose={handleCloseEditPanel}
-                    session={session}
-                  />
-                )}
               </>
             )}
 
-
-
+            {openEditPanelIndex === index && (
+              <EditModal
+                onClose={handleCloseEditPanel}
+                session={session}
+              />
+            )}
           </div>
         ))}
       </Stack>
