@@ -14,7 +14,7 @@ import {
 import getRequest from '../../../request/getRequest';
 import { useNavigate } from 'react-router-dom';
 
-export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
+export const UserSelectDialog = ({ isOpen, onClose }) => {
   //set the default state for the user data
   const [userdata, setUserdata] = useState(null); 
   const [input, setInput] = useState('');
@@ -38,7 +38,6 @@ export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
     }
   };
   
-
   // search for the user by name
   const searchUser = async (name) => {
     if (!name.trim()) {
@@ -50,7 +49,6 @@ export const UserSelectDialog = ({ isOpen, onClose, onUserIdObtained }) => {
       let result = await getRequest(`/user/Get/${name}`);
       console.log('get user id', result);
       if (result.status === 200) {
-        onUserIdObtained(result.data.id);
         handleSetUserData(result.data);
         handleSetUserData(result.data, name);
       } else {

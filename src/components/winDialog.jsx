@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 
 const WinDialog = (props) => {
-  const { onClose, onOK, data, open, title } = props;
+  const { onClose, onOK, data, open, title, icon } = props;
 
   const handleCancle = () => {
     let paramdata = {
@@ -42,7 +42,13 @@ const WinDialog = (props) => {
 
   return (
     <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle>
+      {icon && (
+        <span style={{ marginRight: "8px", verticalAlign: "middle" }}>
+          {icon}
+        </span>)}
+        {title}
+        </DialogTitle>
       <DialogContent>{props.children}</DialogContent>
       <DialogActions>
         <Button
