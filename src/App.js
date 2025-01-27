@@ -4,18 +4,23 @@ import { Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/dashboard";
 import Mainlayout from "./components/mainlayout/index";
 import { Toaster } from "react-hot-toast";
-
-import User from "./pages/user/index";
+// import User from "./pages/user/index";
+// import AddUser from "./pages/user/addUser";
+import Role from "./pages/role/index";
 import Teacher from "./pages/user/teacher/index";
 import CourseList from "./pages/course/course/courseList/index";
 import CourseSingle from "./pages/course/course/courseSingle/index";
 import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle";
 import CategoryTree from "./pages/course/category/categoryTree";
 import CourseLaunch from "./pages/course/courseLaunch/index";
-import AddUser from "./pages/user/addUser";
 import Page404 from "./pages/page404";
-
 import { theme } from "./theme";
+import LoginPage from "./pages/login/login";
+import UserProfile from "./pages/profile/userProfile";
+import Questions from "./pages/exam/questions";
+import Exams from "./pages/exam/exams";
+import ExamPublish from "./pages/exam/publish";
+import AddTeacher from "./pages/user/teacher/addTeacher";
 
 function App() {
   return (
@@ -23,9 +28,13 @@ function App() {
       <CssBaseline />
       <Toaster />
       <Routes>
+        <Route Key="login" path="/login" element={<LoginPage />} />
         <Route key="home" path="/" element={<Mainlayout />}>
           <Route key="dashboard" path="/" element={<Dashboard />} />
-
+          
+          <Route key="role" path="/role" element={<Role />} />
+          
+          <Route key="profile" path="/profile" element={<UserProfile />} />
           <Route key="courseList" path="/course" element={<CourseList />} />
 
           <Route
@@ -52,10 +61,7 @@ function App() {
             element={<CourseInstanceSingle />}
           />
 
-          <Route key="user" path="/user" element={<User />} />
-
-          <Route key="addUser" path="/user/add" element={<AddUser />} />
-
+          //Route for teacher
           <Route
             key="teacher"
             path="/user/teacher"
@@ -63,12 +69,31 @@ function App() {
               <Teacher />
             }
           />
+          <Route key="addTeacher" path="/user/teacher/add" element={<AddTeacher/>}/>
+
+          <Route
+            key="questions"
+            path="/exam/questions"
+            element={<Questions />}
+          />
+
+          <Route
+            key="exams"
+            path="/exam/exams"
+            element={<Exams />}
+          />
+
+          <Route
+            key="publish"
+            path="/exam/publish"
+            element={<ExamPublish />}
+          />
 
           <Route key="page404" path="*" element={<Page404 />} />
         </Route>
       </Routes>
     </ThemeProvider>
-  );
+  )
 }
 
-export default App;
+export default App

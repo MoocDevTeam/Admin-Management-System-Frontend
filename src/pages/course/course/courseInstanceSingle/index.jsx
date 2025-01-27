@@ -6,11 +6,11 @@ import { Box, Typography, Button, Breadcrumbs, Link } from "@mui/material";
 import colors from "../../../../theme";
 import toast from "react-hot-toast";
 import StyledSection from "../../../../components/course/shared/StyledSection";
-import SessionStack from "../../../../components/course/course/courseInstance/session/SessionStack";
+import AddSessionDialog from "../../../../components/course/course/courseInstance/session/AddSessionDialog";
+import SessionList from "../../../../components/course/course/courseInstance/session/SessionList";
 import formatToAustralianDate from "../../../../utils/formatToAustralianDate";
 import getRequest from "../../../../request/getRequest";
 import StyledBreadcrumbs from "../../../../components/course/course/courseInstance/Breadcrumbs";
-import AddSessionDialog from "../../../../components/course/course/courseInstance/session/AddSessionDialog";
 
 export default function CourseInstanceSingle() {
   const { courseId, courseInstanceId } = useParams();
@@ -76,8 +76,7 @@ export default function CourseInstanceSingle() {
       </StyledSection>
 
       <StyledSection sx={{ marginTop: "16px", backgroundColor: colors.primary[400] }}>
-        <Box sx = {{ display: "flex", justifyContent: "space-between"}}
-        >
+        <Box sx = {{ display: "flex", justifyContent: "space-between"}}>
           <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
             Sessions
           </Typography>
@@ -90,7 +89,7 @@ export default function CourseInstanceSingle() {
             courseInstanceId={courseInstanceId} 
           />
         </Box>
-        <SessionStack sessions={courseInstance.sessions} sx={{ marginTop: "16px" }} />
+        <SessionList sessions={courseInstance.sessions} />
       </StyledSection>
     </Box>
   );

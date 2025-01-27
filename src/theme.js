@@ -75,6 +75,7 @@ const themeSettings = {
     },
     background: {
       default: "#fcfcfc",
+      light: "#f9f9f9"
     },
   },
   typography: {
