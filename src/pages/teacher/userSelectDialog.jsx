@@ -11,7 +11,7 @@ import {
   CardMedia,
   Grid,
 } from '@mui/material';
-import getRequest from '../../../request/getRequest';
+import getRequest from '../../request/getRequest';
 import { useNavigate } from 'react-router-dom';
 
 export const UserSelectDialog = ({ isOpen, onClose }) => {
@@ -32,7 +32,7 @@ export const UserSelectDialog = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const handleConfirm = () => { 
     if(userdata.id){
-      navigate('/user/teacher/add', {state: {userId: userdata.id}});
+      navigate('/teacher/add', {state: {userId: userdata.id}});
     } else {
       alert('Please select a user');
     }

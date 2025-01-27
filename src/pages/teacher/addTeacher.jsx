@@ -15,8 +15,8 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useNavigate, useLocation } from "react-router-dom";
-import Header from "../../../components/header";
-import postRequest from "../../../request/postRequest";
+import Header from "../../components/header";
+import postRequest from "../../request/postRequest";
 import toast from "react-hot-toast";
 
 export default function AddTeacher() {
@@ -27,7 +27,7 @@ export default function AddTeacher() {
 
   const navigate = useNavigate();
   const handleOnClose = () => {
-    navigate("/user/teacher");
+    navigate("/teacher");
   };
 
   //set the initial values for the form
@@ -88,7 +88,7 @@ export default function AddTeacher() {
       if (result.isSuccess) {
         toast.success("add success!");
         formik.resetForm();
-        navigate("/user/teacher");
+        navigate("/teacher");
       } else {
         toast.error(result.message);
       }

@@ -7,7 +7,7 @@ import { Toaster } from "react-hot-toast";
 // import User from "./pages/user/index";
 // import AddUser from "./pages/user/addUser";
 import Role from "./pages/role/index";
-import Teacher from "./pages/user/teacher/index";
+import Teacher from "./pages/teacher/index";
 import CourseList from "./pages/course/course/courseList/index";
 import CourseSingle from "./pages/course/course/courseSingle/index";
 import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle";
@@ -20,7 +20,7 @@ import UserProfile from "./pages/profile/userProfile";
 import Questions from "./pages/exam/questions";
 import Exams from "./pages/exam/exams";
 import ExamPublish from "./pages/exam/publish";
-import AddTeacher from "./pages/user/teacher/addTeacher";
+import AddTeacher from "./pages/teacher/addTeacher";
 
 function App() {
   return (
@@ -64,12 +64,12 @@ function App() {
           //Route for teacher
           <Route
             key="teacher"
-            path="/user/teacher"
+            path="/teacher"
             element={
               <Teacher />
             }
           />
-          <Route key="addTeacher" path="/user/teacher/add" element={<AddTeacher/>}/>
+          <Route key="addTeacher" path="/teacher/add" element={<AddTeacher/>}/>
 
           <Route
             key="questions"
