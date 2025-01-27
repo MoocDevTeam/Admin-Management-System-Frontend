@@ -13,7 +13,8 @@ import {
   Typography,
   Radio,
   RadioGroup,
-  FormControlLabel
+  FormControlLabel,
+  Checkbox
 } from '@mui/material';
 import Header from "../../../components/header";
 
@@ -154,6 +155,57 @@ export default function QuestionForm({ open, onClose, question = null, mode = 'a
           </Box>
         );
 
+      case "Multiple Choice Question":
+        return (
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="subtitle1" gutterBottom>Options (Select all that apply)</Typography>
+            {formData.options.map((option, index) => (
+              <Stack 
+                key={option.id} 
+                direction="row" 
+                spacing={2} 
+                alignItems="center"
+                sx={{ mb: 2 }}
+              >
+                <Checkbox
+                  checked={option.correct}
+                  onChange={() => {
+                    const newOptions = [...formData.options];
+                    newOptions[index] = {
+                      ...newOptions[index],
+                      correct: !newOptions[index].correct
+                    };
+                    setFormData({ ...formData, options: newOptions });
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  label={`Option ${option.id}`}
+                  value={option.text}
+                  onChange={(e) => {
+                    const newOptions = [...formData.options];
+                    newOptions[index].text = e.target.value;
+                    setFormData({ ...formData, options: newOptions });
+                  }}
+                />
+              </Stack>
+            ))}
+            <Button 
+              variant="outlined" 
+              size="small"
+              onClick={() => {
+                const newOptions = [...formData.options];
+                const nextId = String.fromCharCode(65 + newOptions.length); // Convert to next letter (A, B, C, etc.)
+                newOptions.push({ id: nextId, text: '', correct: false });
+                setFormData({ ...formData, options: newOptions });
+              }}
+              sx={{ mt: 1 }}
+            >
+              Add Option
+            </Button>
+          </Box>
+        );
+
       case "Judgement Question":
         return (
           <Box sx={{ mt: 3 }}>
@@ -229,6 +281,7 @@ export default function QuestionForm({ open, onClose, question = null, mode = 'a
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 >
                   <MenuItem value="Choice Question">Choice Question</MenuItem>
+                  <MenuItem value="Multiple Choice Question">Multiple Choice Question</MenuItem>
                   <MenuItem value="Judgement Question">Judgement Question</MenuItem>
                   <MenuItem value="Short Answer Question">Short Answer Question</MenuItem>
                 </Select>
