@@ -2,10 +2,11 @@ import React from "react";
 import Header from "../../../../components/header";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
+import { Box, Typography, Button, Breadcrumbs, Link } from "@mui/material";
 import colors from "../../../../theme";
 import toast from "react-hot-toast";
 import StyledSection from "../../../../components/course/shared/StyledSection";
+import AddSessionDialog from "../../../../components/course/course/courseInstance/session/AddSessionDialog";
 import SessionList from "../../../../components/course/course/courseInstance/session/SessionList";
 import formatToAustralianDate from "../../../../utils/formatToAustralianDate";
 import getRequest from "../../../../request/getRequest";
@@ -36,7 +37,11 @@ export default function CourseInstanceSingle() {
         toast.error(err.message || "Failed to fetch course instance data.");
       },
     }
-  );
+    );
+  
+  const [open, setOpen] = React.useState(false);
+  const handleAddSessionOpen = () => setOpen(true);
+  const handleAddSessionClose = () => setOpen(false);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -71,6 +76,19 @@ export default function CourseInstanceSingle() {
       </StyledSection>
 
       <StyledSection sx={{ marginTop: "16px", backgroundColor: colors.primary[400] }}>
+        <Box sx = {{ display: "flex", justifyContent: "space-between"}}>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
+            Sessions
+          </Typography>
+          <Button variant="contained" color="secondary" onClick={handleAddSessionOpen}>
+            Add Session
+          </Button>
+          <AddSessionDialog
+            open={open}
+            onClose={handleAddSessionClose}
+            courseInstanceId={courseInstanceId} 
+          />
+        </Box>
         <SessionList sessions={courseInstance.sessions} />
       </StyledSection>
     </Box>
