@@ -40,6 +40,83 @@ function Row({ row, onEdit, selected, onSelect }) {
 
   const renderQuestionDetails = () => {
     switch (row.type) {
+      case "Multiple Choice Question":
+        return (
+          <Box sx={{ 
+            border: 1, 
+            borderColor: 'divider',
+            borderRadius: 1,
+            mx: 2,
+            my: 1,
+            width: '100%'
+          }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ width: '8%' }}>Option</TableCell>
+                  <TableCell sx={{ width: '25%' }}>Answer</TableCell>
+                  <TableCell sx={{ 
+                    width: '52%', 
+                    pl: 4,
+                    pr: 4
+                  }}>Explanation</TableCell>
+                  <TableCell sx={{ 
+                    width: '15%',
+                    pl: 3 
+                  }}>Correct</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {row.options.map((option) => (
+                  <TableRow key={option.id}>
+                    <TableCell sx={{ height: '48px', verticalAlign: 'middle' }}>
+                      {option.id}
+                    </TableCell>
+                    <TableCell sx={{ height: '48px', verticalAlign: 'middle' }}>
+                      {option.text}
+                    </TableCell>
+                    <TableCell 
+                      sx={{ 
+                        height: '48px', 
+                        verticalAlign: 'middle',
+                        pl: 4,  
+                        pr: 4,
+                        width: '52%',  
+                        maxWidth: '52%', 
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      {option.explanation || '-'}
+                    </TableCell>
+                    <TableCell sx={{ 
+                      height: '48px', 
+                      verticalAlign: 'middle', 
+                      pl: 3,
+                      width: '15%' 
+                    }}>
+                      <Box sx={{ 
+                        minHeight: '32px', 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        justifyContent: 'flex-start'
+                      }}>
+                        {option.correct && (
+                          <Chip 
+                            label="Correct" 
+                            color="success" 
+                            size="small" 
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
+        );
       case "Choice Question":
         return (
           <Box sx={{ 
@@ -341,9 +418,111 @@ export default function Questions() {
         score: 3,
         answer: false,
         explanation: "HTML is a markup language, not a programming language."
+      },
+      {
+        id: 6,
+        title: "Which of the following are JavaScript data types?",
+        type: "Multiple Choice Question",
+        difficulty: "Medium",
+        category: "Frontend",
+        score: 8,
+        options: [
+          {
+            id: 'A',
+            text: 'String',
+            correct: true,
+            explanation: 'String is a primitive data type in JavaScript'
+          },
+          {
+            id: 'B',
+            text: 'Number',
+            correct: true,
+            explanation: 'Number is a primitive data type in JavaScript'
+          },
+          {
+            id: 'C',
+            text: 'Integer',
+            correct: false,
+            explanation: 'JavaScript does not have a specific Integer type - all numbers are of type Number'
+          },
+          {
+            id: 'D',
+            text: 'Object',
+            correct: true,
+            explanation: 'Object is a non-primitive data type in JavaScript'
+          }
+        ]
+      },
+      {
+        id: 7,
+        title: "Which of the following HTTP status codes indicate a successful response? (Select all that apply)",
+        type: "Multiple Choice Question",
+        difficulty: "Medium",
+        category: "Backend",
+        score: 10,
+        options: [
+          {
+            id: 'A',
+            text: '200 OK',
+            correct: true,
+            explanation: '200 indicates that the request has succeeded'
+          },
+          {
+            id: 'B',
+            text: '201 Created',
+            correct: true,
+            explanation: '201 indicates that the request has succeeded and a new resource has been created'
+          },
+          {
+            id: 'C',
+            text: '404 Not Found',
+            correct: false,
+            explanation: '404 is a client error response, not a success response'
+          },
+          {
+            id: 'D',
+            text: '204 No Content',
+            correct: true,
+            explanation: '204 indicates that the request has succeeded but there is no content to send'
+          }
+        ]
+      },
+      {
+        id: 8,
+        title: "Which of the following are valid ways to create a React component? (Select all that apply)",
+        type: "Multiple Choice Question",
+        difficulty: "Easy",
+        category: "Frontend",
+        score: 6,
+        options: [
+          {
+            id: 'A',
+            text: 'Function Component',
+            correct: true,
+            explanation: 'Function components are the modern way to write React components'
+          },
+          {
+            id: 'B',
+            text: 'Class Component',
+            correct: true,
+            explanation: 'Class components are a traditional way to write React components'
+          },
+          {
+            id: 'C',
+            text: 'Arrow Function Component',
+            correct: true,
+            explanation: 'Arrow functions can be used to create valid React components'
+          },
+          {
+            id: 'D',
+            text: 'HTML Component',
+            correct: false,
+            explanation: 'HTML Component is not a valid way to create React components'
+          }
+        ]
       }
     ],
-    total: 5
+    total: 8
   };
 
   // TODO: Implement pagination with API
