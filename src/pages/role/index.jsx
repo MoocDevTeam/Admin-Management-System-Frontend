@@ -91,7 +91,7 @@ export default function Role() {
   useEffect(() => {
     let getUser = async (param) => {
       let result = await getRequest(
-        "http://localhost:9000/api/Role/GetByPage?PageIndex=1&PageSize=10",
+        `${baseUrl}/api/Role/GetByPage?PageIndex=${pageSearch.page}&PageSize=${pageSearch.pageSize}`,
         param
       )
       if (result.status === 200) {
@@ -100,7 +100,6 @@ export default function Role() {
         setPageData({ items: [], total: 0 })
       }
     }
-
     let filterPagedResultRequestDto = {
       Filter: "",
       PageIndex: pageSearch.page,
@@ -119,7 +118,7 @@ export default function Role() {
   }
   const [alertMessage, setAlartMessage] = useState("")
 
-  function handledelete() {
+  function handleDelete() {
     if (rowSelectionModel.length === 0) {
       setAlartMessage("Please select items")
       setOpen(true)
@@ -186,15 +185,17 @@ export default function Role() {
           <Box sx={{ mb: "15px" }}>
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button variant="contained" onClick={handleAddUser}>
-                Add Role
+                Add User
               </Button>
-
+              <Button variant="contained" onClick={handleAddUser}>
+                Permission
+              </Button>
               <Button
                 color="secondary"
                 variant="contained"
-                onClick={handledelete}
+                onClick={handleDelete}
               >
-                Delte
+                Delete
               </Button>
             </Stack>
           </Box>

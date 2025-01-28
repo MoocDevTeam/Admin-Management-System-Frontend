@@ -11,8 +11,51 @@ import Role from "./pages/role/index"
 import { theme } from "./theme"
 import LoginPage from "./pages/login/login"
 import UserProfile from "./pages/profile/userProfile"
+import getRequest from "./request/getRequest"
+import { Lazy } from "yup"
+import LoadingSpinner from "./components/loadingSpinner"
 
 function App() {
+  const [menus, setMenus] = useState([])
+  const [routes, setRoutes] = useState([])
+  useEffect(() => {
+    // if (!Auth.IsAuth) return
+    async function getMenu() {
+      const res = await getRequest("http://localhost:9000/api/menu/GetMenuTree")
+      if (res.isSuccess) {
+        setMenus(res.data)
+        console.log("res.data is:", res.data)
+        let routerMenuData = []
+        for (let i = 0; i < res.data.length; i++) {
+          if (res.data[i].children.length > 0) {
+            for (let j = 0; j < res.data[i].children.length; j++) {
+              if (res.data[i].children[j].menuType === 2) {
+                routerMenuData.push(res.data[i].children[j])
+              }
+            }
+          }
+        }
+        console.log("routerMenuData is:", routerMenuData)
+
+        // const dynamicRoutes = routerMenuData.map((item) => {
+        //   return (
+        //     <Route
+        //       key={item.id}
+        //       path={item.route}
+        //       element={
+        //         <Suspense fallback={<Loading />}>
+        //           <NeedAuth>{LazyLoad(item.component)}</NeedAuth>
+        //         </Suspense>
+        //       }
+        //     />
+        //   )
+        // })
+        // setRoutes(dynamicRoutes)
+      }
+    }
+    getMenu()
+  }, [])
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
