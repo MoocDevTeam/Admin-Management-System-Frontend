@@ -1,9 +1,8 @@
 import * as React from 'react';
-import Card from '@mui/material/Card';
+import { Card, styled } from '@mui/material';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
-import CardActionArea from '@mui/material/CardActionArea';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -17,9 +16,20 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import deleteRequest from "../../../request/delRequest";
 
-
-
 const ITEM_HEIGHT = 48;
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  boxShadow: theme.shadows[2],
+  borderRadius: theme.shape.borderRadius * 2,
+  backgroundColor: theme.palette.background.paper,
+  maxWidth: 300,
+  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+  "&:hover": {
+    cursor: "pointer",
+    backgroundColor: theme.palette.background.light,
+    boxShadow: theme.shadows[4],
+  },
+}));
 
 export default function CategoryCard({ categoryName, description, imageUrl, subCategoryCounts, onClick, categoryId }) {
 
@@ -39,7 +49,6 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
 
     try {
       const response = await deleteRequest(`/Category/Delete/${categoryId}`);
-      console.log("Delete Response:", response);
       if (response.isSuccess) {
         toast.success("Category deleted successfully!");
         const updatedCategories = currentCategories.filter((cat) => cat.id !== categoryId);
@@ -52,32 +61,35 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
       console.error("Error in catch block:", error);
       toast.error("Failed to delete category.");
     }
-
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
   const handleButtonClick = (event) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+
+  const handleClose = (event) => {
+    event.stopPropagation();
     setAnchorEl(null);
   };
 
   return (
-    <Card sx={{ maxWidth: 300 }}>
+    <StyledCard onClick={onClick}>
       <CardHeader
         action={
-          <><IconButton
-            aria-label="more"
-            id="long-button"
-            aria-controls={open ? 'long-menu' : undefined}
-            aria-expanded={open ? 'true' : undefined}
-            aria-haspopup="true"
-            onClick={handleButtonClick}>
-            <MoreVertIcon />
-          </IconButton>
+          <>
+            <IconButton
+              aria-label="more"
+              id="long-button"
+              aria-controls={open ? 'long-menu' : undefined}
+              aria-expanded={open ? 'true' : undefined}
+              aria-haspopup="true"
+              onClick={handleButtonClick}>
+              <MoreVertIcon />
+            </IconButton>
             <Menu
               id="long-menu"
               MenuListProps={{
@@ -105,7 +117,6 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
                     imageUrl
                   }
                 })
-
               )} >Edit</MenuItem>
               <MenuItem onClick={handleDelete}>Delete</MenuItem>
             </Menu>
@@ -113,9 +124,7 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
         }
         title={categoryName}
         subheader={`Includes a total of ${subCategoryCounts} subcategories`}
-
       />
-      < CardActionArea onClick={onClick} >
         <CardMedia
           component="img"
           height="194"
@@ -127,8 +136,7 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
             {description}
           </Typography>
         </CardContent>
-      </CardActionArea>
-    </Card>
+    </StyledCard>
   );
 
 }

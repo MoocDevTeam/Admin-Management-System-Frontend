@@ -10,7 +10,7 @@ export default function CategoryList({ currentCategories, handleCategoryClick, l
     return (
       <FlexList>
         {Array.from({ length: 6 }).map((_, index) => (
-          <Skeleton key={index} variant="rounded" width={300} height={100} />
+          <Skeleton key={index} variant="rounded" width={300} height={300} />
         ))}
       </FlexList>
     );
