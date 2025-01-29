@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import getRequest from "../request"
+import getRequest from "../../request"
 
 export const fetchUserByName = createAsyncThunk(
   "user/fetchUserByName",
@@ -7,14 +7,13 @@ export const fetchUserByName = createAsyncThunk(
     const response = await getRequest(
       `http://localhost:9000/api/User/Get/${userName}`
     )
-
     if (response.status === 200) {
       return response.data
     }
     return rejectWithValue(response.message)
   }
 )
-const userNameFromLocalStorage = localStorage.getItem("username") || "admin";
+const userNameFromLocalStorage = localStorage.getItem("username") || "admin"
 
 const userSlice = createSlice({
   name: "user",

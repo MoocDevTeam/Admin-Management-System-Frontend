@@ -22,11 +22,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons"
 import { Visibility, VisibilityOff } from "@mui/icons-material"
 import postRequest from "../../request/postRequest"
-
+import { useDispatch } from "react-redux"
+import { setAuthenticated } from "../../auth/authSlice"
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const loginValidationSchema = Yup.object({
     username: Yup.string()
@@ -54,6 +56,7 @@ const LoginPage = () => {
         if (res && res.isSuccess === true) {
           localStorage.setItem("access_token", res.message)
           localStorage.setItem("userName", values.username)
+          dispatch(setAuthenticated())
           navigate("/")
         } else {
           formik.setFieldError("username", "Invalid username or password")

@@ -18,10 +18,12 @@ import LoadingSpinner from "./components/loadingSpinner"
 function App() {
   const [menus, setMenus] = useState([])
   const [routes, setRoutes] = useState([])
+  let baseUrl = process.env.REACT_APP_BASE_API_URL
+
   useEffect(() => {
     // if (!Auth.IsAuth) return
     async function getMenu() {
-      const res = await getRequest("http://localhost:9000/api/menu/GetMenuTree")
+      const res = await getRequest(`${baseUrl}/api/menu/GetMenuTree`)
       if (res.isSuccess) {
         setMenus(res.data)
         console.log("res.data is:", res.data)
