@@ -3,8 +3,6 @@ import {
   Box, 
   Button, 
   Stack, 
-  Modal, 
-  Typography,
   Chip,
   Table,
   TableBody,
@@ -15,8 +13,6 @@ import {
   Collapse,
   IconButton,
   Paper,
-  Select,
-  MenuItem,
   Checkbox
 } from "@mui/material";
 import Header from "../../../components/header";
@@ -26,12 +22,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useNavigate } from "react-router-dom";
-import QuestionForm from './questionForm';
-import DeleteConfirmDialog from './deleteConfirmDialog';
+import QuestionForm from '../../../components/exammanagement/questions/questionForm';
+import DeleteConfirmDialog from '../../../components/exammanagement/questions/deleteConfirmDialog';
 import TablePagination from '../../../components/tablePagination';
+import {
+  MultipleChoiceDetails,
+  ChoiceQuestionDetails,
+  JudgementQuestionDetails,
+  ShortAnswerDetails
+} from '../../../components/exammanagement/questions/details';
 
 // row component
 function Row({ row, onEdit, selected, onSelect }) {
@@ -41,186 +41,20 @@ function Row({ row, onEdit, selected, onSelect }) {
   const renderQuestionDetails = () => {
     switch (row.type) {
       case "Multiple Choice Question":
-        return (
-          <Box sx={{ 
-            border: 1, 
-            borderColor: 'divider',
-            borderRadius: 1,
-            mx: 2,
-            my: 1,
-            width: '100%'
-          }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ width: '8%' }}>Option</TableCell>
-                  <TableCell sx={{ width: '25%' }}>Answer</TableCell>
-                  <TableCell sx={{ 
-                    width: '52%', 
-                    pl: 4,
-                    pr: 4
-                  }}>Explanation</TableCell>
-                  <TableCell sx={{ 
-                    width: '15%',
-                    pl: 3 
-                  }}>Correct</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {row.options.map((option) => (
-                  <TableRow key={option.id}>
-                    <TableCell sx={{ height: '48px', verticalAlign: 'middle' }}>
-                      {option.id}
-                    </TableCell>
-                    <TableCell sx={{ height: '48px', verticalAlign: 'middle' }}>
-                      {option.text}
-                    </TableCell>
-                    <TableCell 
-                      sx={{ 
-                        height: '48px', 
-                        verticalAlign: 'middle',
-                        pl: 4,  
-                        pr: 4,
-                        width: '52%',  
-                        maxWidth: '52%', 
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-                      {option.explanation || '-'}
-                    </TableCell>
-                    <TableCell sx={{ 
-                      height: '48px', 
-                      verticalAlign: 'middle', 
-                      pl: 3,
-                      width: '15%' 
-                    }}>
-                      <Box sx={{ 
-                        minHeight: '32px', 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        justifyContent: 'flex-start'
-                      }}>
-                        {option.correct && (
-                          <Chip 
-                            label="Correct" 
-                            color="success" 
-                            size="small" 
-                          />
-                        )}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Box>
-        );
+        return <MultipleChoiceDetails options={row.options} />;
+      
       case "Choice Question":
-        return (
-          <Box sx={{ 
-            border: 1, 
-            borderColor: 'divider',
-            borderRadius: 1,
-            mx: 2,
-            my: 1,
-            width: '100%'
-          }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ width: '8%' }}>Option</TableCell>
-                  <TableCell sx={{ width: '25%' }}>Answer</TableCell>
-                  <TableCell sx={{ 
-                    width: '52%', 
-                    pl: 4,
-                    pr: 4
-                  }}>Explanation</TableCell>
-                  <TableCell sx={{ 
-                    width: '15%',
-                    pl: 3 
-                  }}>Correct</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {row.options.map((option) => (
-                  <TableRow key={option.id}>
-                    <TableCell sx={{ height: '48px', verticalAlign: 'middle' }}>
-                      {option.id}
-                    </TableCell>
-                    <TableCell sx={{ height: '48px', verticalAlign: 'middle' }}>
-                      {option.text}
-                    </TableCell>
-                    <TableCell 
-                      sx={{ 
-                        height: '48px', 
-                        verticalAlign: 'middle',
-                        pl: 4,  
-                        pr: 4,  
-                        width: '52%',  
-                        maxWidth: '52%', 
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-                      {option.explanation || '-'}
-                    </TableCell>
-                    <TableCell sx={{ 
-                      height: '48px', 
-                      verticalAlign: 'middle', 
-                      pl: 3,
-                      width: '15%' 
-                    }}>
-                      <Box sx={{ 
-                        minHeight: '32px', 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        justifyContent: 'flex-start'
-                      }}>
-                        {option.correct && (
-                          <Chip 
-                            label="Correct" 
-                            color="success" 
-                            size="small" 
-                          />
-                        )}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Box>
-        );
+        return <ChoiceQuestionDetails options={row.options} />;
+      
       case "Judgement Question":
-        return (
-          <Box>
-            <Typography variant="subtitle1" gutterBottom>
-              Answer: {row.answer ? "True" : "False"}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Explanation: {row.explanation}
-            </Typography>
-          </Box>
-        );
+        return <JudgementQuestionDetails 
+          answer={row.answer} 
+          explanation={row.explanation} 
+        />;
+      
       case "Short Answer Question":
-        return (
-          <Box>
-            <Typography variant="subtitle1" gutterBottom>
-              Answer:
-            </Typography>
-            <Box sx={{ 
-              p: 2, 
-              bgcolor: colors.primary[400], 
-              borderRadius: 1,
-              border: `1px solid ${colors.primary[300]}`
-            }}>
-              <Typography>{row.answer}</Typography>
-            </Box>
-          </Box>
-        );
+        return <ShortAnswerDetails answer={row.answer} />;
+      
       default:
         return null;
     }
