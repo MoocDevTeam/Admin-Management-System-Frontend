@@ -16,7 +16,7 @@ import {
   FormControlLabel,
   Checkbox
 } from '@mui/material';
-import Header from "../../../components/header";
+import Header from "../../header";
 
 // TODO: API Integration Points:
 // POST /api/questions - Create new question
