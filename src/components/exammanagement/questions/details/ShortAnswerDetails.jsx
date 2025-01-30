@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Paper } from '@mui/material';
 
+// short answer question details
 export default function ShortAnswerDetails({ answer }) {
   return (
     <Box sx={{ mx: 2, my: 1 }}>

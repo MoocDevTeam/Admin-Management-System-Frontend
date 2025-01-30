@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Paper, Chip } from '@mui/material';
 
+// judgement question details
 export default function JudgementQuestionDetails({ answer, explanation }) {
   return (
     <Box sx={{ mx: 2, my: 1 }}>
