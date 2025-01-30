@@ -89,7 +89,7 @@ export default function Role() {
   const [pageData, setPageData] = useState({ items: [], total: 0 })
 
   useEffect(() => {
-    let getUser = async (param) => {
+    let getRole = async (param) => {
       let result = await getRequest(
         `${baseUrl}/api/Role/GetByPage?PageIndex=${pageSearch.page}&PageSize=${pageSearch.pageSize}`,
         param
@@ -107,14 +107,14 @@ export default function Role() {
       Sorting: "",
     }
     //setPageData({ items: rows, total: 26 })
-    getUser(filterPagedResultRequestDto)
+    getRole(filterPagedResultRequestDto)
   }, [pageSearch])
 
   const [open, setOpen] = useState(false)
 
   const navigate = useNavigate()
-  function handleAddUser() {
-    navigate("/user/add")
+  function handleAddRole() {
+    navigate("/role/add")
   }
   const [alertMessage, setAlartMessage] = useState("")
 
@@ -184,10 +184,15 @@ export default function Role() {
         >
           <Box sx={{ mb: "15px" }}>
             <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <Button variant="contained" onClick={handleAddUser}>
-                Add User
+              <Button variant="contained" onClick={handleAddRole}>
+                Add Role
               </Button>
-              <Button variant="contained" onClick={handleAddUser}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  console.log("permission")
+                }}
+              >
                 Permission
               </Button>
               <Button
@@ -217,7 +222,6 @@ export default function Role() {
       </Box>
 
       {/* <WinDialog title="test dialog" open={open} onClose={handleWinClose}>
-        
         <Adduser />
       </WinDialog> */}
     </>

@@ -7,7 +7,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined"
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined"
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
-import { clearAuthentication } from "../../auth/authSlice"
+import { clearAuthentication } from "../../feature/authSlice/authSlice"
 export default function Topbar() {
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
