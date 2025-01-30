@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Table, TableHead, TableBody, TableRow, TableCell, Chip } from '@mui/material';
 
+// choice question details
 export default function ChoiceQuestionDetails({ options }) {
   return (
     <Box sx={{ 
