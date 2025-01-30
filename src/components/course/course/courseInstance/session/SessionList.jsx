@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography"
-import Stack from "@mui/material/Stack";
 import VideoManagement from "./videoManagement";
 import { styled } from "@mui/material/styles";
-import Button from "@mui/material/Button";
-import EditModal from "./EditModal";
+import EditSessionModal from "./models/EditSessionModal";
+import AddSessionModal from "./models/AddSessionModal";
+import MoreButton from "../../../../shared/moreButton";
+import { Box, Typography, Paper, Stack } from "@mui/material";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -26,16 +24,16 @@ const Item = styled(Paper)(({ theme }) => ({
   },
 }));
 
-export default function SessionList({ sessions, sx = {} }) {
+export default function SessionList({ sessions, courseInstanceId, sx = {} }) {
   const [openVideoPanelIndex, setOpenVideoPanelIndex] = useState(null);
   const [openEditPanelIndex, setOpenEditPanelIndex] = useState(null);
+  const [isAddSessionModalOpen, setIsAddSessionModalOpen] = useState(false);
+
+  const handleAddSessionOpen = () => setIsAddSessionModalOpen(true);
+  const handleAddSessionClose = () => setIsAddSessionModalOpen(false);
 
   const handleVideoPanelOpen = (index) => {
     setOpenVideoPanelIndex(index);
-  };
-
-  const handleEditPanelOpen = (index) => {
-    setOpenEditPanelIndex(index);
   };
 
   const handleCloseVideoPanel = () => {
@@ -46,11 +44,29 @@ export default function SessionList({ sessions, sx = {} }) {
     setOpenEditPanelIndex(null);
   };
 
+  const handleEdit = (index) => {
+    console.log(index)
+    setOpenEditPanelIndex(index);
+  };
+
+  const handleDelete = () => { console.log("clicked!") };
+
   return (
     <Box sx={{ width: "100%" }}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-        Outline
-      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
+          Sessions
+        </Typography>
+        <MoreButton
+          showAdd={true}
+          onAdd={handleAddSessionOpen}
+        />
+        <AddSessionModal
+          open={isAddSessionModalOpen}
+          onClose={handleAddSessionClose}
+          courseInstanceId={courseInstanceId}
+        />
+      </Box>
       <Stack spacing={2} sx={{ marginTop: "16px" }} >
         {sessions.map((session, index) => (
           <div key={index}>
@@ -67,16 +83,13 @@ export default function SessionList({ sessions, sx = {} }) {
               }}
             >
               <span>{session.title}</span>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleEditPanelOpen(index);
-                }}
-              >
-                Edit
-              </Button>
+              <MoreButton
+                showEdit={true}
+                showDelete={true}
+                onEdit={() => handleEdit(index)}
+                onDelete={handleDelete}
+              />
+
             </Item>
 
             {openVideoPanelIndex === index && (
@@ -90,7 +103,7 @@ export default function SessionList({ sessions, sx = {} }) {
             )}
 
             {openEditPanelIndex === index && (
-              <EditModal
+              <EditSessionModal
                 onClose={handleCloseEditPanel}
                 session={session}
               />

@@ -4,10 +4,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Dialog, DialogTitle, Typography, IconButton, DialogContent, Button, DialogActions, TextField, } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import postRequest from "../../../../../request/postRequest";
+import postRequest from "../../../../../../request/postRequest";
 
 
-export default function AddSessionDialog({ open, onClose, courseInstanceId })
+export default function AddSessionModal({ open, onClose, courseInstanceId })
 {
   // Initialization state
   const [sessionData, setSessionData] = useState({
