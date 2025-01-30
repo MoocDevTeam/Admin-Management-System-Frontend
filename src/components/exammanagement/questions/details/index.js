@@ -1,7 +1,7 @@
-import MultipleChoiceDetails from './MultipleChoiceDetails';
-import ChoiceQuestionDetails from './ChoiceQuestionDetails';
-import JudgementQuestionDetails from './JudgementQuestionDetails';
-import ShortAnswerDetails from './ShortAnswerDetails';
+import MultipleChoiceDetails from './multipleChoiceDetails';
+import ChoiceQuestionDetails from './choiceQuestionDetails';
+import JudgementQuestionDetails from './judgementQuestionDetails';
+import ShortAnswerDetails from './shortAnswerDetails';
 
 export {
   MultipleChoiceDetails,

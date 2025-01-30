@@ -23,15 +23,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useNavigate } from "react-router-dom";
-import QuestionForm from '../../../components/exammanagement/questions/questionForm';
-import DeleteConfirmDialog from '../../../components/exammanagement/questions/deleteConfirmDialog';
+import QuestionForm from '../../../components/examManagement/questions/questionForm';
+import DeleteConfirmDialog from '../../../components/examManagement/questions/deleteConfirmDialog';
 import TablePagination from '../../../components/tablePagination';
 import {
   MultipleChoiceDetails,
   ChoiceQuestionDetails,
   JudgementQuestionDetails,
   ShortAnswerDetails
-} from '../../../components/exammanagement/questions/details';
+} from '../../../components/examManagement/questions/details';
 
 // row component
 function Row({ row, onEdit, selected, onSelect }) {
