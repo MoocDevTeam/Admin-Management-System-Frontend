@@ -20,7 +20,7 @@ import toast from "react-hot-toast"
 import { GridSearchIcon } from "@mui/x-data-grid"
 import { genderNameToEnum } from "../../components/util/gender"
 
-export default function Test() {
+export default function User() {
   const [pageSearch, setpageSearch] = useState({
     pageSize: 100,
     page: 1,
@@ -135,11 +135,6 @@ export default function Test() {
   const handleUpdate = (row) => {}
   function handleAddUser() {
     navigate("/user/add")
-  const [open, setOpen] = useState(false);
-
-  const navigate = useNavigate();
-  function handleAddUser() {
-    navigate("/test/add");
   }
 
   function handledelete() {
@@ -159,8 +154,8 @@ export default function Test() {
       return
     }
 
-    let ids = rowSelectionModel.join(",");
-    let result = await deleteRequest(`/test/Delete/${ids}`);
+    let ids = rowSelectionModel.join(",")
+    let result = await deleteRequest(`/user/Delete/${ids}`)
     if (result.isSuccess) {
       toast.success("delete success!")
     } else {
@@ -191,7 +186,7 @@ export default function Test() {
   return (
     <>
       <Box m="20px">
-        <Header title="Tests" subtitle="Managing the Test Members" />
+        <Header title="Users" subtitle="Managing the User Members" />
         <Box
           m="40px 0 0 0"
           minHeight={"500px"}
@@ -255,7 +250,7 @@ export default function Test() {
                 }}
               />
               <Button variant="contained" onClick={handleAddUser}>
-                Add Test
+                Add User
               </Button>
               <Button
                 color="secondary"
@@ -266,14 +261,14 @@ export default function Test() {
               </Button>
             </Stack>
           </Box>
-          <TestList
+          <UserList
             columns={columns}
             pageData={
               filteredUserList.items.length > 0 ? filteredUserList : pageData
             }
             setPaginationModel={handlePaginationModel}
             setRowSelectionModel={setRowSelectionModel}
-          ></TestList>
+          ></UserList>
         </Box>
         <AlterDialog
           title="Warning"
