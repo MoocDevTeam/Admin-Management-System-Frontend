@@ -1,5 +1,5 @@
-import { Box } from "@mui/material";
-import Header from "../../../components/header";
+import { Box } from "@mui/material"
+import Header from "../../components/header"
 
 export default function Teacher() {
   return (
@@ -8,5 +8,5 @@ export default function Teacher() {
         <Header title="Teacher" subtitle="Manging Teacher Members"></Header>
       </Box>
     </Box>
-  );
+  )
 }

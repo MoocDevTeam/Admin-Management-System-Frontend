@@ -1,28 +1,24 @@
-import React, { useState, useEffect } from "react";
-import Header from "../../../../components/header";
-import getRequest from "../../../../request/getRequest";
+import React, { useState, useEffect } from "react"
+import Header from "../../../../components/header"
+import getRequest from "../../../../request/getRequest"
+import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material"
+import { Link } from "react-router-dom"
+import FlexList from "../../../../components/course/course/FlexList"
+import CourseCard from "../../../../components/course/course/CourseCard"
+import Skeleton from "@mui/material/Skeleton"
+import toast from "react-hot-toast"
+import postRequest from "../../../../request/postRequest"
+import { useDispatch, useSelector } from "react-redux"
 import {
-  Box,
-  Button,
-  Modal,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { Link } from "react-router-dom";
-import FlexList from "../../../../components/course/course/FlexList";
-import CourseCard from "../../../../components/course/course/CourseCard";
-import Skeleton from "@mui/material/Skeleton";
-import toast from "react-hot-toast";
-import postRequest from "../../../../request/postRequest";
-import { useDispatch, useSelector } from "react-redux";
-import { setCourses, filterCourses } from "../../../../store/courseSlice";
-import FilterDropdown from "../../../../components/course/course/FilterDropdown";
+  setCourses,
+  filterCourses,
+} from "../../../../feature/courseSlice/courseSlice"
+import FilterDropdown from "../../../../components/course/course/FilterDropdown"
 
 export default function CourseList() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+  const [open, setOpen] = useState(false)
   const [newCourseData, setNewCourseData] = useState({
     id: "",
     title: "",
@@ -30,34 +26,34 @@ export default function CourseList() {
     coverImage: "",
     description: "",
     categoryId: "",
-  });
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  })
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
 
   const handleChange = (event) => {
     setNewCourseData({
       ...newCourseData,
       [event.target.name]: event.target.value,
-    });
-  };
+    })
+  }
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
-      const response = await postRequest("/MoocCourse/add", newCourseData);
+      const response = await postRequest("/MoocCourse/add", newCourseData)
       if (response.isSuccess) {
-        setCourses([...courses, response.data]);
-        handleClose();
-        toast.success("Course added successfully!");
+        setCourses([...courses, response.data])
+        handleClose()
+        toast.success("Course added successfully!")
       } else {
-        toast.error(response.message || "Failed to add course.");
+        toast.error(response.message || "Failed to add course.")
       }
     } catch (error) {
-      toast.error("Failed to add course.");
+      toast.error("Failed to add course.")
     }
-  };
+  }
 
-  const dispatch = useDispatch();
-  const courses = useSelector((state) => state.course.filteredCourses);
+  const dispatch = useDispatch()
+  const courses = useSelector((state) => state.course.filteredCourses)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,24 +62,24 @@ export default function CourseList() {
           "/MoocCourse/getall",
           null,
           setLoading
-        );
+        )
         if (response?.isSuccess) {
-          dispatch(setCourses(response?.data));
-          setError("");
+          dispatch(setCourses(response?.data))
+          setError("")
         } else {
           const errorMessage =
-            response?.message || "An error occurred while fetching data.";
-          setError(errorMessage);
-          toast.error(errorMessage);
+            response?.message || "An error occurred while fetching data."
+          setError(errorMessage)
+          toast.error(errorMessage)
         }
       } catch (err) {
-        setError("Failed to fetch data");
-        toast.error("Failed to fetch data");
+        setError("Failed to fetch data")
+        toast.error("Failed to fetch data")
       }
-    };
+    }
 
-    fetchData();
-  }, [dispatch]);
+    fetchData()
+  }, [dispatch])
 
   return (
     <Box m="20px">
@@ -203,8 +199,9 @@ export default function CourseList() {
               <CourseCard
                 title={course.title}
                 category={`Categories: ${course.categoryName || "N/A"}`}
-                description={`Description: ${course.description || "No description available"
-                  }`}
+                description={`Description: ${
+                  course.description || "No description available"
+                }`}
                 imageUrl={course.coverImage}
               />
             </Link>
@@ -212,5 +209,5 @@ export default function CourseList() {
         </FlexList>
       )}
     </Box>
-  );
+  )
 }

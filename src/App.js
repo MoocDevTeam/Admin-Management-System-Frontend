@@ -7,9 +7,8 @@ import { Toaster } from "react-hot-toast"
 import User from "./pages/user/index"
 import AddUser from "./pages/user/addUser"
 import AddRole from "./pages/role/addRole"
-
 import Role from "./pages/role/index"
-import Teacher from "./pages/user/teacher/index"
+import Teacher from "./pages/teacher/index"
 import CourseList from "./pages/course/course/courseList/index"
 import CourseSingle from "./pages/course/course/courseSingle/index"
 import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle"
@@ -91,26 +90,23 @@ function App() {
             path="/course/category"
             element={<Category />}
           />
-
           <Route
             key="courseLaunch"
             path="/course/courseLaunch"
             element={<CourseLaunch />}
           />
-
           <Route
             key="courseSingle"
             path="/course/:courseId"
             element={<CourseSingle />}
           />
-
           <Route
             key="courseInstanceSingle"
             path="/course/:courseId/CourseInstance/:courseInstanceId"
             element={<CourseInstanceSingle />}
           />
 
-          <Route key="teacher" path="/user/teacher" element={<Teacher />} />
+          <Route key="teacher" path="/teacher" element={<Teacher />} />
 
           <Route key="page404" path="*" element={<Page404 />} />
         </Route>
