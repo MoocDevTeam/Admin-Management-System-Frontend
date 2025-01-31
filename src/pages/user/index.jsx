@@ -1,33 +1,41 @@
-import React, { useState } from "react";
-import { Box, Button, Stack, Avatar } from "@mui/material";
-import Header from "../../components/header";
-import colors from "../../theme";
-import AlterDialog from "../../components/alterDialog";
-import UserList from "./userList";
-
-import { useEffect } from "react";
-import getRequest from "../../request/getRequest";
-import deleteRequest from "../../request/delRequest";
-
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import React, { useState } from "react"
+import {
+  Box,
+  Button,
+  Stack,
+  Avatar,
+  InputAdornment,
+  TextField,
+  IconButton,
+} from "@mui/material"
+import Header from "../../components/header"
+import colors from "../../theme"
+import AlterDialog from "../../components/alterDialog"
+import UserList from "./userList"
+import { useEffect } from "react"
+import getRequest from "../../request/getRequest"
+import deleteRequest from "../../request/delRequest"
+import { useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
+import { GridSearchIcon } from "@mui/x-data-grid"
+import { genderNameToEnum } from "../../components/util/gender"
 
 export default function User() {
   const [pageSearch, setpageSearch] = useState({
     pageSize: 100,
     page: 1,
-  });
-
-  let baseUrl = process.env.REACT_APP_BASE_API_URL;
-  const handlePaginationModel = (e) => {
-    setpageSearch((preState) => ({
-      ...preState,
-      page: e.page + 1,
-      pageSize: e.pageSize,
-    }));
-  };
-
-  const handleUpdate = (row) => { };
+  })
+  const [rowSelectionModel, setRowSelectionModel] = useState([])
+  const [open, setOpen] = useState(false)
+  const [pageData, setPageData] = useState({ items: [], total: 0 })
+  const [alertMessage, setAlartMessage] = useState("")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filteredUserList, setFilteredUserList] = useState({
+    items: [],
+    total: 0,
+  })
+  const navigate = useNavigate()
+  let baseUrl = process.env.REACT_APP_BASE_API_URL
 
   const columns = [
     { field: "id", headerName: "ID" },
@@ -53,11 +61,11 @@ export default function User() {
       flex: 1,
       renderCell: (row) => {
         if (row.row.gender === 1) {
-          return "Male";
+          return "Male"
         } else if (row.row.gender === 2) {
-          return "Female";
+          return "Female"
         } else {
-          return "Other";
+          return "Other"
         }
       },
     },
@@ -76,7 +84,7 @@ export default function User() {
             src={baseUrl + row.row.avatar}
             sx={{ width: 50, height: 50 }}
           ></Avatar>
-        );
+        )
       },
     },
     {
@@ -86,76 +94,94 @@ export default function User() {
       renderCell: (row) => {
         return (
           <Box>
-
             <Button variant="text" onClick={handleUpdate(row)}>
               Update
             </Button>
           </Box>
-        );
+        )
       },
     },
-  ];
-
-  const [pageData, setPageData] = useState({ items: [], total: 0 });
+  ]
 
   useEffect(() => {
     let getUser = async (param) => {
-      let result = await getRequest("/user/GetByPage", param);
+      let result = await getRequest("/user/GetByPage", param)
       if (result.status === 200) {
-        setPageData(result.data);
+        setPageData(result.data)
+        console.log("result.data", result.data)
       } else {
-        setPageData({ items: [], total: 0 });
+        setPageData({ items: [], total: 0 })
       }
-      console.log("=========", result);
-    };
+    }
 
     let filterPagedResultRequestDto = {
       Filter: "",
       PageIndex: pageSearch.page,
       PageSize: pageSearch.pageSize,
       Sorting: "",
-    };
+    }
 
-    getUser(filterPagedResultRequestDto);
-  }, [pageSearch]);
+    getUser(filterPagedResultRequestDto)
+  }, [pageSearch])
 
-  const [open, setOpen] = useState(false);
-
-  const navigate = useNavigate();
-  function handleAddUser() {
-    navigate("/user/add");
+  const handlePaginationModel = (e) => {
+    setpageSearch((preState) => ({
+      ...preState,
+      page: e.page + 1,
+      pageSize: e.pageSize,
+    }))
   }
-  const [alertMessage, setAlartMessage] = useState("");
+
+  const handleUpdate = (row) => {}
+  function handleAddUser() {
+    navigate("/user/add")
+  }
 
   function handledelete() {
     if (rowSelectionModel.length === 0) {
-      setAlartMessage("Please select items");
-      setOpen(true);
-      return;
+      setAlartMessage("Please select items")
+      setOpen(true)
+      return
     }
-    setAlartMessage("Are you sure to delete these items?");
-    setOpen(true);
+    setAlartMessage("Are you sure to delete these items?")
+    setOpen(true)
   }
 
   const handleWinClose = async (data) => {
-    console.log("handleWinClose", data);
-    setOpen(false);
+    console.log("handleWinClose", data)
+    setOpen(false)
     if (!data.isOk || rowSelectionModel.length === 0) {
-      return;
+      return
     }
 
-    let ids = rowSelectionModel.join(",");
-    let result = await deleteRequest(`/user/Delete/${ids}`);
+    let ids = rowSelectionModel.join(",")
+    let result = await deleteRequest(`/user/Delete/${ids}`)
     if (result.isSuccess) {
-      toast.success("delete success!");
+      toast.success("delete success!")
     } else {
-      toast.error(result.message);
+      toast.error(result.message)
     }
 
-    setpageSearch({ page: 1, pageSize: pageSearch.pageSize });
-  };
+    setpageSearch({ page: 1, pageSize: pageSearch.pageSize })
+  }
 
-  const [rowSelectionModel, setRowSelectionModel] = React.useState([]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const filteredRole = [...pageData.items].filter(
+        (user) =>
+          user.userName.toLowerCase().includes(searchQuery) ||
+          user.email.toLowerCase().includes(searchQuery) ||
+          user.age === +searchQuery ||
+          user.gender === genderNameToEnum(searchQuery)
+      )
+      setFilteredUserList({
+        items: [...filteredRole],
+        total: filteredRole.length,
+      })
+    }, 300) //debounce
+
+    return () => clearTimeout(timer)
+  }, [searchQuery, pageData.items])
 
   return (
     <>
@@ -163,7 +189,7 @@ export default function User() {
         <Header title="Users" subtitle="Managing the User Members" />
         <Box
           m="40px 0 0 0"
-          minHeight={'500px'}
+          minHeight={"500px"}
           height="100%"
           sx={{
             "& .MuiDataGrid-root": {
@@ -193,12 +219,39 @@ export default function User() {
         >
           <Box sx={{ mb: "15px" }}>
             <Stack direction="row" spacing={2} justifyContent="flex-end">
-
+              <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Search user ..."
+                fullWidth
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{ ml: 2, width: 250, height: 40, marginTop: 1 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <IconButton>
+                        <GridSearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => (
+                          setFilteredUserList({ items: [], total: 0 }),
+                          setSearchQuery("")
+                        )}
+                      >
+                        {searchQuery.length > 0 ? "x" : ""}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
               <Button variant="contained" onClick={handleAddUser}>
                 Add User
               </Button>
-
-
               <Button
                 color="secondary"
                 variant="contained"
@@ -206,30 +259,30 @@ export default function User() {
               >
                 Delte
               </Button>
-
             </Stack>
           </Box>
           <UserList
             columns={columns}
-            pageData={pageData}
+            pageData={
+              filteredUserList.items.length > 0 ? filteredUserList : pageData
+            }
             setPaginationModel={handlePaginationModel}
             setRowSelectionModel={setRowSelectionModel}
           ></UserList>
         </Box>
         <AlterDialog
-        title="Warning"
-        alertType="warning"
-        open={open}
-        onClose={handleWinClose}
-      >
-        {alertMessage}
-      </AlterDialog>
+          title="Warning"
+          alertType="warning"
+          open={open}
+          onClose={handleWinClose}
+        >
+          {alertMessage}
+        </AlterDialog>
       </Box>
 
-      {/* <WinDialog title="test dialog" open={open} onClose={handleWinClose}>
-        
+      {/* <WinDialog title="test dialog" open={open} onClose={handleWinClose}> 
         <Adduser />
       </WinDialog> */}
     </>
-  );
+  )
 }
