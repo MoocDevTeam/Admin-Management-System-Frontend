@@ -77,7 +77,7 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
   };
 
   return (
-    <StyledCard onClick={onClick}>
+    <StyledCard>
       <CardHeader
         action={
           <>
@@ -130,9 +130,10 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
           height="194"
           image={imageUrl}
           alt="Paella dish"
+          onClick={onClick}
         />
         <CardContent>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }} onClick={onClick}>
             {description}
           </Typography>
         </CardContent>

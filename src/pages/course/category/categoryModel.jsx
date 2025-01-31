@@ -69,10 +69,11 @@ export default function CategoryModal({ parentId }) {
       } else {
         const response = await postRequest("/Category/Add", {
           ...categoryData,
-          childrenCategories:[],});
+          childrenCategories: [],
+        });
         if (response.isSuccess) {
-          dispatch(addCategory({...response.data,childrenCategories:[]}));
-          console.log("categoryData",categoryData)
+          dispatch(addCategory({ ...response.data, childrenCategories: [] }));
+          console.log("categoryData", categoryData)
           toast.success("Category added successfully!");
         } else {
           toast.error(response.message || "Failed to add category.");
@@ -86,7 +87,7 @@ export default function CategoryModal({ parentId }) {
   };
 
   return (
-    <Modal open={isOpen} onClose={() => dispatch(closeModal())}>
+    <Modal open={isOpen} >
       <Box
         sx={{
           position: "absolute",
@@ -99,19 +100,9 @@ export default function CategoryModal({ parentId }) {
           p: 4,
         }}
       >
-        <Typography variant="h6" component="h2" marginBottom={2}>
-          {isEdit ? "Edit Category" : "Add New Category"}
-        </Typography>
+        
         <form onSubmit={handleSubmit}>
-          <TextField
-            label="ID"
-            name="id"
-            value={categoryData.id}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-            disabled={isEdit} 
-          />
+
           <TextField
             label="CategoryName"
             name="categoryName"
@@ -138,9 +129,14 @@ export default function CategoryModal({ parentId }) {
             rows={4}
             margin="normal"
           />
-          <Button type="submit" variant="contained" color="primary">
-            Save
-          </Button>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+            <Button type="submit" variant="contained" color="primary">
+              Save
+            </Button>
+            <Button onClick={() => dispatch(closeModal())} variant="contained" color="primary">
+              Exit
+            </Button>
+          </Box>
         </form>
       </Box>
     </Modal>
