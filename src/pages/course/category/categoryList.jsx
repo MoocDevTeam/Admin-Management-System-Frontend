@@ -4,7 +4,7 @@ import Skeleton from "@mui/material/Skeleton";
 import FlexList from "../../../components/course/category/FlexList";
 import CategoryCard from "../../../components/course/category/CategoryCard";
 
-export default function CategoryList({ currentCategories, handleCategoryClick, loading, error }) {
+export default function CategoryList({ currentCategories, handleCategoryClick, handleEdit,loading, error }) {
     
   if (loading) {
     return (
@@ -39,6 +39,7 @@ return(
       imageUrl={category.iconUrl}
       subCategoryCounts={category.childrenCategories?.length || 0}
       onClick={() => handleCategoryClick(category)}
+      onEdit={() => handleEdit(category)}
     />
   ))}
 </FlexList>

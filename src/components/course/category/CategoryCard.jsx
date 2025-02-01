@@ -3,14 +3,13 @@ import { Card, styled } from '@mui/material';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import toast from "react-hot-toast";
 import {
-  openModal,
   setCurrentCategories,
 } from "../../../store/categorySlice";
 import { useSelector, useDispatch } from "react-redux";
@@ -31,17 +30,20 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-export default function CategoryCard({ categoryName, description, imageUrl, subCategoryCounts, onClick, categoryId }) {
-
-
+export default function CategoryCard({
+  categoryName,
+  description,
+  imageUrl,
+  subCategoryCounts,
+  onClick,
+  categoryId,
+  onEdit, 
+}) {
   const dispatch = useDispatch();
   const { currentCategories } = useSelector((state) => state.category);
 
-
   const handleDelete = async () => {
-
     const category = currentCategories.find((cat) => cat.id === categoryId);
-
     if (category && category.childrenCategories?.length > 0) {
       toast.error("Cannot delete a category that has subcategories.");
       return;
@@ -51,7 +53,9 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
       const response = await deleteRequest(`/Category/Delete/${categoryId}`);
       if (response.isSuccess) {
         toast.success("Category deleted successfully!");
-        const updatedCategories = currentCategories.filter((cat) => cat.id !== categoryId);
+        const updatedCategories = currentCategories.filter(
+          (cat) => cat.id !== categoryId
+        );
         dispatch(setCurrentCategories(updatedCategories));
       } else {
         console.error("Error from backend:", response);
@@ -84,16 +88,17 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
             <IconButton
               aria-label="more"
               id="long-button"
-              aria-controls={open ? 'long-menu' : undefined}
-              aria-expanded={open ? 'true' : undefined}
+              aria-controls={open ? "long-menu" : undefined}
+              aria-expanded={open ? "true" : undefined}
               aria-haspopup="true"
-              onClick={handleButtonClick}>
+              onClick={handleButtonClick}
+            >
               <MoreVertIcon />
             </IconButton>
             <Menu
               id="long-menu"
               MenuListProps={{
-                'aria-labelledby': 'long-button',
+                "aria-labelledby": "long-button",
               }}
               anchorEl={anchorEl}
               open={open}
@@ -102,22 +107,24 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
                 paper: {
                   style: {
                     maxHeight: ITEM_HEIGHT * 4.5,
-                    width: '20ch',
+                    width: "20ch",
                   },
                 },
               }}
             >
-              <MenuItem onClick={() => dispatch(
-                openModal({
-                  isEdit: true,
-                  selectedCategory: {
+              <MenuItem
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onEdit({
                     id: categoryId,
                     categoryName,
                     description,
-                    imageUrl
-                  }
-                })
-              )} >Edit</MenuItem>
+                    imageUrl,
+                  });
+                }}
+              >
+                Edit
+              </MenuItem>
               <MenuItem onClick={handleDelete}>Delete</MenuItem>
             </Menu>
           </>
@@ -125,22 +132,22 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
         title={categoryName}
         subheader={`Includes a total of ${subCategoryCounts} subcategories`}
       />
-        <CardMedia
-          component="img"
-          height="194"
-          image={imageUrl}
-          alt="Paella dish"
+      <CardMedia
+        component="img"
+        height="194"
+        image={imageUrl}
+        alt="Paella dish"
+        onClick={onClick}
+      />
+      <CardContent>
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary" }}
           onClick={onClick}
-        />
-        <CardContent>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} onClick={onClick}>
-            {description}
-          </Typography>
-        </CardContent>
+        >
+          {description}
+        </Typography>
+      </CardContent>
     </StyledCard>
   );
-
 }
-
-
-
