@@ -17,13 +17,13 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import postRequest from "../../../../request/postRequest";
 import toast from "react-hot-toast";
-import { setCourses, filterCourses } from "../../../../feature/courseSlice/courseSlice";
+import { setCourses } from "../../../../store/courseSlice";
 import getRequest from "../../../../request/getRequest";
 import CourseCard from "../../../../components/course/course/CourseCard";
 import FlexList from "../../../../components/course/course/FlexList";
 import { setCurrentCategories } from "../../../../store/categorySlice";
+import { configureStore } from "@reduxjs/toolkit";
 import AddCourseModal from "../addCourseModal";
-
 export default function CourseList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -32,49 +32,32 @@ export default function CourseList() {
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [open, setOpen] = useState(false);
-
   const [newCourseData, setNewCourseData] = useState({
     title: "",
     courseCode: "",
     coverImage: "",
     description: "",
-    categoryId: "",
+    categoryId: 1,
   });
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const handleChange = (event) => {
-    setNewCourseData({
-      ...newCourseData,
-      [event.target.name]: event.target.value,
-    });
-  };
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await postRequest("/MoocCourse/add", newCourseData);
-      if (response.isSuccess) {
-        dispatch(setCourses([...courses, response.data]));
-        handleClose();
-        toast.success("Course added successfully!");
-      } else {
-        toast.error(response.message || "Failed to add course.");
-      }
-    } catch (error) {
-      toast.error("Failed to add course.");
-    }
-  };
-
   const dispatch = useDispatch();
   const courses = useSelector((state) => state.course.courses);
-
+  const categoryLocal = useSelector((state) => state.category.setCategories);
+  // Pop up page add course control
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  // fetch data from backend
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getRequest("/MoocCourse/getall", null, setLoading);
+        const response = await getRequest(
+          "/MoocCourse/getall",
+          null,
+          setLoading
+        );
         if (response?.isSuccess) {
           dispatch(setCourses(response?.data));
           setFilteredCourses(response?.data);
+          // store category name and id
           const uniqueCategories = [];
           response?.data.forEach((course) => {
             if (
@@ -92,17 +75,17 @@ export default function CourseList() {
           setCategories(uniqueCategories);
           setError("");
         } else {
-          setError(response?.message || "An error occurred while fetching data.");
-          toast.error(response?.message || "An error occurred while fetching data.");
+          setError(
+            response?.message || "An error occurred while fetching data."
+          );
         }
       } catch (err) {
-        setError("Failed to fetch data");
-        toast.error("Failed to fetch data");
+        setError("Failed to fetch data", err);
       }
     };
     fetchData();
   }, [dispatch]);
-
+  // click chip for different category
   const handleChipClick = (chipIndex) => {
     setSelectedChip(chipIndex);
     const filtered =
@@ -114,7 +97,7 @@ export default function CourseList() {
           );
     setFilteredCourses(filtered);
   };
-
+  //search for course title
   const handleSearchChange = (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
@@ -125,7 +108,6 @@ export default function CourseList() {
     );
     setFilteredCourses(filtered);
   };
-
   return (
     <Box m="20px">
       <Typography variant="h4" gutterBottom>
