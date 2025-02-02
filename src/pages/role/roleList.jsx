@@ -3,6 +3,11 @@ import React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 
 export default function RoleList(props) {
+  console.log(
+    "total in rolelist is:   total is: ",
+    props.pageData.items,
+    props.pageData.total
+  );
   return (
     <>
       <DataGrid

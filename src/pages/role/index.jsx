@@ -41,8 +41,8 @@ export default function Role() {
   const [selectedRowId, setSelectedRowId] = useState(null);
   const navigate = useNavigate();
   const [pageSearch, setPageSearch] = useState({
-    pageSize: 10,
     page: 1,
+    pageSize: 20,
   });
   const [filteredRoleList, setFilteredRoleList] = useState({
     items: [],
@@ -130,25 +130,48 @@ export default function Role() {
   }, [searchQuery, pageData.items]);
 
   useEffect(() => {
-    let getRole = async (param) => {
-      let result = await getRequest(
-        `${baseUrl}/api/Role/GetByPage?PageIndex=${pageSearch.page}&PageSize=${pageSearch.pageSize}`,
-        param
-      );
-      if (result.status === 200) {
-        setPageData(result.data);
-      } else {
-        setPageData({ items: [], total: 0 });
+    async function getRole(param) {
+      let result;
+      // let result = await getRequest(
+      //   `${baseUrl}/api/Role/GetByPage?PageIndex=${pageSearch.page}&PageSize=${pageSearch.pageSize}`,
+      //   param
+      // );
+      console.log("before getRequest, param is:", param);
+      try {
+        result = await getRequest(`${baseUrl}/api/Role/GetByPage`, param);
+        if (result.status === 200) {
+          // console.log("after getRequest, result.data is:", result.data);
+          // console.log("in useEffect, pagedata 1:", pageData);
+          setPageData({
+            items: result.data.items,
+            total: result.data.total,
+          });
+          console.log("result.data.total:", result.data.total);
+        } else {
+          setPageData({ items: [], total: 0 });
+        }
+      } catch {
+        toast.error(result.message);
       }
-    };
+    }
+    console.log("in useEffect, pagedata 2:", pageData);
     let filterPagedResultRequestDto = {
       Filter: "",
-      PageIndex: pageSearch.page,
+      Page: pageSearch.page,
       PageSize: pageSearch.pageSize,
       Sorting: "",
     };
     getRole(filterPagedResultRequestDto);
-  }, [pageSearch, baseUrl]);
+  }, [pageSearch]);
+
+  const handlePaginationModel = (e) => {
+    console.log("e.page, e.pageSize are:", e.page, e.pageSize);
+    setPageSearch((preState) => ({
+      ...preState,
+      page: e.page + 1,
+      pageSize: e.pageSize,
+    }));
+  };
 
   function handleAddRole() {
     navigate("/role/add");
@@ -165,13 +188,6 @@ export default function Role() {
     setUpdateOpen(true);
   };
 
-  const handlePaginationModel = (e) => {
-    setPageSearch((preState) => ({
-      ...preState,
-      page: e.page + 1,
-      pageSize: e.pageSize,
-    }));
-  };
   function handleDelete() {
     if (rowSelectionModel.length === 0) {
       setAlertMessage("Please select one or more roles");
@@ -211,7 +227,8 @@ export default function Role() {
     // } else {
     //   toast.error(result.message);
     // }
-    setPageSearch({ page: 1, pageSize: pageSearch.pageSize });
+    // setPageSearch({ page: pageSearch.page, pageSize: pageSearch.pageSize });
+    setPageSearch((preState) => ({ ...preState, page: 1 }));
   };
 
   return (
