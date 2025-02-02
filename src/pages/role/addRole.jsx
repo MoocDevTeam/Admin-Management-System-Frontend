@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect } from "react";
 import {
   Box,
   Button,
@@ -11,74 +11,77 @@ import {
   ListItemText,
   Checkbox,
   OutlinedInput,
-} from "@mui/material"
+} from "@mui/material";
 
-import { useFormik } from "formik"
-import toast from "react-hot-toast"
-import * as Yup from "yup"
-import postRequest from "../../request/postRequest"
-import Header from "../../components/header"
-import { useState } from "react"
-import getRequest from "../../request/getRequest"
+import { useFormik } from "formik";
+import toast from "react-hot-toast";
+import * as Yup from "yup";
+import postRequest from "../../request/postRequest";
+import Header from "../../components/header";
+import { useState } from "react";
+import getRequest from "../../request/getRequest";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function AddRole() {
+  const [roles, setRoles] = useState([]);
+  const [selectRoles, setSelectRoles] = useState([]);
+  const [avatarData, setAvatarData] = useState("");
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  let baseUrl = process.env.REACT_APP_BASE_API_URL;
+
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      username: "",
-      email: "",
-      address: "",
-      gender: 0,
-      age: 0,
-      password: "",
-      confirmpassword: "",
+      roleName: "",
+      description: "",
+      // address: "",
+      // gender: 0,
+      // age: 0,
+      // password: "",
+      // confirmpassword: "",
     },
     validationSchema: Yup.object({
-      username: Yup.string()
+      roleName: Yup.string()
         .min(3, "Must be 3 characters or more")
         .max(30, "Must be 30 characters or less")
         .required("Required"),
-      email: Yup.string()
-        .max(100, "Must be 30 characters or less")
-        .email("pls input correct email format"),
-      password: Yup.string()
-        .min(6, "Must be 6 characters or more")
-        .max(100, "Must be 30 characters or less")
-        .required("Required"),
-      confirmpassword: Yup.string()
-        .required("Required")
-        .oneOf([Yup.ref("password"), null], "Passwords must match"),
+      description: Yup.string().max(100, "Must be 30 characters or less"),
+      // .email("pls input correct email format"),
+      // password: Yup.string()
+      //   .min(6, "Must be 6 characters or more")
+      //   .max(100, "Must be 30 characters or less")
+      //   .required("Required"),
+      // confirmpassword: Yup.string()
+      //   .required("Required")
+      //   .oneOf([Yup.ref("password"), null], "Passwords must match"),
     }),
     onSubmit: async (values) => {
-      let result = await postRequest("/role/Add", {
-        username: values.username,
-        password: values.password,
-        email: values.email,
-        address: values.address,
-        gender: values.gender,
-        age: values.age,
-        avatar: avatarData,
-        roleIds: selectRoles,
-      })
-
+      let result = await postRequest(`${baseUrl}/api/Role/Add`, {
+        roleName: values.roleName,
+        description: values.description,
+        // email: values.email,
+        // address: values.address,
+        // gender: values.gender,
+        // age: values.age,
+        // avatar: avatarData,
+        // roleIds: selectRoles,
+      });
       if (result.isSuccess) {
-        toast.success("add success!")
-        formik.resetForm()
-        //navigate("/", { replace: true });
+        toast.success("add success!");
+        formik.resetForm();
+        navigate("/role", { replace: true });
       } else {
-        toast.error(result.message)
+        toast.error(result.message);
       }
     },
-  })
+  });
 
-  const [avatarData, setAvatarData] = useState("")
   const handleAvatarResult = (result) => {
-    setAvatarData(result)
-  }
+    setAvatarData(result);
+  };
 
-  const [roles, setRoles] = useState([])
-  const [selectRoles, setSelectRoles] = useState([])
-  const ITEM_HEIGHT = 48
-  const ITEM_PADDING_TOP = 8
   const MenuProps = {
     PaperProps: {
       style: {
@@ -86,24 +89,24 @@ export default function AddRole() {
         width: 250,
       },
     },
-  }
+  };
   const handleChangeRole = (event) => {
     const {
       target: { value },
-    } = event
+    } = event;
     setSelectRoles(
-      // On autofill we get a stringified value.
+      //On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
-    )
-  }
+    );
+  };
 
   const renderValueRole = (valueArray) => {
     return roles
       .filter((x) => valueArray.indexOf(x.id) !== -1)
       .map((x) => x.roleName)
-      .join(", ")
-    // return roles.map((value) => valueArray.find(x=>x===value.id)).map(x=>x.name).join(', ')
-  }
+      .join(", ");
+    //return roles.map((value) => valueArray.find(x=>x===value.id)).map(x=>x.name).join(', ')
+  };
 
   return (
     <Box m="20px">
@@ -123,13 +126,13 @@ export default function AddRole() {
             fullWidth
             variant="filled"
             type="text"
-            label="User Name"
-            name="username"
+            label="Role Name"
+            name="roleName"
             autoComplete="text"
             onChange={formik.handleChange}
-            value={formik.values.username}
-            error={formik.touched.username && Boolean(formik.errors.username)}
-            helperText={formik.touched.username && formik.errors.username}
+            value={formik.values.roleName}
+            error={formik.touched.roleName && Boolean(formik.errors.roleName)}
+            helperText={formik.touched.roleName && formik.errors.roleName}
             autoFocus
             sx={{ gridColumn: "span 4" }}
           />
@@ -137,17 +140,19 @@ export default function AddRole() {
             fullWidth
             variant="filled"
             type="text"
-            label="Password"
-            name="password"
+            label="Description"
+            name="description"
             onChange={formik.handleChange}
-            value={formik.values.password}
-            error={formik.touched.password && Boolean(formik.errors.password)}
-            helperText={formik.touched.password && formik.errors.password}
-            autoComplete="current-password"
+            value={formik.values.description}
+            error={
+              formik.touched.description && Boolean(formik.errors.description)
+            }
+            helperText={formik.touched.description && formik.errors.description}
+            autoComplete="current-description"
             autoFocus
             sx={{ gridColumn: "span 4" }}
           />
-          <TextField
+          {/* <TextField
             fullWidth
             variant="filled"
             type="text"
@@ -165,8 +170,8 @@ export default function AddRole() {
             autoComplete="current-password"
             autoFocus
             sx={{ gridColumn: "span 4" }}
-          />
-          <TextField
+          /> */}
+          {/* <TextField
             fullWidth
             variant="filled"
             type="text"
@@ -179,8 +184,8 @@ export default function AddRole() {
             helperText={formik.touched.email && formik.errors.email}
             autoFocus
             sx={{ gridColumn: "span 4" }}
-          />
-          <TextField
+          /> */}
+          {/* <TextField
             fullWidth
             variant="filled"
             type="text"
@@ -193,9 +198,9 @@ export default function AddRole() {
             helperText={formik.touched.address && formik.errors.address}
             autoFocus
             sx={{ gridColumn: "span 4" }}
-          />
+          /> */}
 
-          <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
+          {/* <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
             <InputLabel id="demo-simple-select-label">gender</InputLabel>
             <Select
               labelId="demo-simple-select-label"
@@ -211,9 +216,9 @@ export default function AddRole() {
               <MenuItem value={2}>Female</MenuItem>
               <MenuItem value={0}>Other</MenuItem>
             </Select>
-          </FormControl>
+          </FormControl> */}
 
-          <FormControl sx={{ gridColumn: "span 2" }}>
+          {/* <FormControl sx={{ gridColumn: "span 2" }}>
             <InputLabel id="demo-multiple-checkbox-label">Roles</InputLabel>
             <Select
               labelId="demo-multiple-checkbox-label"
@@ -232,9 +237,9 @@ export default function AddRole() {
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </FormControl> */}
 
-          <TextField
+          {/* <TextField
             fullWidth
             variant="filled"
             type="text"
@@ -247,19 +252,27 @@ export default function AddRole() {
             helperText={formik.touched.age && formik.errors.age}
             autoFocus
             sx={{ gridColumn: "span 4" }}
-          />
+          /> */}
         </Box>
         <Box display="flex" justifyContent="end" mt="20px">
           <Stack direction="row" spacing={2}>
             <Button type="submit" color="secondary" variant="contained">
-              Create New User
+              Create New Role
             </Button>
-            <Button type="cancle" color="secondary" variant="contained">
+            <Button
+              type="cancel"
+              color="secondary"
+              variant="contained"
+              onClick={() => {
+                formik.resetForm();
+                navigate("/role");
+              }}
+            >
               Cancel
             </Button>
           </Stack>
         </Box>
       </form>
     </Box>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -7,35 +7,35 @@ import {
   InputAdornment,
   TextField,
   IconButton,
-} from "@mui/material"
-import Header from "../../components/header"
-import colors from "../../theme"
-import AlterDialog from "../../components/alterDialog"
-import UserList from "./userList"
-import { useEffect } from "react"
-import getRequest from "../../request/getRequest"
-import deleteRequest from "../../request/delRequest"
-import { useNavigate } from "react-router-dom"
-import toast from "react-hot-toast"
-import { GridSearchIcon } from "@mui/x-data-grid"
-import { genderNameToEnum } from "../../components/util/gender"
+} from "@mui/material";
+import Header from "../../components/header";
+import colors from "../../theme";
+import AlterDialog from "../../components/alterDialog";
+import UserList from "./userList";
+import { useEffect } from "react";
+import getRequest from "../../request/getRequest";
+import deleteRequest from "../../request/delRequest";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { GridSearchIcon } from "@mui/x-data-grid";
+import { genderNameToEnum } from "../../components/util/gender";
 
 export default function User() {
   const [pageSearch, setpageSearch] = useState({
     pageSize: 100,
     page: 1,
-  })
-  const [rowSelectionModel, setRowSelectionModel] = useState([])
-  const [open, setOpen] = useState(false)
-  const [pageData, setPageData] = useState({ items: [], total: 0 })
-  const [alertMessage, setAlartMessage] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
+  });
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [pageData, setPageData] = useState({ items: [], total: 0 });
+  const [alertMessage, setAlertMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [filteredUserList, setFilteredUserList] = useState({
     items: [],
     total: 0,
-  })
-  const navigate = useNavigate()
-  let baseUrl = process.env.REACT_APP_BASE_API_URL
+  });
+  const navigate = useNavigate();
+  let baseUrl = process.env.REACT_APP_BASE_API_URL;
 
   const columns = [
     { field: "id", headerName: "ID" },
@@ -61,11 +61,11 @@ export default function User() {
       flex: 1,
       renderCell: (row) => {
         if (row.row.gender === 1) {
-          return "Male"
+          return "Male";
         } else if (row.row.gender === 2) {
-          return "Female"
+          return "Female";
         } else {
-          return "Other"
+          return "Other";
         }
       },
     },
@@ -84,7 +84,7 @@ export default function User() {
             src={baseUrl + row.row.avatar}
             sx={{ width: 50, height: 50 }}
           ></Avatar>
-        )
+        );
       },
     },
     {
@@ -98,72 +98,70 @@ export default function User() {
               Update
             </Button>
           </Box>
-        )
+        );
       },
     },
-  ]
+  ];
 
   useEffect(() => {
     let getUser = async (param) => {
-      let result = await getRequest("/user/GetByPage", param)
+      let result = await getRequest(`${baseUrl}/api/user/GetByPage`, param);
       if (result.status === 200) {
-        setPageData(result.data)
-        console.log("result.data", result.data)
+        setPageData(result.data);
+        console.log("user result.data", result.data);
       } else {
-        setPageData({ items: [], total: 0 })
+        setPageData({ items: [], total: 0 });
       }
-    }
-
+    };
     let filterPagedResultRequestDto = {
       Filter: "",
       PageIndex: pageSearch.page,
       PageSize: pageSearch.pageSize,
       Sorting: "",
-    }
-
-    getUser(filterPagedResultRequestDto)
-  }, [pageSearch])
+    };
+    getUser(filterPagedResultRequestDto);
+  }, [pageSearch]);
 
   const handlePaginationModel = (e) => {
     setpageSearch((preState) => ({
       ...preState,
       page: e.page + 1,
       pageSize: e.pageSize,
-    }))
-  }
+    }));
+  };
 
-  const handleUpdate = (row) => {}
+  const handleUpdate = (row) => {};
   function handleAddUser() {
-    navigate("/user/add")
+    navigate("/user/add");
   }
 
-  function handledelete() {
+  function handleDelete() {
     if (rowSelectionModel.length === 0) {
-      setAlartMessage("Please select items")
-      setOpen(true)
-      return
+      setAlertMessage("Please select one or more users");
+      setOpen(true);
+      return;
     }
-    setAlartMessage("Are you sure to delete these items?")
-    setOpen(true)
+    setAlertMessage("Are you sure to delete?");
+    setOpen(true);
   }
 
   const handleWinClose = async (data) => {
-    console.log("handleWinClose", data)
-    setOpen(false)
+    console.log("handleWinClose", data);
+    setOpen(false);
     if (!data.isOk || rowSelectionModel.length === 0) {
-      return
+      return;
     }
 
-    let ids = rowSelectionModel.join(",")
-    let result = await deleteRequest(`/user/Delete/${ids}`)
+    let ids = rowSelectionModel.join(",");
+    let result = await deleteRequest(`${baseUrl}/api/User/Delete/${ids}`);
     if (result.isSuccess) {
-      toast.success("delete success!")
+      toast.success("delete success!");
     } else {
-      toast.error(result.message)
+      toast.error(result.message);
     }
 
-    setpageSearch({ page: 1, pageSize: pageSearch.pageSize })
-  }
+    setpageSearch({ page: 1, pageSize: pageSearch.pageSize });
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -173,15 +171,15 @@ export default function User() {
           user.email.toLowerCase().includes(searchQuery) ||
           user.age === +searchQuery ||
           user.gender === genderNameToEnum(searchQuery)
-      )
+      );
       setFilteredUserList({
         items: [...filteredRole],
         total: filteredRole.length,
-      })
-    }, 300) //debounce
+      });
+    }, 300); //debounce
 
-    return () => clearTimeout(timer)
-  }, [searchQuery, pageData.items])
+    return () => clearTimeout(timer);
+  }, [searchQuery, pageData.items]);
 
   return (
     <>
@@ -222,7 +220,7 @@ export default function User() {
               <TextField
                 variant="outlined"
                 size="small"
-                placeholder="Search user ..."
+                placeholder="Search a user ..."
                 fullWidth
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -255,9 +253,9 @@ export default function User() {
               <Button
                 color="secondary"
                 variant="contained"
-                onClick={handledelete}
+                onClick={handleDelete}
               >
-                Delte
+                Delete
               </Button>
             </Stack>
           </Box>
@@ -284,5 +282,5 @@ export default function User() {
         <Adduser />
       </WinDialog> */}
     </>
-  )
+  );
 }

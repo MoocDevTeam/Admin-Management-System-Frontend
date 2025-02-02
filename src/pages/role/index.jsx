@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -6,64 +6,80 @@ import {
   InputAdornment,
   Stack,
   TextField,
-} from "@mui/material"
-import Header from "../../components/header"
-import colors from "../../theme"
-import AlterDialog from "../../components/alterDialog"
-import RoleList from "./roleList"
+} from "@mui/material";
+import Header from "../../components/header";
+import colors from "../../theme";
+import AlterDialog from "../../components/alterDialog";
+import RoleList from "./roleList";
 
-import { useEffect } from "react"
-import getRequest from "../../request/getRequest"
-import deleteRequest from "../../request/delRequest"
+import { useEffect } from "react";
+import getRequest from "../../request/getRequest";
+import deleteRequest from "../../request/delRequest";
 
-import { useNavigate } from "react-router-dom"
-import toast from "react-hot-toast"
-import { GridSearchIcon } from "@mui/x-data-grid"
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { GridSearchIcon } from "@mui/x-data-grid";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { useFormik } from "formik";
+import postRequest from "../../request/postRequest";
+import * as Yup from "yup";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
 
 export default function Role() {
   const [pageSearch, setPageSearch] = useState({
     pageSize: 10,
     page: 1,
-  })
-  const [rowSelectionModel, setRowSelectionModel] = useState([])
-  const [searchQuery, setSearchQuery] = useState("")
-  const [pageData, setPageData] = useState({ items: [], total: 0 })
+  });
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [pageData, setPageData] = useState({ items: [], total: 0 });
   const [filteredRoleList, setFilteredRoleList] = useState({
     items: [],
     total: 0,
-  })
-  const [alertMessage, setAlartMessage] = useState("")
-  const [open, setOpen] = useState(false)
-  let baseUrl = process.env.REACT_APP_BASE_API_URL
+  });
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [updateOpen, setUpdateOpen] = useState(false);
+  const [selectedRowId, setSelectedRowId] = useState(null);
+  let baseUrl = process.env.REACT_APP_BASE_API_URL;
 
-  const rows = [
-    { id: 1, RoleName: "SuperAdmin", Description: "full power" },
-    { id: 2, RoleName: "Admin", Description: "full power" },
-    { id: 3, RoleName: "Admin2", Description: "full power" },
-    { id: 4, RoleName: "Admin3", Description: "full power" },
-    { id: 5, RoleName: "Admin4", Description: "full power" },
-    { id: 6, RoleName: "Admin5", Description: "full power" },
-    { id: 7, RoleName: "Teacher", Description: "limited Power" },
-    { id: 8, RoleName: "Teacher2", Description: "limited Power" },
-    { id: 9, RoleName: "Teacher3", Description: "limited Power" },
-    { id: 10, RoleName: "Teacher4", Description: "limited Power" },
-    { id: 11, RoleName: "Teacher5", Description: "limited Power" },
-    { id: 12, RoleName: "Teacher6", Description: "limited Power" },
-    { id: 13, RoleName: "Teacher7", Description: "limited Power" },
-    { id: 14, RoleName: "Teacher8", Description: "limited Power" },
-    { id: 15, RoleName: "Teacher9", Description: "limited Power" },
-    { id: 16, RoleName: "Teacher10", Description: "limited Power" },
-    { id: 17, RoleName: "Teacher11", Description: "limited Power" },
-    { id: 18, RoleName: "Teacher12", Description: "limited Power" },
-    { id: 19, RoleName: "Teacher13", Description: "limited Power" },
-    { id: 20, RoleName: "Teacher14", Description: "limited Power" },
-    { id: 21, RoleName: "Teacher15", Description: "limited Power" },
-    { id: 22, RoleName: "Teacher16", Description: "limited Power" },
-    { id: 23, RoleName: "Teacher17", Description: "limited Power" },
-    { id: 24, RoleName: "Teacher18", Description: "limited Power" },
-    { id: 25, RoleName: "Teacher19", Description: "limited Power" },
-    { id: 26, RoleName: "Teacher20", Description: "limited Power" },
-  ]
+  const formik = useFormik({
+    initialValues: {
+      roleName: "",
+      description: "",
+    },
+    validationSchema: Yup.object({
+      roleName: Yup.string()
+        .min(3, "Must be 3 characters or more")
+        .max(30, "Must be 30 characters or less")
+        .required("Required"),
+      description: Yup.string()
+        .min(3, "Must be 3 characters or more")
+        .max(100, "Must be 30 characters or less"),
+    }),
+    onSubmit: async (values) => {
+      let result = await postRequest(`${baseUrl}/api/Role/Update`, {
+        id: selectedRowId,
+        roleName: values.roleName,
+        description: values.description,
+      });
+      if (result.isSuccess) {
+        toast.success("Add Role Success !");
+        formik.resetForm();
+        navigate("/role", { replace: true });
+      } else {
+        toast.error(result.message);
+      }
+      setUpdateOpen(false);
+    },
+  });
+
   const columns = [
     { field: "id", headerName: "ID" },
     {
@@ -79,97 +95,98 @@ export default function Role() {
     },
     {
       field: "Operation",
-      headerName: "Opertation",
+      headerName: "Operation",
       flex: 1,
       renderCell: (row) => {
         return (
           <Box>
-            <Button variant="text" onClick={handleUpdate(row)}>
+            {/* <Button variant="text" onClick={(e) => handleUpdate(e, row)}>
+              Update
+            </Button> */}
+            <Button
+              variant="outlined"
+              color="success"
+              startIcon={<ModeEditIcon />}
+              onClick={(e) => handleUpdate(e, row)}
+            >
               Update
             </Button>
           </Box>
-        )
+        );
       },
     },
-  ]
+  ];
 
   useEffect(() => {
     let getRole = async (param) => {
       let result = await getRequest(
         `${baseUrl}/api/Role/GetByPage?PageIndex=${pageSearch.page}&PageSize=${pageSearch.pageSize}`,
         param
-      )
+      );
       if (result.status === 200) {
-        setPageData(result.data)
+        setPageData(result.data);
       } else {
-        setPageData({ items: [], total: 0 })
+        setPageData({ items: [], total: 0 });
       }
-    }
+    };
     let filterPagedResultRequestDto = {
       Filter: "",
       PageIndex: pageSearch.page,
       PageSize: pageSearch.pageSize,
       Sorting: "",
-    }
-    //setPageData({ items: rows, total: 26 })
-    getRole(filterPagedResultRequestDto)
-  }, [pageSearch])
+    };
+    getRole(filterPagedResultRequestDto);
+  }, [pageSearch, baseUrl]);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   function handleAddRole() {
-    navigate("/role/add")
+    navigate("/role/add");
   }
-  const handleUpdate = (row) => {}
+  const handleUpdate = (e, row) => {
+    e.stopPropagation();
+    //only for one item update
+    if (rowSelectionModel.length === 0 || rowSelectionModel.length > 1) {
+      setAlertMessage("Please select one or more roles");
+      setAlertOpen(true);
+      return;
+    }
+    setSelectedRowId(row.id);
+    console.log("in handle update, row value:", row.id);
+    setUpdateOpen(true);
+  };
 
   const handlePaginationModel = (e) => {
     setPageSearch((preState) => ({
       ...preState,
       page: e.page + 1,
       pageSize: e.pageSize,
-    }))
-  }
+    }));
+  };
   function handleDelete() {
     if (rowSelectionModel.length === 0) {
-      setAlartMessage("Please select items")
-      setOpen(true)
-      return
+      setAlertMessage("Please select one or more roles");
+      setAlertOpen(true);
+      return;
     }
-    setAlartMessage("Are you sure to delete these items?")
-    setOpen(true)
+    setAlertMessage("Are you sure to delete ?");
+    setAlertOpen(true);
   }
 
   const handleWinClose = async (data) => {
-    console.log("handleWinClose", data)
-    setOpen(false)
+    console.log("handleWinClose", data);
+    setAlertOpen(false);
     if (!data.isOk || rowSelectionModel.length === 0) {
-      return
+      return;
     }
-
-    let ids = rowSelectionModel.join(",")
-    let result = await deleteRequest(`/user/Delete/${ids}`)
+    let ids = rowSelectionModel.join(",");
+    let result = await deleteRequest(`${baseUrl}/api/Role/Delete/${ids}`);
     if (result.isSuccess) {
-      toast.success("delete success!")
+      toast.success("Delete Success!");
     } else {
-      toast.error(result.message)
+      toast.error(result.message);
     }
-    setPageSearch({ page: 1, pageSize: pageSearch.pageSize })
-  }
-
-  const handleSearchChange = (event) => {
-    const query = event.target.value.toLowerCase()
-    setSearchQuery(query)
-    console.log("pageData.item:", pageData.items)
-    const filteredRole = [...pageData.items].filter(
-      (role) =>
-        role.roleName.toLowerCase().includes(query) ||
-        role.description.toLowerCase().includes(query)
-    )
-    setFilteredRoleList({
-      items: [...filteredRole],
-      total: filteredRole.length,
-    })
-    console.log("filteredRoleList:", filteredRole)
-  }
+    setPageSearch({ page: 1, pageSize: pageSearch.pageSize });
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -177,14 +194,14 @@ export default function Role() {
         (role) =>
           role.roleName.toLowerCase().includes(searchQuery) ||
           role.description.toLowerCase().includes(searchQuery)
-      )
+      );
       setFilteredRoleList({
         items: [...filteredRole],
         total: filteredRole.length,
-      })
-    }, 300) //debounce
-    return () => clearTimeout(timer)
-  }, [searchQuery, pageData.items])
+      });
+    }, 300); //debounce
+    return () => clearTimeout(timer);
+  }, [searchQuery, pageData.items]);
 
   return (
     <>
@@ -225,7 +242,7 @@ export default function Role() {
               <TextField
                 variant="outlined"
                 size="small"
-                placeholder="Search role ..."
+                placeholder="Search a role ..."
                 fullWidth
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -259,7 +276,7 @@ export default function Role() {
               <Button
                 variant="contained"
                 onClick={() => {
-                  console.log("permission")
+                  console.log("permission");
                 }}
               >
                 Permission
@@ -285,16 +302,73 @@ export default function Role() {
         <AlterDialog
           title="Warning"
           alertType="warning"
-          open={open}
+          open={alertOpen}
           onClose={handleWinClose}
         >
           {alertMessage}
         </AlterDialog>
       </Box>
-
+      <Dialog open={updateOpen} onClose={() => setUpdateOpen(false)}>
+        <DialogTitle>Update Role</DialogTitle>
+        <Formik>
+          <Form onSubmit={formik.handleSubmit}>
+            <DialogContent>
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Role Name"
+                name="roleName"
+                margin="dense"
+                autoComplete="text"
+                onChange={formik.handleChange}
+                value={formik.values.roleName}
+                error={
+                  formik.touched.roleName && Boolean(formik.errors.roleName)
+                }
+                helperText={formik.touched.roleName && formik.errors.roleName}
+                autoFocus
+                sx={{ gridColumn: "span 4" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Description"
+                name="description"
+                margin="dense"
+                onChange={formik.handleChange}
+                value={formik.values.description}
+                error={
+                  formik.touched.description &&
+                  Boolean(formik.errors.description)
+                }
+                helperText={
+                  formik.touched.description && formik.errors.description
+                }
+                autoComplete="current-description"
+                autoFocus
+                sx={{ gridColumn: "span 4" }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button type="submit" color="secondary" variant="contained">
+                Save
+              </Button>
+              <Button
+                onClick={() => setUpdateOpen(false)}
+                color="secondary"
+                variant="contained"
+              >
+                Cancel
+              </Button>
+            </DialogActions>
+          </Form>
+        </Formik>
+      </Dialog>
       {/* <WinDialog title="test dialog" open={open} onClose={handleWinClose}>
         <Adduser />
       </WinDialog> */}
     </>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect } from "react";
 import {
   Box,
   Button,
@@ -11,17 +11,24 @@ import {
   ListItemText,
   Checkbox,
   OutlinedInput,
-} from "@mui/material"
-
-import { useFormik } from "formik"
-import toast from "react-hot-toast"
-import * as Yup from "yup"
-import postRequest from "../../request/postRequest"
-import Header from "../../components/header"
-import { useState } from "react"
-import getRequest from "../../request/getRequest"
+} from "@mui/material";
+import { useFormik } from "formik";
+import toast from "react-hot-toast";
+import * as Yup from "yup";
+import postRequest from "../../request/postRequest";
+import Header from "../../components/header";
+import { useState } from "react";
+import getRequest from "../../request/getRequest";
+import { useNavigate } from "react-router-dom";
 
 export default function AddUser() {
+  const [avatarData, setAvatarData] = useState("");
+  const [roles, setRoles] = useState([]);
+  const [selectRoles, setSelectRoles] = useState([]);
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const navigate = useNavigate();
+  let baseUrl = process.env.REACT_APP_BASE_API_URL;
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -49,7 +56,7 @@ export default function AddUser() {
         .oneOf([Yup.ref("password"), null], "Passwords must match"),
     }),
     onSubmit: async (values) => {
-      let result = await postRequest("/user/Add", {
+      let result = await postRequest(`${baseUrl}/api/User/Add`, {
         username: values.username,
         password: values.password,
         email: values.email,
@@ -58,27 +65,20 @@ export default function AddUser() {
         age: values.age,
         avatar: avatarData,
         roleIds: selectRoles,
-      })
-
+      });
       if (result.isSuccess) {
-        toast.success("add success!")
-        formik.resetForm()
-        //navigate("/", { replace: true });
+        toast.success("add success!");
+        formik.resetForm();
+        navigate("/user", { replace: true });
       } else {
-        toast.error(result.message)
+        toast.error(result.message);
       }
     },
-  })
+  });
 
-  const [avatarData, setAvatarData] = useState("")
   const handleAvatarResult = (result) => {
-    setAvatarData(result)
-  }
-
-  const [roles, setRoles] = useState([])
-  const [selectRoles, setSelectRoles] = useState([])
-  const ITEM_HEIGHT = 48
-  const ITEM_PADDING_TOP = 8
+    setAvatarData(result);
+  };
   const MenuProps = {
     PaperProps: {
       style: {
@@ -86,24 +86,24 @@ export default function AddUser() {
         width: 250,
       },
     },
-  }
+  };
   const handleChangeRole = (event) => {
     const {
       target: { value },
-    } = event
+    } = event;
     setSelectRoles(
-      // On autofill we get a stringified value.
+      //On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
-    )
-  }
+    );
+  };
 
   const renderValueRole = (valueArray) => {
     return roles
       .filter((x) => valueArray.indexOf(x.id) !== -1)
       .map((x) => x.roleName)
-      .join(", ")
+      .join(", ");
     // return roles.map((value) => valueArray.find(x=>x===value.id)).map(x=>x.name).join(', ')
-  }
+  };
 
   return (
     <Box m="20px">
@@ -254,12 +254,20 @@ export default function AddUser() {
             <Button type="submit" color="secondary" variant="contained">
               Create New User
             </Button>
-            <Button type="cancle" color="secondary" variant="contained">
+            <Button
+              type="cancel"
+              color="secondary"
+              variant="contained"
+              onClick={() => {
+                formik.resetForm();
+                navigate("/user");
+              }}
+            >
               Cancel
             </Button>
           </Stack>
         </Box>
       </form>
     </Box>
-  )
+  );
 }
