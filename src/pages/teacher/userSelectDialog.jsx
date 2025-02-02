@@ -16,12 +16,12 @@ import { useNavigate } from 'react-router-dom';
 
 export const UserSelectDialog = ({ isOpen, onClose }) => {
   //set the default state for the user data
-  const [userdata, setUserdata] = useState(null); 
+  const [userdata, setUserdata] = useState(null);
   const [input, setInput] = useState('');
 
   //update the user data by adding the username to the data
   const handleSetUserData = (data, username) => {
-    setUserdata({...data, username});
+    setUserdata({ ...data, username });
   };
 
   // update the input value
@@ -30,14 +30,14 @@ export const UserSelectDialog = ({ isOpen, onClose }) => {
   };
 
   const navigate = useNavigate();
-  const handleConfirm = () => { 
-    if(userdata.id){
-      navigate('/user/teacher/add', {state: {userId: userdata.id}});
+  const handleConfirm = () => {
+    if (userdata.id) {
+      navigate('/user/teacher/add', { state: { userId: userdata.id } });
     } else {
       alert('Please select a user');
     }
   };
-  
+
   // search for the user by name
   const searchUser = async (name) => {
     if (!name.trim()) {
@@ -92,7 +92,7 @@ export const UserSelectDialog = ({ isOpen, onClose }) => {
 
         {/* search result */}
         {userdata && (
-          <Box mt={4} >
+          <Box mt={4}>
             <Typography variant="h4" gutterBottom>
               User Information:
             </Typography>
@@ -112,12 +112,12 @@ export const UserSelectDialog = ({ isOpen, onClose }) => {
                   image={
                     userdata.image ||
                     'https://mui.com/static/images/cards/contemplative-reptile.jpg'
-                  } // default image this part will be modified later when user can offer the own avatar url
+                  }
                   alt="User Image"
                 />
                 <CardContent>
                   <Typography variant="h3" textAlign="left" gutterBottom>
-                   {userdata.username || 'No Name'}
+                    {userdata.username || 'No Name'}
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
                     <strong>ID:</strong> {userdata.id || 'N/A'}
@@ -126,30 +126,29 @@ export const UserSelectDialog = ({ isOpen, onClose }) => {
                     <strong>Email:</strong> {userdata.email || 'N/A'}
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
-                    <strong>Status:</strong> {userdata.isActivce ?  'Active' : 'Inactive'}
+                    <strong>Status:</strong> {userdata.isActivce ? 'Active' : 'Inactive'}
                   </Typography>
                 </CardContent>
               </CardActionArea>
             </Card>
             <Box mt={4} display="flex" justifyContent="center" gap={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={handleConfirm}
-          >
-            Confirm
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            size="large"
-            onClick={onClose}
-          >
-            Close
-          </Button>
-
-        </Box>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                onClick={handleConfirm}
+              >
+                Confirm
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                size="large"
+                onClick={onClose}
+              >
+                Close
+              </Button>
+            </Box>
           </Box>
         )}
 

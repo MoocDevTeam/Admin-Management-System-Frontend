@@ -254,13 +254,13 @@ export default function Teacher() {
       
       {/* Alter windialog for delete teacher */}
       <WinDialog 
-      open={isWinDialogOpen} 
-      onClose={handleWinDialogClose} 
-      onOK={handleDeleteTeacher} 
-      title={"Confirm Deletion"}
-      icon={<WarningIcon color="warning"/>}
+        open={isWinDialogOpen} 
+        onClose={handleWinDialogClose} 
+        onOK={handleDeleteTeacher} 
+        title={"Confirm Deletion"}
+        icon={<WarningIcon color="warning"/>}
       >
-      Are you sure you want to delete the selected teacher?
+        Are you sure you want to delete the selected teacher?
       </WinDialog>
     </Box>
   );

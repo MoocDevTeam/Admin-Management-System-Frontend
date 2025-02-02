@@ -1,62 +1,128 @@
-import React, { useState } from "react"
-import { Box, Button, Stack, Avatar } from "@mui/material"
-import Header from "../../components/header"
-import colors from "../../theme"
-import AlterDialog from "../../components/alterDialog"
-import RoleList from "./roleList"
-
-import { useEffect } from "react"
-import getRequest from "../../request/getRequest"
-import deleteRequest from "../../request/delRequest"
-
-import { useNavigate } from "react-router-dom"
-import toast from "react-hot-toast"
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  Stack,
+  TextField,
+} from "@mui/material";
+import Header from "../../components/header";
+import colors from "../../theme";
+import AlterDialog from "../../components/alterDialog";
+import RoleList from "./roleList";
+import getRequest from "../../request/getRequest";
+import deleteRequest from "../../request/delRequest";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { GridSearchIcon } from "@mui/x-data-grid";
 
 export default function Role() {
-  const [pageSearch, setpageSearch] = useState({
+  const [pageSearch, setPageSearch] = useState({
     pageSize: 10,
     page: 1,
-  })
+  });
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [pageData, setPageData] = useState({ items: [], total: 0 });
+  const [filteredRoleList, setFilteredRoleList] = useState({
+    items: [],
+    total: 0,
+  });
+  const [alertMessage, setAlartMessage] = useState("");
+  const [open, setOpen] = useState(false);
+  let baseUrl = process.env.REACT_APP_BASE_API_URL;
 
-  let baseUrl = process.env.REACT_APP_BASE_API_URL
+  useEffect(() => {
+    let getRole = async (param) => {
+      let result = await getRequest(
+        `${baseUrl}/api/Role/GetByPage?PageIndex=${pageSearch.page}&PageSize=${pageSearch.pageSize}`,
+        param
+      );
+      if (result.status === 200) {
+        setPageData(result.data);
+      } else {
+        setPageData({ items: [], total: 0 });
+      }
+    };
+    let filterPagedResultRequestDto = {
+      Filter: "",
+      PageIndex: pageSearch.page,
+      PageSize: pageSearch.pageSize,
+      Sorting: "",
+    };
+    getRole(filterPagedResultRequestDto);
+  }, [pageSearch]);
+
+  const navigate = useNavigate();
+  function handleAddRole() {
+    navigate("/role/add");
+  }
+  const handleUpdate = (row) => {};
   const handlePaginationModel = (e) => {
-    setpageSearch((preState) => ({
+    setPageSearch((preState) => ({
       ...preState,
       page: e.page + 1,
       pageSize: e.pageSize,
-    }))
+    }));
+  };
+  function handleDelete() {
+    if (rowSelectionModel.length === 0) {
+      setAlartMessage("Please select items");
+      setOpen(true);
+      return;
+    }
+    setAlartMessage("Are you sure to delete these items?");
+    setOpen(true);
   }
 
-  const handleUpdate = (row) => {}
+  const handleWinClose = async (data) => {
+    console.log("handleWinClose", data);
+    setOpen(false);
+    if (!data.isOk || rowSelectionModel.length === 0) {
+      return;
+    }
+    let ids = rowSelectionModel.join(",");
+    let result = await deleteRequest(`/user/Delete/${ids}`);
+    if (result.isSuccess) {
+      toast.success("delete success!");
+    } else {
+      toast.error(result.message);
+    }
+    setPageSearch({ page: 1, pageSize: pageSearch.pageSize });
+  };
 
-  const rows = [
-    { id: 1, RoleName: "SuperAdmin", Description: "full power" },
-    { id: 2, RoleName: "Admin", Description: "full power" },
-    { id: 3, RoleName: "Admin2", Description: "full power" },
-    { id: 4, RoleName: "Admin3", Description: "full power" },
-    { id: 5, RoleName: "Admin4", Description: "full power" },
-    { id: 6, RoleName: "Admin5", Description: "full power" },
-    { id: 7, RoleName: "Teacher", Description: "limited Power" },
-    { id: 8, RoleName: "Teacher2", Description: "limited Power" },
-    { id: 9, RoleName: "Teacher3", Description: "limited Power" },
-    { id: 10, RoleName: "Teacher4", Description: "limited Power" },
-    { id: 11, RoleName: "Teacher5", Description: "limited Power" },
-    { id: 12, RoleName: "Teacher6", Description: "limited Power" },
-    { id: 13, RoleName: "Teacher7", Description: "limited Power" },
-    { id: 14, RoleName: "Teacher8", Description: "limited Power" },
-    { id: 15, RoleName: "Teacher9", Description: "limited Power" },
-    { id: 16, RoleName: "Teacher10", Description: "limited Power" },
-    { id: 17, RoleName: "Teacher11", Description: "limited Power" },
-    { id: 18, RoleName: "Teacher12", Description: "limited Power" },
-    { id: 19, RoleName: "Teacher13", Description: "limited Power" },
-    { id: 20, RoleName: "Teacher14", Description: "limited Power" },
-    { id: 21, RoleName: "Teacher15", Description: "limited Power" },
-    { id: 22, RoleName: "Teacher16", Description: "limited Power" },
-    { id: 23, RoleName: "Teacher17", Description: "limited Power" },
-    { id: 24, RoleName: "Teacher18", Description: "limited Power" },
-    { id: 25, RoleName: "Teacher19", Description: "limited Power" },
-    { id: 26, RoleName: "Teacher20", Description: "limited Power" },
-  ]
+  const handleSearchChange = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+    console.log("pageData.item:", pageData.items);
+    const filteredRole = [...pageData.items].filter(
+      (role) =>
+        role.roleName.toLowerCase().includes(query) ||
+        role.description.toLowerCase().includes(query)
+    );
+    setFilteredRoleList({
+      items: [...filteredRole],
+      total: filteredRole.length,
+    });
+    console.log("filteredRoleList:", filteredRole);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const filteredRole = [...pageData.items].filter(
+        (role) =>
+          role.roleName.toLowerCase().includes(searchQuery) ||
+          role.description.toLowerCase().includes(searchQuery)
+      );
+      setFilteredRoleList({
+        items: [...filteredRole],
+        total: filteredRole.length,
+      });
+    }, 300); //debounce
+    return () => clearTimeout(timer);
+  }, [searchQuery, pageData.items]);
+
   const columns = [
     { field: "id", headerName: "ID" },
     {
@@ -81,73 +147,10 @@ export default function Role() {
               Update
             </Button>
           </Box>
-        )
+        );
       },
     },
-  ]
-
-  const [pageData, setPageData] = useState({ items: [], total: 0 })
-
-  useEffect(() => {
-    let getUser = async (param) => {
-      let result = await getRequest(
-        "http://localhost:9000/api/Role/GetByPage?PageIndex=1&PageSize=10",
-        param
-      )
-      if (result.status === 200) {
-        setPageData(result.data)
-      } else {
-        setPageData({ items: [], total: 0 })
-      }
-    }
-
-    let filterPagedResultRequestDto = {
-      Filter: "",
-      PageIndex: pageSearch.page,
-      PageSize: pageSearch.pageSize,
-      Sorting: "",
-    }
-    //setPageData({ items: rows, total: 26 })
-    getUser(filterPagedResultRequestDto)
-  }, [pageSearch])
-
-  const [open, setOpen] = useState(false)
-
-  const navigate = useNavigate()
-  function handleAddUser() {
-    navigate("/user/add")
-  }
-  const [alertMessage, setAlartMessage] = useState("")
-
-  function handledelete() {
-    if (rowSelectionModel.length === 0) {
-      setAlartMessage("Please select items")
-      setOpen(true)
-      return
-    }
-    setAlartMessage("Are you sure to delete these items?")
-    setOpen(true)
-  }
-
-  const handleWinClose = async (data) => {
-    console.log("handleWinClose", data)
-    setOpen(false)
-    if (!data.isOk || rowSelectionModel.length === 0) {
-      return
-    }
-
-    let ids = rowSelectionModel.join(",")
-    let result = await deleteRequest(`/user/Delete/${ids}`)
-    if (result.isSuccess) {
-      toast.success("delete success!")
-    } else {
-      toast.error(result.message)
-    }
-
-    setpageSearch({ page: 1, pageSize: pageSearch.pageSize })
-  }
-
-  const [rowSelectionModel, setRowSelectionModel] = React.useState([])
+  ];
 
   return (
     <>
@@ -185,22 +188,55 @@ export default function Role() {
         >
           <Box sx={{ mb: "15px" }}>
             <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <Button variant="contained" onClick={handleAddUser}>
+              <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Search role ..."
+                fullWidth
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{ ml: 2, width: 250, height: 40, marginTop: 1 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <IconButton>
+                        <GridSearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => (
+                          setFilteredRoleList({ items: [], total: 0 }),
+                          setSearchQuery("")
+                        )}
+                      >
+                        {searchQuery.length > 0 ? "x" : ""}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Button variant="contained" onClick={handleAddRole}>
                 Add Role
               </Button>
-
               <Button
-                color="secondary"
                 variant="contained"
-                onClick={handledelete}
+                onClick={() => {
+                  console.log("permission");
+                }}
               >
-                Delte
+                Permission
+              </Button>
+              <Button color="secondary" variant="contained" onClick={handleDelete}>
+                Delete
               </Button>
             </Stack>
           </Box>
           <RoleList
             columns={columns}
-            pageData={pageData}
+            pageData={filteredRoleList.items.length > 0 ? filteredRoleList : pageData}
             setPaginationModel={handlePaginationModel}
             setRowSelectionModel={setRowSelectionModel}
           ></RoleList>
@@ -216,9 +252,8 @@ export default function Role() {
       </Box>
 
       {/* <WinDialog title="test dialog" open={open} onClose={handleWinClose}>
-        
         <Adduser />
       </WinDialog> */}
     </>
-  )
+  );
 }
