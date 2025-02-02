@@ -32,21 +32,22 @@ import * as Yup from "yup";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 
 export default function Role() {
-  const [pageSearch, setPageSearch] = useState({
-    pageSize: 10,
-    page: 1,
-  });
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [pageData, setPageData] = useState({ items: [], total: 0 });
-  const [filteredRoleList, setFilteredRoleList] = useState({
-    items: [],
-    total: 0,
-  });
   const [alertMessage, setAlertMessage] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
+  const navigate = useNavigate();
+  const [pageSearch, setPageSearch] = useState({
+    pageSize: 10,
+    page: 1,
+  });
+  const [filteredRoleList, setFilteredRoleList] = useState({
+    items: [],
+    total: 0,
+  });
   let baseUrl = process.env.REACT_APP_BASE_API_URL;
 
   const formik = useFormik({
@@ -100,9 +101,6 @@ export default function Role() {
       renderCell: (row) => {
         return (
           <Box>
-            {/* <Button variant="text" onClick={(e) => handleUpdate(e, row)}>
-              Update
-            </Button> */}
             <Button
               variant="outlined"
               color="success"
@@ -116,6 +114,20 @@ export default function Role() {
       },
     },
   ];
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const filteredRole = [...pageData.items].filter(
+        (role) =>
+          role.roleName.toLowerCase().includes(searchQuery) ||
+          role.description.toLowerCase().includes(searchQuery)
+      );
+      setFilteredRoleList({
+        items: [...filteredRole],
+        total: filteredRole.length,
+      });
+    }, 300); //debounce
+    return () => clearTimeout(timer);
+  }, [searchQuery, pageData.items]);
 
   useEffect(() => {
     let getRole = async (param) => {
@@ -138,7 +150,6 @@ export default function Role() {
     getRole(filterPagedResultRequestDto);
   }, [pageSearch, baseUrl]);
 
-  const navigate = useNavigate();
   function handleAddRole() {
     navigate("/role/add");
   }
@@ -146,12 +157,11 @@ export default function Role() {
     e.stopPropagation();
     //only for one item update
     if (rowSelectionModel.length === 0 || rowSelectionModel.length > 1) {
-      setAlertMessage("Please select one or more roles");
+      setAlertMessage("Please select only one role to update");
       setAlertOpen(true);
       return;
     }
     setSelectedRowId(row.id);
-    console.log("in handle update, row value:", row.id);
     setUpdateOpen(true);
   };
 
@@ -168,40 +178,41 @@ export default function Role() {
       setAlertOpen(true);
       return;
     }
-    setAlertMessage("Are you sure to delete ?");
+    setAlertMessage(
+      `Are you sure to delete ${rowSelectionModel.length} ${
+        rowSelectionModel.length > 1 ? "roles" : "role"
+      } ?`
+    );
     setAlertOpen(true);
   }
-
   const handleWinClose = async (data) => {
-    console.log("handleWinClose", data);
+    let result;
     setAlertOpen(false);
     if (!data.isOk || rowSelectionModel.length === 0) {
       return;
     }
-    let ids = rowSelectionModel.join(",");
-    let result = await deleteRequest(`${baseUrl}/api/Role/Delete/${ids}`);
-    if (result.isSuccess) {
+    try {
+      await Promise.all(
+        rowSelectionModel.map((id) => {
+          result = deleteRequest(`${baseUrl}/api/Role/Delete/${id}`);
+          return result;
+        })
+      );
+      setRowSelectionModel([]);
       toast.success("Delete Success!");
-    } else {
+    } catch (error) {
       toast.error(result.message);
     }
+    // let ids = rowSelectionModel.join(",");
+    //  console.log("rowselectedModel, ids are:", rowSelectionModel, ids);
+    // let result = await deleteRequest(`${baseUrl}/api/Role/Delete/${ids}`);
+    // if (result.isSuccess) {
+    //   toast.success("Delete Success!");
+    // } else {
+    //   toast.error(result.message);
+    // }
     setPageSearch({ page: 1, pageSize: pageSearch.pageSize });
   };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const filteredRole = [...pageData.items].filter(
-        (role) =>
-          role.roleName.toLowerCase().includes(searchQuery) ||
-          role.description.toLowerCase().includes(searchQuery)
-      );
-      setFilteredRoleList({
-        items: [...filteredRole],
-        total: filteredRole.length,
-      });
-    }, 300); //debounce
-    return () => clearTimeout(timer);
-  }, [searchQuery, pageData.items]);
 
   return (
     <>
@@ -307,65 +318,65 @@ export default function Role() {
         >
           {alertMessage}
         </AlterDialog>
+        <Dialog open={updateOpen} onClose={() => setUpdateOpen(false)}>
+          <DialogTitle>Update Role</DialogTitle>
+          <Formik>
+            <Form onSubmit={formik.handleSubmit}>
+              <DialogContent>
+                <TextField
+                  fullWidth
+                  variant="filled"
+                  type="text"
+                  label="Role Name"
+                  name="roleName"
+                  margin="dense"
+                  autoComplete="text"
+                  onChange={formik.handleChange}
+                  value={formik.values.roleName}
+                  error={
+                    formik.touched.roleName && Boolean(formik.errors.roleName)
+                  }
+                  helperText={formik.touched.roleName && formik.errors.roleName}
+                  autoFocus
+                  sx={{ gridColumn: "span 4" }}
+                />
+                <TextField
+                  fullWidth
+                  variant="filled"
+                  type="text"
+                  label="Description"
+                  name="description"
+                  margin="dense"
+                  onChange={formik.handleChange}
+                  value={formik.values.description}
+                  error={
+                    formik.touched.description &&
+                    Boolean(formik.errors.description)
+                  }
+                  helperText={
+                    formik.touched.description && formik.errors.description
+                  }
+                  autoComplete="current-description"
+                  autoFocus
+                  sx={{ gridColumn: "span 4" }}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button type="submit" color="secondary" variant="contained">
+                  Save
+                </Button>
+                <Button
+                  onClick={() => setUpdateOpen(false)}
+                  color="secondary"
+                  variant="contained"
+                >
+                  Cancel
+                </Button>
+              </DialogActions>
+            </Form>
+          </Formik>
+        </Dialog>
       </Box>
-      <Dialog open={updateOpen} onClose={() => setUpdateOpen(false)}>
-        <DialogTitle>Update Role</DialogTitle>
-        <Formik>
-          <Form onSubmit={formik.handleSubmit}>
-            <DialogContent>
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Role Name"
-                name="roleName"
-                margin="dense"
-                autoComplete="text"
-                onChange={formik.handleChange}
-                value={formik.values.roleName}
-                error={
-                  formik.touched.roleName && Boolean(formik.errors.roleName)
-                }
-                helperText={formik.touched.roleName && formik.errors.roleName}
-                autoFocus
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Description"
-                name="description"
-                margin="dense"
-                onChange={formik.handleChange}
-                value={formik.values.description}
-                error={
-                  formik.touched.description &&
-                  Boolean(formik.errors.description)
-                }
-                helperText={
-                  formik.touched.description && formik.errors.description
-                }
-                autoComplete="current-description"
-                autoFocus
-                sx={{ gridColumn: "span 4" }}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button type="submit" color="secondary" variant="contained">
-                Save
-              </Button>
-              <Button
-                onClick={() => setUpdateOpen(false)}
-                color="secondary"
-                variant="contained"
-              >
-                Cancel
-              </Button>
-            </DialogActions>
-          </Form>
-        </Formik>
-      </Dialog>
       {/* <WinDialog title="test dialog" open={open} onClose={handleWinClose}>
         <Adduser />
       </WinDialog> */}

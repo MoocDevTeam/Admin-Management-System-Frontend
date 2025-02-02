@@ -1,17 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Select,
-  InputLabel,
-  FormControl,
-  MenuItem,
-  Stack,
-  ListItemText,
-  Checkbox,
-  OutlinedInput,
-} from "@mui/material";
+import { Box, Button, TextField, Stack } from "@mui/material";
 
 import { useFormik } from "formik";
 import toast from "react-hot-toast";
@@ -19,8 +7,7 @@ import * as Yup from "yup";
 import postRequest from "../../request/postRequest";
 import Header from "../../components/header";
 import { useState } from "react";
-import getRequest from "../../request/getRequest";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function AddRole() {
   const [roles, setRoles] = useState([]);
@@ -36,11 +23,6 @@ export default function AddRole() {
     initialValues: {
       roleName: "",
       description: "",
-      // address: "",
-      // gender: 0,
-      // age: 0,
-      // password: "",
-      // confirmpassword: "",
     },
     validationSchema: Yup.object({
       roleName: Yup.string()
@@ -48,25 +30,11 @@ export default function AddRole() {
         .max(30, "Must be 30 characters or less")
         .required("Required"),
       description: Yup.string().max(100, "Must be 30 characters or less"),
-      // .email("pls input correct email format"),
-      // password: Yup.string()
-      //   .min(6, "Must be 6 characters or more")
-      //   .max(100, "Must be 30 characters or less")
-      //   .required("Required"),
-      // confirmpassword: Yup.string()
-      //   .required("Required")
-      //   .oneOf([Yup.ref("password"), null], "Passwords must match"),
     }),
     onSubmit: async (values) => {
       let result = await postRequest(`${baseUrl}/api/Role/Add`, {
         roleName: values.roleName,
         description: values.description,
-        // email: values.email,
-        // address: values.address,
-        // gender: values.gender,
-        // age: values.age,
-        // avatar: avatarData,
-        // roleIds: selectRoles,
       });
       if (result.isSuccess) {
         toast.success("add success!");
@@ -152,107 +120,6 @@ export default function AddRole() {
             autoFocus
             sx={{ gridColumn: "span 4" }}
           />
-          {/* <TextField
-            fullWidth
-            variant="filled"
-            type="text"
-            label="Confirmed Password"
-            name="confirmpassword"
-            onChange={formik.handleChange}
-            value={formik.values.confirmpassword}
-            error={
-              formik.touched.confirmpassword &&
-              Boolean(formik.errors.confirmpassword)
-            }
-            helperText={
-              formik.touched.confirmpassword && formik.errors.confirmpassword
-            }
-            autoComplete="current-password"
-            autoFocus
-            sx={{ gridColumn: "span 4" }}
-          /> */}
-          {/* <TextField
-            fullWidth
-            variant="filled"
-            type="text"
-            label="Email"
-            name="email"
-            autoComplete="text"
-            onChange={formik.handleChange}
-            value={formik.values.email}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
-            autoFocus
-            sx={{ gridColumn: "span 4" }}
-          /> */}
-          {/* <TextField
-            fullWidth
-            variant="filled"
-            type="text"
-            label="Address"
-            name="address"
-            autoComplete="text"
-            onChange={formik.handleChange}
-            value={formik.values.address}
-            error={formik.touched.address && Boolean(formik.errors.address)}
-            helperText={formik.touched.address && formik.errors.address}
-            autoFocus
-            sx={{ gridColumn: "span 4" }}
-          /> */}
-
-          {/* <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
-            <InputLabel id="demo-simple-select-label">gender</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name="gender"
-              value={formik.values.gender}
-              label="gender"
-              error={formik.touched.gender && Boolean(formik.errors.gender)}
-              helperText={formik.touched.gender && formik.errors.gender}
-              onChange={formik.handleChange}
-            >
-              <MenuItem value={1}>Male</MenuItem>
-              <MenuItem value={2}>Female</MenuItem>
-              <MenuItem value={0}>Other</MenuItem>
-            </Select>
-          </FormControl> */}
-
-          {/* <FormControl sx={{ gridColumn: "span 2" }}>
-            <InputLabel id="demo-multiple-checkbox-label">Roles</InputLabel>
-            <Select
-              labelId="demo-multiple-checkbox-label"
-              id="demo-multiple-checkbox"
-              multiple
-              value={selectRoles}
-              onChange={handleChangeRole}
-              input={<OutlinedInput label="Roles" />}
-              renderValue={renderValueRole}
-              MenuProps={MenuProps}
-            >
-              {roles.map((item) => (
-                <MenuItem key={item.id} value={item.id}>
-                  <Checkbox checked={selectRoles.includes(item.id)} />
-                  <ListItemText primary={item.roleName} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl> */}
-
-          {/* <TextField
-            fullWidth
-            variant="filled"
-            type="text"
-            label="Age"
-            name="age"
-            autoComplete="text"
-            onChange={formik.handleChange}
-            value={formik.values.age}
-            error={formik.touched.age && Boolean(formik.errors.age)}
-            helperText={formik.touched.age && formik.errors.age}
-            autoFocus
-            sx={{ gridColumn: "span 4" }}
-          /> */}
         </Box>
         <Box display="flex" justifyContent="end" mt="20px">
           <Stack direction="row" spacing={2}>
