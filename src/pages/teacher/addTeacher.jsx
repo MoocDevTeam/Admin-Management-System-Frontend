@@ -197,7 +197,6 @@ export default function AddTeacher() {
           <DatePicker
             label="Hired Date"
             format="DD/MM/YYYY"
-            // inputFormat="DD/MM/YYYY"
             onChange={(value) => {
               if(value&&value.isValid()){
                 const formattedDate = value.toISOString();
