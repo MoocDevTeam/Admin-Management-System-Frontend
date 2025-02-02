@@ -8,7 +8,7 @@ const postRequest = async (url, param, setLoading) => {
     let result = await request.post(url, param);
     return result;
   } catch (error) {
-    return { status: 400, message: error.message, data: {} };
+    return { isSuccess: false,status: 400,message: error.message, data: {} };
   } finally {
     if (setLoading) setLoading(false); // Request finished
   }

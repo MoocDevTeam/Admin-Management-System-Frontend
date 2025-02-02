@@ -1,53 +1,58 @@
-import React, { useState, useEffect, Suspense } from "react"
-import { CssBaseline, ThemeProvider } from "@mui/material"
-import { Routes, Route } from "react-router-dom"
-import Dashboard from "./pages/dashboard"
-import Mainlayout from "./components/mainlayout/index"
-import { Toaster } from "react-hot-toast"
-import User from "./pages/user/index"
-import AddUser from "./pages/user/addUser"
-import AddRole from "./pages/role/addRole"
-import Role from "./pages/role/index"
-import Teacher from "./pages/teacher/index"
-import CourseList from "./pages/course/course/courseList/index"
-import CourseSingle from "./pages/course/course/courseSingle/index"
-import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle"
-import Category from "./pages/course/category/index"
-import CourseLaunch from "./pages/course/courseLaunch/index"
-import Page404 from "./pages/page404"
-import { theme } from "./theme"
-import LoginPage from "./pages/login/login"
-import UserProfile from "./pages/profile/userProfile"
-import getRequest from "./request/getRequest"
-import { Lazy } from "yup"
-import LoadingSpinner from "./components/loadingSpinner"
-import { useSelector } from "react-redux"
-import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute"
-import lazyLoad from "./components/util/lazyLoad"
+import React, { useState, useEffect, Suspense } from "react";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/dashboard";
+import Mainlayout from "./components/mainlayout/index";
+import { Toaster } from "react-hot-toast";
+import User from "./pages/user/index";
+import AddUser from "./pages/user/addUser";
+import AddRole from "./pages/role/addRole";
+import Role from "./pages/role/index";
+import Teacher from "./pages/user/teacher/index";
+import CourseList from "./pages/course/course/courseList/index";
+import CourseSingle from "./pages/course/course/courseSingle/index";
+import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle";
+import CategoryTree from "./pages/course/category/categoryTree";
+import CourseLaunch from "./pages/course/courseLaunch/index";
+import Page404 from "./pages/page404";
+import { theme } from "./theme";
+import LoginPage from "./pages/login/login";
+import UserProfile from "./pages/profile/userProfile";
+import getRequest from "./request/getRequest";
+import { Lazy } from "yup";
+import LoadingSpinner from "./components/loadingSpinner";
+import { useSelector } from "react-redux";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import lazyLoad from "./components/util/lazyLoad";
+import Questions from "./pages/exam/questions";
+import Exams from "./pages/exam/exams";
+import ExamPublish from "./pages/exam/publish";
+import AddTeacher from "./pages/user/teacher/addTeacher";
+
 function App() {
-  const [menus, setMenus] = useState([])
-  const [routes, setRoutes] = useState([])
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated)
-  let baseUrl = process.env.REACT_APP_BASE_API_URL
+  const [menus, setMenus] = useState([]);
+  const [routes, setRoutes] = useState([]);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  let baseUrl = process.env.REACT_APP_BASE_API_URL;
 
   useEffect(() => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) return;
     async function getMenu() {
-      const res = await getRequest(`${baseUrl}/api/menu/GetMenuTree`)
+      const res = await getRequest(`${baseUrl}/api/menu/GetMenuTree`);
       if (res.isSuccess) {
-        setMenus(res.data)
-        console.log("res.data is:", res.data)
-        let routerMenuData = []
+        setMenus(res.data);
+        console.log("res.data is:", res.data);
+        let routerMenuData = [];
         for (let i = 0; i < res.data.length; i++) {
           if (res.data[i].children.length > 0) {
             for (let j = 0; j < res.data[i].children.length; j++) {
               if (res.data[i].children[j].menuType === 2) {
-                routerMenuData.push(res.data[i].children[j])
+                routerMenuData.push(res.data[i].children[j]);
               }
             }
           }
         }
-        console.log("routerMenuData is:", routerMenuData)
+        console.log("routerMenuData is:", routerMenuData);
 
         const dynamicRoutes = routerMenuData.map((item) => {
           return (
@@ -62,21 +67,21 @@ function App() {
                 </Suspense>
               }
             />
-          )
-        })
-        console.log("dynamicRoutes: ", dynamicRoutes)
-        setRoutes(dynamicRoutes)
+          );
+        });
+        console.log("dynamicRoutes: ", dynamicRoutes);
+        setRoutes(dynamicRoutes);
       }
     }
-    getMenu()
-  }, [])
+    getMenu();
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Toaster />
       <Routes>
-        <Route Key="login" path="/login" element={<LoginPage />} />
+        <Route key="login" path="/login" element={<LoginPage />} />
         <Route key="home" path="/" element={<Mainlayout />}>
           <Route key="dashboard" path="/" element={<Dashboard />} />
           <Route key="user" path="/user" element={<User />} />
@@ -88,7 +93,7 @@ function App() {
           <Route
             key="category"
             path="/course/category"
-            element={<Category />}
+            element={<CategoryTree />}
           />
           <Route
             key="courseLaunch"
@@ -106,13 +111,19 @@ function App() {
             element={<CourseInstanceSingle />}
           />
 
-          <Route key="teacher" path="/teacher" element={<Teacher />} />
+          //Route for teacher
+          <Route key="teacher" path="/user/teacher" element={<Teacher />} />
+          <Route key="addTeacher" path="/user/teacher/add" element={<AddTeacher />} />
+
+          <Route key="questions" path="/exam/questions" element={<Questions />} />
+          <Route key="exams" path="/exam/exams" element={<Exams />} />
+          <Route key="publish" path="/exam/publish" element={<ExamPublish />} />
 
           <Route key="page404" path="*" element={<Page404 />} />
         </Route>
       </Routes>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

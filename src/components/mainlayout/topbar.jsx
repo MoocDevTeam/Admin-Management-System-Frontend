@@ -8,11 +8,13 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined"
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { clearAuthentication } from "../../feature/authSlice/authSlice"
+
 export default function Topbar() {
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
   }

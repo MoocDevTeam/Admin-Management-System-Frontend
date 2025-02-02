@@ -5,16 +5,16 @@ const deleteRequest = async (url, param, setLoading) => {
     setLoading(true);
   }
   try {
-    if(param){
-        let result = await request.delete(url, param);
-        return result;
-    }else{
-        let result = await request.delete(url);
-        return result; 
+    if (param) {
+      let result = await request.delete(url, param);
+      return result;
+    } else {
+      let result = await request.delete(url);
+      return result;
     }
-   
+
   } catch (error) {
-    return { status: 400, message: error.message, data: {} };
+    return { isSuccess: false, status: 400, message: error.message, data: {} };
   } finally {
     if (setLoading) setLoading(false); // Request finished
   }
