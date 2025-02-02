@@ -13,6 +13,7 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import WarningIcon from "@mui/icons-material/Warning";
+import { UpdateTeacher } from "./updateTeacher";
 
 export default function Teacher() {
   //set default page size
@@ -30,6 +31,20 @@ export default function Teacher() {
 
   //Set windialog open state
   const [isWinDialogOpen, setIsWinDialogOpen] = useState(false);
+
+  //Set update teacher dialog state
+  const [isUpdateTeacherDialogOpen, setIsUpdateTeacherDialogOpen] = useState(false);
+
+  //Set selected teacher state
+  const [selectedTeacher, setSelectedTeacher]= useState(null);
+
+  //Handle selected teacher state
+  const handleSetSelectedTeacher = (rowData) => {
+    setSelectedTeacher(rowData);
+    setIsUpdateTeacherDialogOpen(true);
+  }
+  //Handle update teacher dialog
+  const handleUpdateTeacherDialogClose = () => setIsUpdateTeacherDialogOpen(false);
 
   //Handle search dialog open
   const handleSearchOpen = () => setIsDialogOpen(true);
@@ -177,7 +192,10 @@ export default function Teacher() {
               variant="outlined"
               color="success"
               startIcon={<ModeEditIcon />}
-              onClick={handleWinDialogOpen}
+              onClick={(event) => {
+                event.stopPropagation(); //prevent row selection
+                handleSetSelectedTeacher(params.row); //open update teacher dialog
+              }}
             >
               Update
             </Button>
@@ -262,6 +280,13 @@ export default function Teacher() {
       >
       Are you sure you want to delete the selected teacher?
       </WinDialog>
+
+      {/* Update teacher dialog */}
+      <UpdateTeacher 
+      open={isUpdateTeacherDialogOpen} 
+      onClose={handleUpdateTeacherDialogClose}
+      data={selectedTeacher}
+      />
     </Box>
   );
 }
