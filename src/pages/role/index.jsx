@@ -123,19 +123,15 @@ export default function Role() {
       );
       setFilteredRoleList({
         items: [...filteredRole],
-        total: filteredRole.length,
+        total: filteredRole.length || pageData.total,
       });
     }, 300); //debounce
     return () => clearTimeout(timer);
-  }, [searchQuery, pageData.items]);
+  }, [searchQuery, pageData]);
 
   useEffect(() => {
     async function getRole(param) {
       let result;
-      // let result = await getRequest(
-      //   `${baseUrl}/api/Role/GetByPage?PageIndex=${pageSearch.page}&PageSize=${pageSearch.pageSize}`,
-      //   param
-      // );
       console.log("before getRequest, param is:", param);
       try {
         result = await getRequest(`${baseUrl}/api/Role/GetByPage`, param);
@@ -216,14 +212,6 @@ export default function Role() {
     } catch (error) {
       toast.error(result.message);
     }
-    // let ids = rowSelectionModel.join(",");
-    //  console.log("rowselectedModel, ids are:", rowSelectionModel, ids);
-    // let result = await deleteRequest(`${baseUrl}/api/Role/Delete/${ids}`);
-    // if (result.isSuccess) {
-    //   toast.success("Delete Success!");
-    // } else {
-    //   toast.error(result.message);
-    // }
     // setPageSearch({ page: pageSearch.page, pageSize: pageSearch.pageSize });
     setPageSearch((preState) => ({ ...preState, page: 1 }));
   };
@@ -317,10 +305,15 @@ export default function Role() {
           </Box>
           <RoleList
             columns={columns}
-            pageData={pageData}
+            pageData={
+              filteredRoleList.items.length
+                ? { ...filteredRoleList, total: pageData.total }
+                : pageData
+            }
             setPaginationModel={handlePaginationModel}
             setRowSelectionModel={setRowSelectionModel}
           ></RoleList>
+          {/* total could be zero, pagination does not work */}
         </Box>
         <AlterDialog
           title="Warning"
