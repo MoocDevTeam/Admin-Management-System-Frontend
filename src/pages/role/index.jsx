@@ -140,13 +140,10 @@ export default function Role() {
       try {
         result = await getRequest(`${baseUrl}/api/Role/GetByPage`, param);
         if (result.status === 200) {
-          // console.log("after getRequest, result.data is:", result.data);
-          // console.log("in useEffect, pagedata 1:", pageData);
           setPageData({
             items: result.data.items,
             total: result.data.total,
           });
-          console.log("result.data.total:", result.data.total);
         } else {
           setPageData({ items: [], total: 0 });
         }
@@ -154,15 +151,15 @@ export default function Role() {
         toast.error(result.message);
       }
     }
-    console.log("in useEffect, pagedata 2:", pageData);
+
     let filterPagedResultRequestDto = {
       Filter: "",
-      Page: pageSearch.page,
+      PageIndex: pageSearch.page,
       PageSize: pageSearch.pageSize,
       Sorting: "",
     };
     getRole(filterPagedResultRequestDto);
-  }, [pageSearch]);
+  }, [pageSearch, baseUrl]);
 
   const handlePaginationModel = (e) => {
     console.log("e.page, e.pageSize are:", e.page, e.pageSize);
@@ -180,7 +177,7 @@ export default function Role() {
     e.stopPropagation();
     //only for one item update
     if (rowSelectionModel.length === 0 || rowSelectionModel.length > 1) {
-      setAlertMessage("Please select only one role to update");
+      setAlertMessage("Please select one role to update");
       setAlertOpen(true);
       return;
     }
@@ -320,9 +317,7 @@ export default function Role() {
           </Box>
           <RoleList
             columns={columns}
-            pageData={
-              filteredRoleList.items.length > 0 ? filteredRoleList : pageData
-            }
+            pageData={pageData}
             setPaginationModel={handlePaginationModel}
             setRowSelectionModel={setRowSelectionModel}
           ></RoleList>
