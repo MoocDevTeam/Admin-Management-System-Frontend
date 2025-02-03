@@ -105,6 +105,7 @@ export default function Role() {
         setPageData({ items: [], total: 0 })
       }
     }
+
     let filterPagedResultRequestDto = {
       Filter: "",
       PageIndex: pageSearch.page,
@@ -293,6 +294,7 @@ export default function Role() {
       </Box>
 
       {/* <WinDialog title="test dialog" open={open} onClose={handleWinClose}>
+        
         <Adduser />
       </WinDialog> */}
     </>
