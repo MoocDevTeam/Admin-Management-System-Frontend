@@ -8,21 +8,16 @@ import {
   Stack,
   Skeleton,
   Modal,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  InputAdornment,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import postRequest from "../../../../request/postRequest";
-import toast from "react-hot-toast";
 import { setCourses } from "../../../../store/courseSlice";
 import getRequest from "../../../../request/getRequest";
 import CourseCard from "../../../../components/course/course/CourseCard";
 import FlexList from "../../../../components/course/course/FlexList";
 import { setCurrentCategories } from "../../../../store/categorySlice";
-import { configureStore } from "@reduxjs/toolkit";
 import AddCourseModal from "../addCourseModal";
 export default function CourseList() {
   const [loading, setLoading] = useState(true);
@@ -92,9 +87,9 @@ export default function CourseList() {
       chipIndex === null // all course
         ? courses
         : courses.filter(
-            (course) =>
-              course.categoryName === categories[chipIndex]?.categoryName
-          );
+          (course) =>
+            course.categoryName === categories[chipIndex]?.categoryName
+        );
     setFilteredCourses(filtered);
   };
   //search for course title
@@ -144,6 +139,15 @@ export default function CourseList() {
           value={searchQuery}
           onChange={handleSearchChange}
           sx={{ ml: 2, width: 300, height: 40, marginTop: 1 }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
+          }}
         />
       </Box>
       {/* Filter button and Add course button */}
