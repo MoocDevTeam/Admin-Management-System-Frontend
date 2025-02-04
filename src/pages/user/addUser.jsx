@@ -19,6 +19,7 @@ import postRequest from "../../request/postRequest";
 import Header from "../../components/header";
 import { useState } from "react";
 import getRequest from "../../request/getRequest";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function AddUser() {
@@ -28,7 +29,8 @@ export default function AddUser() {
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const navigate = useNavigate();
-  let baseUrl = process.env.REACT_APP_BASE_API_URL;
+  const { roleNames } = useSelector((state) => state.role);
+
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -56,7 +58,7 @@ export default function AddUser() {
         .oneOf([Yup.ref("password"), null], "Passwords must match"),
     }),
     onSubmit: async (values) => {
-      let result = await postRequest(`${baseUrl}/api/User/Add`, {
+      let result = await postRequest("/User/Add", {
         username: values.username,
         password: values.password,
         email: values.email,
@@ -102,8 +104,12 @@ export default function AddUser() {
       .filter((x) => valueArray.indexOf(x.id) !== -1)
       .map((x) => x.roleName)
       .join(", ");
-    // return roles.map((value) => valueArray.find(x=>x===value.id)).map(x=>x.name).join(', ')
+    //return roles.map((value) => valueArray.find(x=>x===value.id)).map(x=>x.name).join(', ')
   };
+
+  useEffect(() => {
+    setRoles(roleNames);
+  }, [roleNames]);
 
   return (
     <Box m="20px">

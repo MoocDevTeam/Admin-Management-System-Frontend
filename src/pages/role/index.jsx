@@ -25,11 +25,13 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import { useFormik } from "formik";
 import postRequest from "../../request/postRequest";
 import * as Yup from "yup";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import { useDispatch } from "react-redux";
+import { setRoleNames } from "../../feature/roleSlice/roleSlice";
 
 export default function Role() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
@@ -38,17 +40,18 @@ export default function Role() {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
-  const [selectedRowId, setSelectedRowId] = useState(null);
+  const [selectedRowId, setSelectedRowId] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [pageSearch, setPageSearch] = useState({
-    page: 1,
+    pageIndex: 1,
     pageSize: 20,
   });
   const [filteredRoleList, setFilteredRoleList] = useState({
     items: [],
     total: 0,
   });
-  let baseUrl = process.env.REACT_APP_BASE_API_URL;
 
   const formik = useFormik({
     initialValues: {
@@ -65,7 +68,7 @@ export default function Role() {
         .max(100, "Must be 30 characters or less"),
     }),
     onSubmit: async (values) => {
-      let result = await postRequest(`${baseUrl}/api/Role/Update`, {
+      let result = await postRequest("/Role/Update", {
         id: selectedRowId,
         roleName: values.roleName,
         description: values.description,
@@ -132,14 +135,14 @@ export default function Role() {
   useEffect(() => {
     async function getRole(param) {
       let result;
-      console.log("before getRequest, param is:", param);
       try {
-        result = await getRequest(`${baseUrl}/api/Role/GetByPage`, param);
+        result = await getRequest("/Role/GetByPage", param);
         if (result.status === 200) {
           setPageData({
             items: result.data.items,
             total: result.data.total,
           });
+          dispatch(setRoleNames(result.data.items));
         } else {
           setPageData({ items: [], total: 0 });
         }
@@ -147,7 +150,6 @@ export default function Role() {
         toast.error(result.message);
       }
     }
-
     let filterPagedResultRequestDto = {
       Filter: "",
       PageIndex: pageSearch.page,
@@ -155,10 +157,9 @@ export default function Role() {
       Sorting: "",
     };
     getRole(filterPagedResultRequestDto);
-  }, [pageSearch, baseUrl]);
+  }, [pageSearch]);
 
   const handlePaginationModel = (e) => {
-    console.log("e.page, e.pageSize are:", e.page, e.pageSize);
     setPageSearch((preState) => ({
       ...preState,
       page: e.page + 1,
@@ -177,7 +178,8 @@ export default function Role() {
       setAlertOpen(true);
       return;
     }
-    setSelectedRowId(row.id);
+    setSelectedRowId((pre) => [...pre, row.id]);
+
     setUpdateOpen(true);
   };
 
@@ -203,7 +205,7 @@ export default function Role() {
     try {
       await Promise.all(
         rowSelectionModel.map((id) => {
-          result = deleteRequest(`${baseUrl}/api/Role/Delete/${id}`);
+          result = deleteRequest(`Role/Delete/${id}`);
           return result;
         })
       );
@@ -212,7 +214,7 @@ export default function Role() {
     } catch (error) {
       toast.error(result.message);
     }
-    // setPageSearch({ page: pageSearch.page, pageSize: pageSearch.pageSize });
+    //setPageSearch({ page: pageSearch.page, pageSize: pageSearch.pageSize });
     setPageSearch((preState) => ({ ...preState, page: 1 }));
   };
 
@@ -324,7 +326,11 @@ export default function Role() {
           {alertMessage}
         </AlterDialog>
         <Dialog open={updateOpen} onClose={() => setUpdateOpen(false)}>
-          <DialogTitle>Update Role</DialogTitle>
+          <DialogTitle
+            sx={{ color: "#000", fontWeight: "bold", fontSize: "2rem" }}
+          >
+            Update Role
+          </DialogTitle>
           <Formik>
             <Form onSubmit={formik.handleSubmit}>
               <DialogContent>
@@ -343,7 +349,9 @@ export default function Role() {
                   }
                   helperText={formik.touched.roleName && formik.errors.roleName}
                   autoFocus
-                  sx={{ gridColumn: "span 4" }}
+                  sx={{
+                    gridColumn: "span 4",
+                  }}
                 />
                 <TextField
                   fullWidth

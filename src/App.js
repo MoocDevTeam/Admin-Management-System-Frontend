@@ -28,12 +28,11 @@ function App() {
   const [menus, setMenus] = useState([]);
   const [routes, setRoutes] = useState([]);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  let baseUrl = process.env.REACT_APP_BASE_API_URL;
 
   useEffect(() => {
     if (!isAuthenticated) return;
     async function getMenu() {
-      const res = await getRequest(`${baseUrl}/api/menu/GetMenuTree`);
+      const res = await getRequest("menu/GetMenuTree");
       if (res.isSuccess) {
         setMenus(res.data);
         console.log("res.data is:", res.data);

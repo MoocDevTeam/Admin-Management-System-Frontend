@@ -1,22 +1,22 @@
-import React, { useEffect } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { fetchUserByName } from "../../feature/userSlice/userSlice"
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchUserByName } from "../../feature/userSlice/userSlice";
 // import getUserProfile from './getUserProfile';
-import { Container, Typography, Box, TextField, Alert } from "@mui/material"
-import LoadingSpinner from "../../components/loadingSpinner"
-import { getGenderName } from "../../components/util/gender"
+import { Container, Typography, Box, TextField, Alert } from "@mui/material";
+import LoadingSpinner from "../../components/loadingSpinner";
+import { getGenderName } from "../../components/util/gender";
 
 export default function UserProfile() {
-  const dispatch = useDispatch()
-  const { user, status, error } = useSelector((state) => state.user)
+  const dispatch = useDispatch();
+  const { user, status, error } = useSelector((state) => state.user);
 
-  const userName = localStorage.getItem("userName") // Get the username from localStorage
+  const userName = localStorage.getItem("userName"); // Get the username from localStorage
 
   useEffect(() => {
     if (userName) {
-      dispatch(fetchUserByName(userName))
+      dispatch(fetchUserByName(userName));
     }
-  }, [dispatch, userName])
+  }, [dispatch, userName]);
 
   return (
     <Container>
@@ -63,5 +63,5 @@ export default function UserProfile() {
         </Box>
       )}
     </Container>
-  )
+  );
 }

@@ -19,24 +19,24 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { GridSearchIcon } from "@mui/x-data-grid";
 import { genderNameToEnum } from "../../components/util/gender";
-
+import { useSelector } from "react-redux";
 export default function User() {
-  const [pageSearch, setpageSearch] = useState({
-    pageSize: 100,
-    page: 1,
-  });
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [open, setOpen] = useState(false);
   const [pageData, setPageData] = useState({ items: [], total: 0 });
   const [alertMessage, setAlertMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
   const [filteredUserList, setFilteredUserList] = useState({
     items: [],
     total: 0,
   });
-  const navigate = useNavigate();
-  let baseUrl = process.env.REACT_APP_BASE_API_URL;
-
+  const [pageSearch, setPageSearch] = useState({
+    pageSize: 100,
+    pageIndex: 1,
+  });
+  const baseUrl = process.env.REACT_APP_BASE_API_URL;
   const columns = [
     { field: "id", headerName: "ID" },
     {
@@ -89,12 +89,12 @@ export default function User() {
     },
     {
       field: "operation",
-      headerName: "opertation",
+      headerName: "operation",
       flex: 1,
       renderCell: (row) => {
         return (
           <Box>
-            <Button variant="text" onClick={handleUpdate(row)}>
+            <Button variant="text" onClick={(e) => handleUpdate(e, row)}>
               Update
             </Button>
           </Box>
@@ -102,67 +102,6 @@ export default function User() {
       },
     },
   ];
-
-  useEffect(() => {
-    let getUser = async (param) => {
-      let result = await getRequest(`${baseUrl}/api/user/GetByPage`, param);
-      if (result.status === 200) {
-        setPageData(result.data);
-        console.log("user result.data", result.data);
-      } else {
-        setPageData({ items: [], total: 0 });
-      }
-    };
-    let filterPagedResultRequestDto = {
-      Filter: "",
-      PageIndex: pageSearch.page,
-      PageSize: pageSearch.pageSize,
-      Sorting: "",
-    };
-    getUser(filterPagedResultRequestDto);
-  }, [pageSearch]);
-
-  const handlePaginationModel = (e) => {
-    setpageSearch((preState) => ({
-      ...preState,
-      page: e.page + 1,
-      pageSize: e.pageSize,
-    }));
-  };
-
-  const handleUpdate = (row) => {};
-  function handleAddUser() {
-    navigate("/user/add");
-  }
-
-  function handleDelete() {
-    if (rowSelectionModel.length === 0) {
-      setAlertMessage("Please select one or more users");
-      setOpen(true);
-      return;
-    }
-    setAlertMessage("Are you sure to delete?");
-    setOpen(true);
-  }
-
-  const handleWinClose = async (data) => {
-    console.log("handleWinClose", data);
-    setOpen(false);
-    if (!data.isOk || rowSelectionModel.length === 0) {
-      return;
-    }
-
-    let ids = rowSelectionModel.join(",");
-    let result = await deleteRequest(`${baseUrl}/api/User/Delete/${ids}`);
-    if (result.isSuccess) {
-      toast.success("delete success!");
-    } else {
-      toast.error(result.message);
-    }
-
-    setpageSearch({ page: 1, pageSize: pageSearch.pageSize });
-  };
-
   useEffect(() => {
     const timer = setTimeout(() => {
       const filteredRole = [...pageData.items].filter(
@@ -179,7 +118,84 @@ export default function User() {
     }, 300); //debounce
 
     return () => clearTimeout(timer);
-  }, [searchQuery, pageData.items]);
+  }, [searchQuery, pageData]);
+
+  useEffect(() => {
+    let getUser = async (param) => {
+      let result = await getRequest("user/GetByPage", param);
+      if (result.status === 200) {
+        setPageData(result.data);
+      } else {
+        setPageData({ items: [], total: 0 });
+      }
+    };
+    let filterPagedResultRequestDto = {
+      Filter: "",
+      PageIndex: pageSearch.page,
+      PageSize: pageSearch.pageSize,
+      Sorting: "",
+    };
+    getUser(filterPagedResultRequestDto);
+  }, [pageSearch]);
+
+  const handlePaginationModel = (e) => {
+    setPageSearch((preState) => ({
+      ...preState,
+      page: e.page + 1,
+      pageSize: e.pageSize,
+    }));
+  };
+
+  const handleUpdate = (e, row) => {
+    e.stopPropagation();
+  };
+
+  function handleAddUser() {
+    navigate("/user/add");
+  }
+
+  function handleDelete() {
+    if (rowSelectionModel.length === 0) {
+      setAlertMessage("Please select one or more users");
+      setOpen(true);
+      return;
+    }
+    setAlertMessage(
+      `Are you sure to delete ${rowSelectionModel.length} ${
+        rowSelectionModel.length > 1 ? "users" : "user"
+      } ?`
+    );
+    setOpen(true);
+  }
+
+  const handleWinClose = async (data) => {
+    console.log("handleWinClose", data);
+    let result;
+    setOpen(false);
+    if (!data.isOk || rowSelectionModel.length === 0) {
+      return;
+    }
+    // let ids = rowSelectionModel.join(",");
+    // let result = await deleteRequest(`User/Delete/${ids}`);
+    // if (result.isSuccess) {
+    //   toast.success("delete success!");
+    // } else {
+    //   toast.error(result.message);
+    // }
+    try {
+      await Promise.all(
+        rowSelectionModel.map((id) => {
+          result = deleteRequest(`User/Delete/${id}`);
+          return result;
+        })
+      );
+      setRowSelectionModel([]);
+      toast.success("Delete Success!");
+    } catch (error) {
+      toast.error(result.message);
+    }
+    setPageSearch({ page: 1, pageSize: pageSearch.pageSize });
+  };
 
   return (
     <>
@@ -262,7 +278,9 @@ export default function User() {
           <UserList
             columns={columns}
             pageData={
-              filteredUserList.items.length > 0 ? filteredUserList : pageData
+              filteredUserList.items.length
+                ? { ...filteredUserList, total: pageData.total }
+                : pageData
             }
             setPaginationModel={handlePaginationModel}
             setRowSelectionModel={setRowSelectionModel}
