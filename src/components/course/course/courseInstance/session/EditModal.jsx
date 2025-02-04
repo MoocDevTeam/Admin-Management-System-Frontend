@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
-import postRequest from "../../../../request/postRequest";
+import postRequest from "../../../../../request/postRequest";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 

@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import getRequest from "../../request";
+import postRequest from "../../request/postRequest";
 
+let baseUrl = process.env.REACT_APP_BASE_API_URL;
 export const fetchUserByName = createAsyncThunk(
   "user/fetchUserByName",
   async (userName, { rejectWithValue }) => {
@@ -11,6 +13,22 @@ export const fetchUserByName = createAsyncThunk(
     return rejectWithValue(response.message);
   }
 );
+
+export const updateUser = createAsyncThunk(
+  "user/updateUser",
+  async (updateUserData, { rejectWithValue }) => {
+    const response = await postRequest(
+      `${baseUrl}/api/user/update`,
+      updateUserData
+    );
+
+    if (response === 200) {
+      return response.data;
+    }
+    return rejectWithValue(response.message);
+  }
+);
+
 const userNameFromLocalStorage = localStorage.getItem("username") || "admin";
 
 const userSlice = createSlice({

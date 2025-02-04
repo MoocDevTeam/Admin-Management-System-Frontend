@@ -8,11 +8,12 @@ import User from "./pages/user/index";
 import AddUser from "./pages/user/addUser";
 import AddRole from "./pages/role/addRole";
 import Role from "./pages/role/index";
-import Teacher from "./pages/teacher/index";
+import Teacher from "./pages/user/teacher/index";
+import AddTeacher from "./pages/user/teacher/addTeacher";
 import CourseList from "./pages/course/course/courseList/index";
 import CourseSingle from "./pages/course/course/courseSingle/index";
 import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle";
-import Category from "./pages/course/category/index";
+import CategoryTree from "./pages/course/category/categoryTree";
 import CourseLaunch from "./pages/course/courseLaunch/index";
 import Page404 from "./pages/page404";
 import { theme } from "./theme";
@@ -20,6 +21,9 @@ import LoginPage from "./pages/login/login";
 import UserProfile from "./pages/profile/userProfile";
 import getRequest from "./request/getRequest";
 import { Lazy } from "yup";
+import Questions from "./pages/exam/questions";
+import Exams from "./pages/exam/exams";
+import ExamPublish from "./pages/exam/publish";
 import LoadingSpinner from "./components/loadingSpinner";
 import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
@@ -75,7 +79,7 @@ function App() {
       <CssBaseline />
       <Toaster />
       <Routes>
-        <Route Key="login" path="/login" element={<LoginPage />} />
+        <Route key="login" path="/login" element={<LoginPage />} />
         <Route key="home" path="/" element={<Mainlayout />}>
           <Route key="dashboard" path="/" element={<Dashboard />} />
           <Route key="user" path="/user" element={<User />} />
@@ -87,7 +91,7 @@ function App() {
           <Route
             key="category"
             path="/course/category"
-            element={<Category />}
+            element={<CategoryTree />}
           />
           <Route
             key="courseLaunch"
@@ -104,7 +108,24 @@ function App() {
             path="/course/:courseId/CourseInstance/:courseInstanceId"
             element={<CourseInstanceSingle />}
           />
-          <Route key="teacher" path="/teacher" element={<Teacher />} />
+
+          {/* Route for teacher */}
+          <Route key="teacher" path="/user/teacher" element={<Teacher />} />
+          <Route
+            key="addTeacher"
+            path="/user/teacher/add"
+            element={<AddTeacher />}
+          />
+
+          {/* Exam-related routes */}
+          <Route
+            key="questions"
+            path="/exam/questions"
+            element={<Questions />}
+          />
+          <Route key="exams" path="/exam/exams" element={<Exams />} />
+          <Route key="publish" path="/exam/publish" element={<ExamPublish />} />
+
           <Route key="page404" path="*" element={<Page404 />} />
         </Route>
       </Routes>
