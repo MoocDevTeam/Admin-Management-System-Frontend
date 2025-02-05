@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import postRequest from "../../../../request/postRequest";
 import toast from "react-hot-toast";
 import { setCourses } from "../../../../store/courseSlice";
 import { useDispatch, useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
-
 import {
   Box,
   Button,
@@ -16,14 +15,37 @@ import {
   MenuItem,
   IconButton,
 } from "@mui/material";
-
 export default function AddCourseModal({
   CourseData,
   categories,
   handleClose,
 }) {
   const [newCourseData, setNewCourseData] = useState(CourseData);
+  const [selectedCategory, setSelectedCategory] = useState(null); // 存储选中的父级分类
   const courses = useSelector((state) => state.course.filteredCourses);
+  console.log("add course category", categories);
+
+  function flattenCategories(categories, parentPath = "") {
+    let result = [];
+
+    for (const category of categories) {
+      const currentPath = parentPath
+        ? `${parentPath} - ${category.categoryName}`
+        : category.categoryName;
+      result.push({ path: currentPath, id: category.id });
+
+      if (category.children && category.children.length > 0) {
+        result = result.concat(
+          flattenCategories(category.children, currentPath)
+        );
+      }
+    }
+
+    return result;
+  }
+  const flatCategory = flattenCategories(categories);
+  console.log("flatCategory", flatCategory);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -44,8 +66,12 @@ export default function AddCourseModal({
     const { name, value } = event.target;
     setNewCourseData({
       ...newCourseData,
-      [name]: name === "categoryId" ? Number(value) : value, // 动态更新字段值
+      [name]: value,
     });
+    // if (name === "categoryId") {
+    //   setSelectedCategory(value);
+    //   setNewCourseData((prev) => ({ ...prev, subCategoryId: "" }));
+    // }
   };
 
   return (
@@ -105,13 +131,13 @@ export default function AddCourseModal({
             labelId="category-select-label"
             id="category-select"
             name="categoryId"
-            value={newCourseData.categoryId}
+            value={newCourseData.categoryId || ""}
             onChange={handleChange}
             label="Category"
           >
-            {categories.map((category) => (
+            {flatCategory.map((category) => (
               <MenuItem key={category.id} value={category.id}>
-                {category.categoryName}
+                {category.path}
               </MenuItem>
             ))}
           </Select>

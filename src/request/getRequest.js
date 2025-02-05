@@ -5,14 +5,14 @@ const getRequest = async (url, param, setLoading) => {
     setLoading(true);
   }
   try {
-    console.log("begin getRequest", `url:${url}  param:${param}`);
+    // console.log("begin getRequest", `url:${url}  param:${param}`);
     let result = await request.get(url, {
       params: param,
     });
-    console.log(
-      "end getRequest",
-      `url:${url}  param:${param} result:${JSON.stringify(result)}`
-    );
+    // console.log(
+    //   "end getRequest",
+    //   `url:${url}  param:${param} result:${JSON.stringify(result)}`
+    // );
     return result;
   } catch (error) {
     return { status: 400, message: error.message, data: {} };

@@ -49,34 +49,62 @@ export default function CourseList() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getRequest(
+        const courseResponse = await getRequest(
           "/MoocCourse/getall",
           null,
           setLoading
         );
-        if (response?.isSuccess) {
-          dispatch(setCourses(response?.data));
-          setFilteredCourses(response?.data);
-          // store category name and id
-          const uniqueCategories = [];
-          response?.data.forEach((course) => {
-            if (
-              !uniqueCategories.some(
-                (item) => item.categoryName === course.categoryName
-              )
-            ) {
-              uniqueCategories.push({
-                id: course.categoryId,
-                categoryName: course.categoryName,
-              });
-            }
-          });
-          dispatch(setCurrentCategories(uniqueCategories));
-          setCategories(uniqueCategories);
+        if (courseResponse?.isSuccess) {
+          dispatch(setCourses(courseResponse?.data));
+          setFilteredCourses(courseResponse?.data);
           setError("");
         } else {
           setError(
-            response?.message || "An error occurred while fetching data."
+            courseResponse?.message || "An error occurred while fetching data."
+          );
+        }
+      } catch (err) {
+        setError("Failed to fetch data", err);
+      }
+    };
+    fetchData();
+  }, [dispatch]);
+  // process category with unlimited level
+  // store categoryName,id and children
+  function processCategory(category) {
+    const categoryWithChildren = {
+      categoryName: category.categoryName,
+      id: category.id,
+      children: [],
+    };
+    category.childrenCategories.forEach((childCategory) => {
+      categoryWithChildren.children.push(processCategory(childCategory));
+    });
+    return categoryWithChildren;
+  }
+  // fetch category data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categoryResponse = await getRequest(
+          "/Category/GetAllCategories",
+          null,
+          setLoading
+        );
+        if (categoryResponse?.isSuccess) {
+          console.log("category", categoryResponse?.data);
+          const uniqueCategoriesList = [];
+          categoryResponse.data.forEach((category) => {
+            uniqueCategoriesList.push(processCategory(category));
+          });
+          console.log("uniqueCategoriesList", uniqueCategoriesList);
+          dispatch(setCurrentCategories(uniqueCategoriesList));
+          setCategories(uniqueCategoriesList);
+          setError("");
+        } else {
+          setError(
+            categoryResponse?.message ||
+              "An error occurred while fetching data."
           );
         }
       } catch (err) {
