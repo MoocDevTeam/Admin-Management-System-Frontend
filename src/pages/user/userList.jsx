@@ -1,8 +1,8 @@
-import React from "react";
+import React from "react"
 
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid"
 
-export default function RoleList(props) {
+export default function UserList(props) {
   return (
     <>
       <DataGrid
@@ -15,9 +15,9 @@ export default function RoleList(props) {
         rows={props.pageData.items}
         onPaginationModelChange={props.setPaginationModel}
         onRowSelectionModelChange={(newRowSelectionModel) => {
-          props.setRowSelectionModel(newRowSelectionModel);
+          props.setRowSelectionModel(newRowSelectionModel)
         }}
       />
     </>
-  );
+  )
 }
