@@ -18,7 +18,7 @@ import getRequest from "../../../../request/getRequest";
 import CourseCard from "../../../../components/course/course/CourseCard";
 import FlexWrap from "../../../../components/course/shared/FlexWrap";
 import { setCurrentCategories } from "../../../../store/categorySlice";
-import AddCourseModal from "../addCourseModal";
+import AddCourseModal from "../../../../components/course/course/addCourseModal";
 import FilterMenu from "../../../../components/course/course/FilterMenu";
 import Header from "../../../../components/header";
 

@@ -25,7 +25,7 @@ import postRequest from "../../../../request/postRequest";
 import colors from "../../../../theme";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentCategories } from "../../../../store";
-import EditCourseModal from "../editCourse";
+import EditCourseModal from "../../../../components/course/course/editCourse/index"
 import deleteRequest from "../../../../request/delRequest";
 import { useNavigate } from "react-router-dom";
 import StyledBreadcrumbs from "../../../../components/course/course/Breadcrumbs";
