@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUserByName, updateUser } from "../../feature/userSlice/userSlice";
+import { fetchUserByName, updateUser } from "../../store/userSlice";
 import {
   Container,
   Typography,

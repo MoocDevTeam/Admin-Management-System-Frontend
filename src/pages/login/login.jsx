@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -14,21 +14,21 @@ import {
   Link,
   Checkbox,
   IconButton,
-} from "@mui/material"
-import { Link as RouterLink, useNavigate } from "react-router-dom"
-import { useFormik } from "formik"
-import * as Yup from "yup"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faGraduationCap } from "@fortawesome/free-solid-svg-icons"
-import { Visibility, VisibilityOff } from "@mui/icons-material"
-import postRequest from "../../request/postRequest"
-import { useDispatch } from "react-redux"
-import { setAuthenticated } from "../../feature/authSlice/authSlice"
+} from "@mui/material";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import postRequest from "../../request/postRequest";
+import { useDispatch } from "react-redux";
+import { setAuthenticated } from "../../store/authSlice";
 const LoginPage = () => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const loginValidationSchema = Yup.object({
     username: Yup.string()
@@ -37,7 +37,7 @@ const LoginPage = () => {
     password: Yup.string()
       .required("Password is required!")
       .min(6, "Password must be at least 6 characters long"),
-  })
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -47,28 +47,31 @@ const LoginPage = () => {
     },
     loginValidationSchema,
     onSubmit: async (values) => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        const res = await postRequest("http://localhost:9000/api/Auth/login", {
+        const res = await postRequest("/Auth/login", {
           username: values.username,
           password: values.password,
-        })
+        });
         if (res && res.isSuccess === true) {
-          localStorage.setItem("access_token", res.message)
-          localStorage.setItem("userName", values.username)
-          dispatch(setAuthenticated())
-          navigate("/")
+          localStorage.setItem("access_token", res.message);
+          localStorage.setItem("userName", values.username);
+          dispatch(setAuthenticated());
+          navigate("/");
         } else {
-          formik.setFieldError("username", "Invalid username or password")
+          formik.setFieldError("username", "Invalid username or password");
         }
       } catch (error) {
-        console.error("Login error:", error)
-        formik.setFieldError("username", "An error occurred. Please try again.")
+        console.error("Login error:", error);
+        formik.setFieldError(
+          "username",
+          "An error occurred. Please try again."
+        );
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     },
-  })
+  });
 
   return (
     <Box
@@ -317,7 +320,7 @@ const LoginPage = () => {
         </Paper>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

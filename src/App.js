@@ -20,14 +20,19 @@ import { theme } from "./theme";
 import LoginPage from "./pages/login/login";
 import UserProfile from "./pages/profile/userProfile";
 import getRequest from "./request/getRequest";
-import { Lazy } from "yup";
 import Questions from "./pages/exam/questions";
 import Exams from "./pages/exam/exams";
 import ExamPublish from "./pages/exam/publish";
 import LoadingSpinner from "./components/loadingSpinner";
 import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
-import lazyLoad from "./components/util/lazyLoad";
+import { lazy } from "react";
+
+function LazyLoad(componentPath) {
+  const Module = lazy(() => import(`${componentPath}`));
+  return Module;
+}
+
 function App() {
   const [menus, setMenus] = useState([]);
   const [routes, setRoutes] = useState([]);
@@ -60,7 +65,7 @@ function App() {
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <ProtectedRoute>
-                    {lazyLoad(item.componentPath)}
+                    {LazyLoad(item.componentPath)}
                   </ProtectedRoute>
                 </Suspense>
               }

@@ -10,19 +10,18 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchUserByName } from "../../store/userSlice";
 import LoadingSpinner from "../loadingSpinner";
-import { getAccessName } from '../util/access';
-import QuizIcon from '@mui/icons-material/Quiz';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import PublishIcon from '@mui/icons-material/Publish';
-import CastForEducationIcon from '@mui/icons-material/CastForEducation';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import CategoryIcon from '@mui/icons-material/Category';
-import SchoolIcon from '@mui/icons-material/School';
+import { getAccessName } from "../util/access";
+import QuizIcon from "@mui/icons-material/Quiz";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import PublishIcon from "@mui/icons-material/Publish";
+import CastForEducationIcon from "@mui/icons-material/CastForEducation";
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import CategoryIcon from "@mui/icons-material/Category";
+import SchoolIcon from "@mui/icons-material/School";
 
 export default function MainSidebar({ userName }) {
-
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dispatch = useDispatch();
   const { user, status, error } = useSelector((state) => state.user);
@@ -37,7 +36,6 @@ export default function MainSidebar({ userName }) {
     <Box>
       <Sidebar collapsed={isCollapsed}>
         <Menu style={{ height: "99vh" }}>
-          
           {/* LOGO AND MENU ICON */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -120,15 +118,10 @@ export default function MainSidebar({ userName }) {
             >
               Teacher
             </MenuItem>
-
           </SubMenu>
 
           <SubMenu icon={<AutoStoriesIcon />} label="Course Management">
-            <MenuItem
-              icon={<MenuBookIcon />}
-              component={<Link />}
-              to="course"
-            >
+            <MenuItem icon={<MenuBookIcon />} component={<Link />} to="course">
               Courses
             </MenuItem>
             <MenuItem
@@ -169,34 +162,9 @@ export default function MainSidebar({ userName }) {
             >
               Publish
             </MenuItem>
-
-          </SubMenu>
-
-          <SubMenu icon={<PeopleOutlinedIcon />} label="Course Management">
-            <MenuItem
-              icon={<PeopleOutlinedIcon />}
-              component={<Link />}
-              to="course"
-            >
-              Courses
-            </MenuItem>
-            <MenuItem
-              icon={<PeopleOutlinedIcon />}
-              component={<Link />}
-              to="/course/category"
-            >
-              Categories
-            </MenuItem>
-            <MenuItem
-              icon={<PeopleOutlinedIcon />}
-              component={<Link />}
-              to="/course/courseLaunch"
-            >
-              Course Launch
-            </MenuItem>
           </SubMenu>
         </Menu>
       </Sidebar>
     </Box>
-  )
+  );
 }

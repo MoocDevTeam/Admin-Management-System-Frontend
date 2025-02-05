@@ -123,7 +123,7 @@ export default function User() {
   useEffect(() => {
     let getUser = async (param) => {
       let result = await getRequest("user/GetByPage", param);
-      if (result.status === 200) {
+      if (result.isSuccess === true) {
         setPageData(result.data);
       } else {
         setPageData({ items: [], total: 0 });

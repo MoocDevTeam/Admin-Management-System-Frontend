@@ -31,7 +31,7 @@ import postRequest from "../../request/postRequest";
 import * as Yup from "yup";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { useDispatch } from "react-redux";
-import { setRoleNames } from "../../feature/roleSlice/roleSlice";
+import { setRoleNames } from "../../store/roleSlice";
 
 export default function Role() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
@@ -137,7 +137,7 @@ export default function Role() {
       let result;
       try {
         result = await getRequest("/Role/GetByPage", param);
-        if (result.status === 200) {
+        if (result.isSuccess === true) {
           setPageData({
             items: result.data.items,
             total: result.data.total,
