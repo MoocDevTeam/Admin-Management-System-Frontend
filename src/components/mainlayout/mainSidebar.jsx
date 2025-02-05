@@ -36,7 +36,7 @@ export default function MainSidebar({ userName }) {
   return (
     <Box>
       <Sidebar collapsed={isCollapsed}>
-        <Menu style={{ height: "99vh" }}>
+        <Menu style={{ height: '99vh' }}>
           
           {/* LOGO AND MENU ICON */}
           <MenuItem
@@ -54,9 +54,7 @@ export default function MainSidebar({ userName }) {
                 alignItems="center"
                 ml="15px"
               >
-                <Typography color={colors.grey[100]}>
-                  {user ? getAccessName(user.access) : ""}
-                </Typography>
+                <Typography color={colors.grey[100]}>{user ? getAccessName(user.access) : ''}</Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
                 </IconButton>
@@ -75,23 +73,21 @@ export default function MainSidebar({ userName }) {
                 />
               </Box>
 
-              {status === "loading" && <LoadingSpinner />}
-              {status === "failed" && (
-                <Alert severity="error">
-                  {error || "Failed to load user data"}
-                </Alert>
+              {status === 'loading' && (<LoadingSpinner />)}
+              {status === 'failed' && (
+                <Alert severity="error">{error || 'Failed to load user data'}</Alert>
               )}
-              {status === "succeeded" && (
+              {status === 'succeeded' && (
                 <Box textAlign="center">
                   <Typography
                     color={colors.grey[100]}
                     fontWeight="bold"
                     sx={{ m: "10px 0 0 0" }}
                   >
-                    {user.userName || "n/a"}
+                    {user.userName || 'n/a'}
                   </Typography>
                   <Typography color={colors.greenAccent[500]}>
-                    {user.email || "n/a"}
+                    {user.email || 'n/a'}
                   </Typography>
                 </Box>
               )}
@@ -120,7 +116,6 @@ export default function MainSidebar({ userName }) {
             >
               Teacher
             </MenuItem>
-
           </SubMenu>
 
           <SubMenu icon={<AutoStoriesIcon />} label="Course Management">
@@ -169,32 +164,8 @@ export default function MainSidebar({ userName }) {
             >
               Publish
             </MenuItem>
-
           </SubMenu>
 
-          <SubMenu icon={<PeopleOutlinedIcon />} label="Course Management">
-            <MenuItem
-              icon={<PeopleOutlinedIcon />}
-              component={<Link />}
-              to="course"
-            >
-              Courses
-            </MenuItem>
-            <MenuItem
-              icon={<PeopleOutlinedIcon />}
-              component={<Link />}
-              to="/course/category"
-            >
-              Categories
-            </MenuItem>
-            <MenuItem
-              icon={<PeopleOutlinedIcon />}
-              component={<Link />}
-              to="/course/courseLaunch"
-            >
-              Course Launch
-            </MenuItem>
-          </SubMenu>
         </Menu>
       </Sidebar>
     </Box>

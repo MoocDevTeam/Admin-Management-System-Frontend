@@ -1,13 +1,11 @@
 {
   "name": "moocadmin",
-  "version": "1.0.25",
+  "version": "1.0.24",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.1.0",
-    "@fortawesome/free-solid-svg-icons": "^6.7.2",
-    "@fortawesome/react-fontawesome": "^0.2.2",
     "@microsoft/signalr": "^8.0.7",
     "@mui/icons-material": "^6.1.6",
     "@mui/lab": "^6.0.0-beta.24",
@@ -36,7 +34,7 @@
     "styled-components": "^6.1.13",
     "uuid": "^11.0.5",
     "web-vitals": "^2.1.4",
-    "yup": "^1.6.1"
+    "yup": "^1.4.0"
   },
   "scripts": {
     "start": "set PORT=9008 && react-scripts start",

@@ -1,43 +1,44 @@
-import React, { useState } from "react"
-import { Box, IconButton, Menu, MenuItem } from "@mui/material"
-import colors from "../../theme"
-import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined"
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined"
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined"
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined"
-import { useNavigate } from "react-router-dom"
-import { useDispatch } from "react-redux"
-import { clearAuthentication } from "../../feature/authSlice/authSlice"
+import React, { useState } from "react";
+import { Box, IconButton, Menu, MenuItem } from "@mui/material";
+import colors from "../../theme";
+import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import { useNavigate } from 'react-router-dom';
+
 export default function Topbar() {
-  const [anchorEl, setAnchorEl] = useState(null)
-  const isMenuOpen = Boolean(anchorEl)
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const isMenuOpen = Boolean(anchorEl);
+  const navigate = useNavigate();
+
   const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   const handleProfileNavigate = () => {
-    navigate("/profile") // Navigate to the UserProfile page
-  }
+    navigate('/profile');  // Navigate to the UserProfile page
+  };
 
   const handleProfileClick = () => {
-    console.log("Profile clicked") //should open profile route
-    handleMenuClose()
-    handleProfileNavigate()
+    console.log('Profile clicked'); //should open profile route
+    handleMenuClose();
+    handleProfileNavigate();
   }
 
+
+
   const handleLogoutClick = () => {
-    console.log("Logout clicked") // should clear JWT token
-    handleMenuClose()
-    localStorage.removeItem("access_token") // Remove token from localStorage
-    localStorage.removeItem("userName") // Remove username from localStorage
-    dispatch(clearAuthentication())
-    navigate("/login") // Navigate to login page
+    console.log('Logout clicked'); // should clear JWT token
+    handleMenuClose();
+    localStorage.removeItem('access_token');  // Remove token from localStorage
+    localStorage.removeItem('userName');  // Remove username from localStorage
+    navigate('/login');  // Navigate to login page
   }
 
   return (
@@ -46,11 +47,12 @@ export default function Topbar() {
         display="flex"
         backgroundColor={colors.primary[400]}
         borderRadius="3px"
-      ></Box>
+      >
+      </Box>
 
       {/* ICONS */}
       <Box display="flex">
-        <IconButton>
+        <IconButton >
           <LightModeOutlinedIcon />
         </IconButton>
         <IconButton>
@@ -69,12 +71,12 @@ export default function Topbar() {
           open={isMenuOpen}
           onClose={handleMenuClose}
           anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
+            vertical: 'bottom',
+            horizontal: 'right',
           }}
           transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
+            vertical: 'top',
+            horizontal: 'right',
           }}
         >
           <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
@@ -82,5 +84,5 @@ export default function Topbar() {
         </Menu>
       </Box>
     </Box>
-  )
+  );
 }
