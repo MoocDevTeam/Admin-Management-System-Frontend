@@ -15,7 +15,7 @@ const getRequest = async (url, param, setLoading) => {
     );
     return result;
   } catch (error) {
-    return { isSuccess: false,status: 400, message: error.message, data: {} };
+    return { isSuccess: false, status: 400, message: error.message, data: {} };
   } finally {
     if (setLoading) setLoading(false); // Request finished
   }

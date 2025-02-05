@@ -3,7 +3,12 @@ import { Menu, MenuItem, Button } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { filterCourses } from "../../../store/courseSlice";
 
-const CategoryDummyData = ["All", "Programming Language", "Business and Accounting", "Social"]
+const CategoryDummyData = [
+  "All",
+  "Programming Language",
+  "Business and Accounting",
+  "Social",
+];
 
 const FilterDropdown = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -24,24 +29,15 @@ const FilterDropdown = () => {
 
   return (
     <>
-      <Button
-        variant="outlined"
-        color="primary"
-        onClick={handleOpen}
-      >
+      <Button variant="outlined" color="primary" onClick={handleOpen}>
         Filter
       </Button>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {CategoryDummyData.map((item, index) => {
           return (
             <MenuItem onClick={() => handleFilter(`${item}`)}>{item}</MenuItem>
-          )
+          );
         })}
-
       </Menu>
     </>
   );
