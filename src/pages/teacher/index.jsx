@@ -64,7 +64,7 @@ export default function Teacher() {
       for (const id of rowSelectionModel) {
         try {
           const result = await deleteRequest(`/teacher/Delete/${id}`);
-          if (result.status === 200) {
+          if (result.isSuccess === true) {
             toast("Teacher deleted successfully");
             console.log(`deleted teacher with id: ${id}`);
           } else {
@@ -94,7 +94,7 @@ export default function Teacher() {
   useEffect(() => {
     let getTeacher = async (param) => {
       let result = await getRequest("/teacher/GetByPage", param);
-      if (result.status === 200) {
+      if (result.isSuccess === true) {
         setPageData(result.data);
       } else {
         setPageData({ items: [], total: 0 });
@@ -278,16 +278,16 @@ export default function Teacher() {
 
       {/* Windialog to search a user before adding a teacher */}
       <UserSelectDialog isOpen={isDialogOpen} onClose={handleSearchClose} />
-      
+
       {/* Alter windialog for delete teacher */}
-      <WinDialog 
-      open={isWinDialogOpen} 
-      onClose={handleWinDialogClose} 
-      onOK={handleDeleteTeacher} 
-      title={"Confirm Deletion"}
-      icon={<WarningIcon color="warning"/>}
+      <WinDialog
+        open={isWinDialogOpen}
+        onClose={handleWinDialogClose}
+        onOK={handleDeleteTeacher}
+        title={"Confirm Deletion"}
+        icon={<WarningIcon color="warning" />}
       >
-      Are you sure you want to delete the selected teacher?
+        Are you sure you want to delete the selected teacher?
       </WinDialog>
 
       {/* Update teacher dialog */}
