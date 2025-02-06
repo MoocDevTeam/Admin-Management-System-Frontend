@@ -8,8 +8,7 @@ import User from "./pages/user/index";
 import AddUser from "./pages/user/addUser";
 import AddRole from "./pages/role/addRole";
 import Role from "./pages/role/index";
-import Teacher from "./pages/user/teacher/index";
-import AddTeacher from "./pages/user/teacher/addTeacher";
+import Teacher from "./pages/teacher/index";
 import CourseList from "./pages/course/course/courseList/index";
 import CourseSingle from "./pages/course/course/courseSingle/index";
 import CourseInstanceSingle from "./pages/course/course/courseInstanceSingle";
@@ -23,6 +22,7 @@ import getRequest from "./request/getRequest";
 import Questions from "./pages/exam/questions";
 import Exams from "./pages/exam/exams";
 import ExamPublish from "./pages/exam/publish";
+import AddTeacher from "./pages/teacher/addTeacher";
 import LoadingSpinner from "./components/loadingSpinner";
 import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
@@ -117,10 +117,13 @@ function App() {
           {/* Route for teacher */}
           <Route key="teacher" path="/user/teacher" element={<Teacher />} />
           <Route
-            key="addTeacher"
-            path="/user/teacher/add"
-            element={<AddTeacher />}
+            key="teacher"
+            path="/teacher"
+            element={
+              <Teacher />
+            }
           />
+          <Route key="addTeacher" path="/teacher/add" element={<AddTeacher/>}/>
 
           {/* Exam-related routes */}
           <Route

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
-import postRequest from "../../../../../request/postRequest";
+import postRequest from "../../../../../../request/postRequest";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-const EditModal = ({ onClose, session }) => {
+const EditSessionModal = ({ onClose, session }) => {
   const [sessionData, setSessionData] = useState({
     courseInstanceId: "",
     id: "",
@@ -119,4 +119,4 @@ const EditModal = ({ onClose, session }) => {
   );
 };
 
-export default EditModal;
+export default EditSessionModal;

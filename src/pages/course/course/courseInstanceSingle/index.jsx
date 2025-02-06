@@ -2,7 +2,7 @@ import React from "react";
 import Header from "../../../../components/header";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
+import { Box, Typography} from "@mui/material";
 import colors from "../../../../theme";
 import toast from "react-hot-toast";
 import StyledSection from "../../../../components/course/shared/StyledSection";
@@ -38,6 +38,8 @@ export default function CourseInstanceSingle() {
     }
   );
 
+
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -71,7 +73,8 @@ export default function CourseInstanceSingle() {
       </StyledSection>
 
       <StyledSection sx={{ marginTop: "16px", backgroundColor: colors.primary[400] }}>
-        <SessionList sessions={courseInstance.sessions} />
+
+        <SessionList sessions={courseInstance.sessions} courseInstanceId={courseInstanceId} />
       </StyledSection>
     </Box>
   );
