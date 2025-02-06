@@ -23,7 +23,7 @@ export default function AddTeacher() {
 
   //Get userId from the search dialog
   const location = useLocation();
-  const userId = location.state?.userId;
+  const userId = location.state?.userId;        
 
   const navigate = useNavigate();
   const handleOnClose = () => {
