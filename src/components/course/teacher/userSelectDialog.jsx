@@ -11,7 +11,7 @@ import {
   CardMedia,
   Grid,
 } from '@mui/material';
-import getRequest from '../../request/getRequest';
+import getRequest from '../../../request/getRequest';
 import { useNavigate } from 'react-router-dom';
 
 export const UserSelectDialog = ({ isOpen, onClose }) => {
