@@ -5,6 +5,7 @@ const initialState = {
   token: null,
   status: "idle",
   error: null,
+  menuItems: [],
 };
 const authSlice = createSlice({
   name: "auth",
@@ -16,7 +17,11 @@ const authSlice = createSlice({
     clearAuthentication: (state) => {
       state.isAuthenticated = false;
     },
+    setMenuItems: (state, action) => {
+      state.menuItems = action.payload;
+    },
   },
 });
-export const { setAuthenticated, clearAuthentication } = authSlice.actions;
+export const { setAuthenticated, clearAuthentication, setMenuItems } =
+  authSlice.actions;
 export default authSlice.reducer;

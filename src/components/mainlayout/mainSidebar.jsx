@@ -20,12 +20,35 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CategoryIcon from "@mui/icons-material/Category";
 import SchoolIcon from "@mui/icons-material/School";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
+import { TreeItem } from "@mui/x-tree-view/TreeItem";
 
 export default function MainSidebar({ userName }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dispatch = useDispatch();
+  const menuItems = useSelector((state) => state.auth.menuItems);
   const { user, status, error } = useSelector((state) => state.user);
-
+  console.log("in mainSidebar,menu items:", menuItems);
+  const renderTree = (nodes) =>
+    nodes.map((node) => (
+      <TreeItem
+        key={node.id}
+        itemId={node.id.toString()}
+        label={
+          <div style={{ display: "flex", alignItems: "center" }}>
+            {/* <Checkbox
+              size="small"
+              checked={checked.includes(node.id)}
+              indeterminate={indeterminate.includes(node.id)}
+              onChange={(e) => handleCheck(node, e.target.checked)}
+            /> */}
+            <span>{node.title}</span>
+          </div>
+        }
+      >
+        {node.children && node.children.length > 0 && renderTree(node.children)}
+      </TreeItem>
+    ));
   useEffect(() => {
     if (userName) {
       dispatch(fetchUserByName(userName));
@@ -95,8 +118,10 @@ export default function MainSidebar({ userName }) {
               )}
             </Box>
           )}
-
-          <SubMenu icon={<PeopleOutlinedIcon />} label="People Management">
+          {menuItems && (
+            <SimpleTreeView>{renderTree(menuItems)}</SimpleTreeView>
+          )}
+          {/* <SubMenu icon={<PeopleOutlinedIcon />} label="People Management">
             <MenuItem
               icon={<PeopleOutlinedIcon />}
               component={<Link />}
@@ -118,7 +143,7 @@ export default function MainSidebar({ userName }) {
             >
               Teacher
             </MenuItem>
-          </SubMenu>
+          </SubMenu> */}
 
           <SubMenu icon={<AutoStoriesIcon />} label="Course Management">
             <MenuItem icon={<MenuBookIcon />} component={<Link />} to="course">

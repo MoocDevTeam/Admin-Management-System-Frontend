@@ -27,7 +27,8 @@ import LoadingSpinner from "./components/loadingSpinner";
 import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { lazy } from "react";
-
+import { useDispatch } from "react-redux";
+import { setMenuItems } from "./store/authSlice";
 function LazyLoad(componentPath) {
   const Module = lazy(() => import(`${componentPath}`));
   return Module;
@@ -37,7 +38,8 @@ function App() {
   const [menus, setMenus] = useState([]);
   const [routes, setRoutes] = useState([]);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-
+  const menuItems = useSelector((state) => state.auth.menuItems);
+  const dispatch = useDispatch();
   useEffect(() => {
     if (!isAuthenticated) return;
     async function getMenu() {
@@ -45,6 +47,7 @@ function App() {
       if (res.isSuccess) {
         setMenus(res.data);
         console.log("res.data is:", res.data);
+        dispatch(setMenuItems([...res.data]));
         let routerMenuData = [];
         for (let i = 0; i < res.data.length; i++) {
           if (res.data[i].children.length > 0) {
@@ -77,7 +80,7 @@ function App() {
       }
     }
     getMenu();
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <ThemeProvider theme={theme}>
