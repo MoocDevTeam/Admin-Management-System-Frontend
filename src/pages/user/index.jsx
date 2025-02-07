@@ -19,14 +19,17 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { GridSearchIcon } from "@mui/x-data-grid";
 import { genderNameToEnum } from "../../components/util/gender";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setRoleNames } from "../../store/roleSlice";
 export default function User() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [open, setOpen] = useState(false);
   const [pageData, setPageData] = useState({ items: [], total: 0 });
   const [alertMessage, setAlertMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const roleNames = useSelector((state) => state.role.roleNames);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [filteredUserList, setFilteredUserList] = useState({
     items: [],
@@ -138,6 +141,35 @@ export default function User() {
     getUser(filterPagedResultRequestDto);
   }, [pageSearch]);
 
+  useEffect(() => {
+    async function getRole(param) {
+      let result;
+      try {
+        result = await getRequest("/Role/GetByPage", param);
+        if (result.isSuccess === true) {
+          dispatch(
+            setRoleNames({ items: result.data.items, total: result.data.total })
+          );
+        } else {
+          return;
+        }
+      } catch {
+        toast.error(result.message);
+      }
+    }
+    let filterPagedResultRequestDto = {
+      Filter: "",
+      PageIndex: pageSearch.page,
+      PageSize: pageSearch.pageSize,
+      Sorting: "",
+    };
+    if (roleNames.total > 0) {
+      return;
+    } else {
+      getRole(filterPagedResultRequestDto);
+    }
+  }, []);
+
   const handlePaginationModel = (e) => {
     setPageSearch((preState) => ({
       ...preState,
@@ -175,13 +207,6 @@ export default function User() {
     if (!data.isOk || rowSelectionModel.length === 0) {
       return;
     }
-    // let ids = rowSelectionModel.join(",");
-    // let result = await deleteRequest(`User/Delete/${ids}`);
-    // if (result.isSuccess) {
-    //   toast.success("delete success!");
-    // } else {
-    //   toast.error(result.message);
-    // }
     try {
       await Promise.all(
         rowSelectionModel.map((id) => {
