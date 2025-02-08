@@ -32,7 +32,6 @@ import * as Yup from "yup";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { useDispatch } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
-import { useSelector } from "react-redux";
 
 export default function Role() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
@@ -44,7 +43,6 @@ export default function Role() {
   const [selectedRowId, setSelectedRowId] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const roleNames = useSelector((state) => state.role.roleNames);
 
   const [pageSearch, setPageSearch] = useState({
     pageIndex: 1,
@@ -71,7 +69,7 @@ export default function Role() {
     }),
     onSubmit: async (values) => {
       let result = await postRequest("/Role/Update", {
-        id: selectedRowId,
+        id: selectedRowId[0],
         roleName: values.roleName,
         description: values.description,
       });
@@ -162,14 +160,7 @@ export default function Role() {
       PageSize: pageSearch.pageSize,
       Sorting: "",
     };
-    if (roleNames.total > 0) {
-      setPageData({
-        items: roleNames.items,
-        total: roleNames.total,
-      });
-    } else {
-      getRole(filterPagedResultRequestDto);
-    }
+    getRole(filterPagedResultRequestDto);
   }, [pageSearch]);
 
   const handlePaginationModel = (e) => {
