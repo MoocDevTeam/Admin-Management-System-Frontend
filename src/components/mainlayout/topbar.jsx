@@ -34,8 +34,8 @@ export default function Topbar() {
   const handleLogoutClick = () => {
     console.log("Logout clicked"); // should clear JWT token
     handleMenuClose();
-    localStorage.removeItem("access_token"); // Remove token from localStorage
-    localStorage.removeItem("userName"); // Remove username from localStorage
+    // localStorage.removeItem("access_token"); // Remove token from localStorage
+    // localStorage.removeItem("userName"); // Remove username from localStorage
     dispatch(clearAuthentication());
     navigate("/login"); // Navigate to login page
   };
