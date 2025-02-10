@@ -44,7 +44,7 @@ export default function User() {
 
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
 
-  // State: stores the user data of the row we want to update
+  //store user data
   const [selectedUser, setSelectedUser] = useState(null);
 
   const baseUrl = process.env.REACT_APP_BASE_API_URL;
@@ -186,11 +186,7 @@ export default function User() {
     }));
   };
 
-  const handleUpdate = (e, row) => {
-    e.stopPropagation();
-    // setSelectedUser(row.row);      // store the clicked user's data
-    // setUpdateDialogOpen(true)
-  };
+ 
 
   function handleAddUser() {
     navigate("/user/add");
@@ -201,8 +197,8 @@ export default function User() {
   // This function is triggered when the user clicks "UPDATE"
   const handleOpenUpdateDialog = (event, rowData) => {
     event.stopPropagation(); // prevents row selection triggered by the DataGrid
-    setSelectedUser(rowData);         // store the user data to pass to the dialog
-    setIsUpdateDialogOpen(true);      // open the dialog
+    setSelectedUser(rowData); // store the user data to pass to the dialog
+    setIsUpdateDialogOpen(true);// open the dialog
   };
 
   const handleCloseUpdateDialog = () => {
