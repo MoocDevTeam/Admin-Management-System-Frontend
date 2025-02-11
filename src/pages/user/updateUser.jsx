@@ -55,7 +55,7 @@ export const UpdateUser = ({open, onClose, data, onUserUpdated}) => {
             const result = await postRequest("/User/Update", payload);
             if(result.isSuccess){
                 toast.success("user updated successfully");
-                onUserUpdated({...values});
+                onUserUpdated({...values}); //callback to userIndex to update parent state
                 formik.resetForm();
             }else{
                 toast.error(result.message || "failed to update user");
@@ -173,7 +173,7 @@ export const UpdateUser = ({open, onClose, data, onUserUpdated}) => {
                    mt={3}
                    >
                     <Button variant="outlined" onClick={onClose}>CANCEL</Button>
-                    <Button variant="contained" type="submit" color="primary" onClick={() => console.log("Button clicked!")}>UPDATE</Button>
+                    <Button variant="contained" type="submit" color="primary">UPDATE</Button>
                    </Stack>
                 </form>
             </Box>

@@ -205,6 +205,18 @@ export default function User() {
     setIsUpdateDialogOpen(false);
   };
 
+
+  //callback for child
+  const handleUserUpdated = (updatedUser) => {
+    setPageData((prevData) => {
+      const newItems = prevData.items.map((user) => 
+         (user.id === updatedUser.id ? updatedUser : user)
+      );
+      return {...prevData, items: newItems};
+    });
+    setIsUpdateDialogOpen(false); //close the userUpdate dialog
+  };
+
   function handleDelete() {
     if (rowSelectionModel.length === 0) {
       setAlertMessage("Please select one or more users");
@@ -335,6 +347,7 @@ export default function User() {
           open={isUpdateDialogOpen}
           onClose={handleCloseUpdateDialog}
           data={selectedUser}
+          onUserUpdated={handleUserUpdated}
         />
       )}
 
