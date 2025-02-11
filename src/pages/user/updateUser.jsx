@@ -51,29 +51,29 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
       };
       console.log("Update payload:", payload);
 
-      const result = await postRequest("/User/Update", payload);
-      if (result.isSuccess) {
-        toast.success("user updated successfully");
-        onUserUpdated({ ...values });
-        formik.resetForm();
-      } else {
-        toast.error(result.message || "failed to update user");
-      }
-    },
-  });
-  // If data changes while dialog is open, update form values
-  useEffect(() => {
-    if (data) {
-      formik.setValues({
-        id: data.id || "",
-        userName: data.userName || "",
-        email: data.email || "",
-        address: data.address || "",
-        gender: data.gender ?? 0,
-        age: data.age || 0,
-      });
-    }
-  }, [data]);
+            const result = await postRequest("/User/Update", payload);
+            if(result.isSuccess){
+                toast.success("user updated successfully");
+                onUserUpdated({...values}); //callback to userIndex to update parent state
+                formik.resetForm();
+            }else{
+                toast.error(result.message || "failed to update user");
+            }
+        },
+    });
+    // If data changes while dialog is open, update form values
+    useEffect(() => {
+        if(data){
+            formik.setValues({
+                id: data.id || "",
+                userName: data.userName || "",
+                email: data.email || "",
+                address: data.address || "",
+                gender: data.gender ?? 0,
+                age: data.age || 0,
+            });
+        }
+    },[data]);
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -152,36 +152,34 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
               sx={{ gridColumn: "span 2" }}
             ></TextField>
 
-            <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
-              <InputLabel>GENDER</InputLabel>
-              <Select
-                name="gender"
-                label="GENDER" // corresponds to <InputLabel> for accessibility
-                value={formik.values.gender}
-                onChange={formik.handleChange}
-                error={formik.touched.gender && Boolean(formik.errors.gender)}
-              >
-                <MenuItem value={0}>Other</MenuItem>
-                <MenuItem value={1}>Male</MenuItem>
-                <MenuItem value={2}>Female</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          <Stack direction="row" spacing={2} justifyContent="flex-end" mt={3}>
-            <Button variant="outlined" onClick={onClose}>
-              CANCEL
-            </Button>
-            <Button
-              variant="contained"
-              type="submit"
-              color="primary"
-              onClick={() => console.log("Button clicked!")}
-            >
-              UPDATE
-            </Button>
-          </Stack>
-        </form>
-      </Box>
-    </Dialog>
-  );
-};
+                    <FormControl
+                    fullWidth
+                    sx={{gridColumn: "span 2"}}
+                    >
+                     <InputLabel>GENDER</InputLabel>   
+                     <Select
+                     name="gender"
+                     label="GENDER" // corresponds to <InputLabel> for accessibility
+                     value={formik.values.gender}
+                     onChange={formik.handleChange}
+                     error={formik.touched.gender && Boolean(formik.errors.gender)}
+                     >
+                        <MenuItem value={0}>Other</MenuItem>
+                        <MenuItem value={1}>Male</MenuItem>
+                        <MenuItem value={2}>Female</MenuItem>
+                     </Select>
+                    </FormControl>
+                   </Box>
+                   <Stack
+                   direction="row"
+                   spacing={2}
+                   justifyContent="flex-end"
+                   mt={3}
+                   >
+                    <Button variant="outlined" onClick={onClose}>CANCEL</Button>
+                    <Button variant="contained" type="submit" color="primary">UPDATE</Button>
+                   </Stack>
+                </form>
+            </Box>
+        </Dialog>
+    );
