@@ -21,6 +21,8 @@ import { GridSearchIcon } from "@mui/x-data-grid";
 import { genderNameToEnum } from "../../components/util/gender";
 import { useDispatch, useSelector } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
+import { UpdateUser } from "./updateUser"; 
+
 export default function User() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [open, setOpen] = useState(false);
@@ -39,6 +41,12 @@ export default function User() {
     pageSize: 100,
     pageIndex: 1,
   });
+
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+
+  //store user data
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const baseUrl = process.env.REACT_APP_BASE_API_URL;
   const columns = [
     { field: "id", headerName: "ID" },
@@ -84,7 +92,7 @@ export default function User() {
       renderCell: (row) => {
         return (
           <Avatar
-            src={baseUrl + row.row.avatar}
+            // src={baseUrl + row.row.avatar}
             sx={{ width: 50, height: 50 }}
           ></Avatar>
         );
@@ -94,10 +102,10 @@ export default function User() {
       field: "operation",
       headerName: "operation",
       flex: 1,
-      renderCell: (row) => {
+      renderCell: (params) => {
         return (
           <Box>
-            <Button variant="text" onClick={(e) => handleUpdate(e, row)}>
+            <Button variant="text" onClick={(e) => handleOpenUpdateDialog(e, params.row)}>
               Update
             </Button>
           </Box>
@@ -178,13 +186,24 @@ export default function User() {
     }));
   };
 
-  const handleUpdate = (e, row) => {
-    e.stopPropagation();
-  };
+ 
 
   function handleAddUser() {
     navigate("/user/add");
   }
+
+ 
+
+  // This function is triggered when the user clicks "UPDATE"
+  const handleOpenUpdateDialog = (event, rowData) => {
+    event.stopPropagation(); // prevents row selection triggered by the DataGrid
+    setSelectedUser(rowData); // store the user data to pass to the dialog
+    setIsUpdateDialogOpen(true);// open the dialog
+  };
+
+  const handleCloseUpdateDialog = () => {
+    setIsUpdateDialogOpen(false);
+  };
 
   function handleDelete() {
     if (rowSelectionModel.length === 0) {
@@ -310,6 +329,16 @@ export default function User() {
             setPaginationModel={handlePaginationModel}
             setRowSelectionModel={setRowSelectionModel}
           ></UserList>
+
+          {selectedUser && (
+        <UpdateUser
+          open={isUpdateDialogOpen}
+          onClose={handleCloseUpdateDialog}
+          data={selectedUser}
+        />
+      )}
+
+
         </Box>
         <AlterDialog
           title="Warning"
