@@ -21,8 +21,8 @@ import { GridSearchIcon } from "@mui/x-data-grid";
 import { genderNameToEnum } from "../../components/util/gender";
 import { useDispatch, useSelector } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
-import { UpdateUser } from "./updateUser"; 
-
+import { UpdateUser } from "./updateUser";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
 export default function User() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [open, setOpen] = useState(false);
@@ -105,7 +105,12 @@ export default function User() {
       renderCell: (params) => {
         return (
           <Box>
-            <Button variant="text" onClick={(e) => handleOpenUpdateDialog(e, params.row)}>
+            <Button
+              color="success"
+              startIcon={<ModeEditIcon />}
+              variant="text"
+              onClick={(e) => handleOpenUpdateDialog(e, params.row)}
+            >
               Update
             </Button>
           </Box>
@@ -186,19 +191,15 @@ export default function User() {
     }));
   };
 
- 
-
   function handleAddUser() {
     navigate("/user/add");
   }
-
- 
 
   // This function is triggered when the user clicks "UPDATE"
   const handleOpenUpdateDialog = (event, rowData) => {
     event.stopPropagation(); // prevents row selection triggered by the DataGrid
     setSelectedUser(rowData); // store the user data to pass to the dialog
-    setIsUpdateDialogOpen(true);// open the dialog
+    setIsUpdateDialogOpen(true); // open the dialog
   };
 
   const handleCloseUpdateDialog = () => {
@@ -331,14 +332,12 @@ export default function User() {
           ></UserList>
 
           {selectedUser && (
-        <UpdateUser
-          open={isUpdateDialogOpen}
-          onClose={handleCloseUpdateDialog}
-          data={selectedUser}
-        />
-      )}
-
-
+            <UpdateUser
+              open={isUpdateDialogOpen}
+              onClose={handleCloseUpdateDialog}
+              data={selectedUser}
+            />
+          )}
         </Box>
         <AlterDialog
           title="Warning"

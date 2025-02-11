@@ -11,11 +11,9 @@ import Header from "../../components/header";
 import colors from "../../theme";
 import AlterDialog from "../../components/alterDialog";
 import RoleList from "./roleList";
-
 import { useEffect } from "react";
 import getRequest from "../../request/getRequest";
 import deleteRequest from "../../request/delRequest";
-
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { GridSearchIcon } from "@mui/x-data-grid";
@@ -32,7 +30,7 @@ import * as Yup from "yup";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { useDispatch } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
-
+import { theme } from "../../theme";
 export default function Role() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -335,7 +333,12 @@ export default function Role() {
         </AlterDialog>
         <Dialog open={updateOpen} onClose={() => setUpdateOpen(false)}>
           <DialogTitle
-            sx={{ color: "#000", fontWeight: "bold", fontSize: "2rem" }}
+            sx={{
+              color: "#fff",
+              fontWeight: "bold",
+              fontSize: "2rem",
+              bgcolor: theme.palette.secondary.main,
+            }}
           >
             Update Role
           </DialogTitle>
