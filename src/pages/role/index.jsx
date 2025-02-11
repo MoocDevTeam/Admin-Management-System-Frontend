@@ -200,28 +200,32 @@ export default function Role() {
     );
     setAlertOpen(true);
   }
+
   const handleWinClose = async (data) => {
     let result;
     setAlertOpen(false);
     if (!data.isOk || rowSelectionModel.length === 0) {
       return;
     }
+    const ids = rowSelectionModel;
+
     try {
-      await Promise.all(
-        rowSelectionModel.map((id) => {
-          result = deleteRequest(`Role/Delete/${id}`);
-          return result;
-        })
-      );
-      setRowSelectionModel([]);
+      if (rowSelectionModel.length === 1) {
+        result = await deleteRequest(`Role/Delete/${rowSelectionModel[0]}`);
+      }
+      if (rowSelectionModel.length >= 1) {
+        result = await deleteRequest("Role/BatchDelete", {
+          data: ids,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
       toast.success("Delete Success!");
     } catch (error) {
       toast.error(result.message);
+      setRowSelectionModel([]);
     }
-    //setPageSearch({ page: pageSearch.page, pageSize: pageSearch.pageSize });
     setPageSearch((preState) => ({ ...preState, page: 1 }));
   };
-
   return (
     <>
       <Box m="20px">
