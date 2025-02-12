@@ -34,10 +34,10 @@ export default function CourseInstanceModal({ open, courses, onSubmit, onUpdate,
     if (selectedRowData) {
       setCourseInstance({
         moocCourseId: selectedRowData.moocCourseId,
-        status: selectedRowData.status,
-        permission: selectedRowData.permission,
-        startDate: selectedRowData.startDate ? dayjs(selectedRowData.startDate) : null,
-        endDate: selectedRowData.endDate ? dayjs(selectedRowData.endDate) : null,
+        status: selectedRowData.status === "Open" ? 1 : 0,
+        permission: selectedRowData.permission === "Public" ? 1 : 0,
+        startDate: selectedRowData.startDate ? dayjs.utc(selectedRowData.startDate) : null, // Treat as UTC
+        endDate: selectedRowData.endDate ? dayjs.utc(selectedRowData.endDate) : null,
         description: selectedRowData.description,
       });
     }
@@ -53,11 +53,10 @@ export default function CourseInstanceModal({ open, courses, onSubmit, onUpdate,
     }));
   };
 
-  // date inputs
   const handleDateInputChange = (name, date) => {
     setCourseInstance((prev) => ({
       ...prev,
-      [name]: date ? date.toISOString() : null,
+      [name]: date ? dayjs.utc(date).toISOString() : null, // Convert to UTC and store as ISO string
     }));
   };
 
@@ -65,6 +64,7 @@ export default function CourseInstanceModal({ open, courses, onSubmit, onUpdate,
     event.preventDefault();
     const formattedInstance = {
       ...courseInstance,
+      //Although we have converted format in handleDateInputChange, we still need to ensure the date-time values are in the correct UTC format
       startDate: courseInstance.startDate ? dayjs(courseInstance.startDate).utc().toISOString() : null,
       endDate: courseInstance.endDate ? dayjs(courseInstance.endDate).utc().toISOString() : null,
     };
@@ -157,7 +157,7 @@ export default function CourseInstanceModal({ open, courses, onSubmit, onUpdate,
             {/* Start Date */}
             <DateTimePicker
               label="Start Date"
-              value={courseInstance.startDate ? dayjs(courseInstance.startDate).utc() : null}
+              value={courseInstance.startDate ? dayjs.utc(courseInstance.startDate) : null} // Explicitly use UTC
               format="DD/MM/YYYY HH:mm" // Explicitly set format, otherwise the format will be "MM/DD/YYYY HH:mm"
               onChange={(newValue) => handleDateInputChange("startDate", newValue)}
               // DateTimePicker doesn’t accept fullWidth or margin props
@@ -166,7 +166,7 @@ export default function CourseInstanceModal({ open, courses, onSubmit, onUpdate,
             {/* End Date */}
             <DateTimePicker
               label="End Date"
-              value={courseInstance.endDate ? dayjs(courseInstance.endDate).utc() : null}
+              value={courseInstance.endDate ? dayjs.utc(courseInstance.endDate) : null}
               format="DD/MM/YYYY HH:mm"
               onChange={(newValue) => handleDateInputChange("endDate", newValue)}
               slotProps={{ textField: { fullWidth: true, margin: "normal" } }}

@@ -12,6 +12,7 @@ const Container = styled(Box)(({ theme }) => ({
   "& .MuiDataGrid-cell": {
     borderBottom: "none",
   },
+  //to all cells in the Course Title column
   "& .course-column--cell": {
     color: colors.greenAccent[300],
   },
