@@ -1,18 +1,19 @@
-import Header from "../../../components/header";
+import Header from "../../components/header";
 import { Box, Button, Stack, Dialog, Typography } from "@mui/material";
-import TeacherList from "./teacherList";
+import TeacherList from "../../components/course/teacher/teacherList";
 import React, { useState, useEffect } from "react";
-import getRequest from "../../../request/getRequest";
-import colors from "../../../theme";
+import getRequest from "../../request/getRequest";
+import colors from "../../theme";
 import dayjs from "dayjs";
-import { UserSelectDialog } from "./userSelectDialog";
-import deleteRequest from "../../../request/delRequest";
+import { UserSelectDialog } from "../../components/course/teacher/userSelectDialog";
+import deleteRequest from "../../request/delRequest";
 import toast from "react-hot-toast";
-import WinDialog from "../../../components/winDialog";
+import WinDialog from "../../components/winDialog";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import WarningIcon from "@mui/icons-material/Warning";
+import { UpdateTeacher } from "../../components/course/teacher/updateTeacher";
 
 export default function Teacher() {
   //set default page size
@@ -30,6 +31,20 @@ export default function Teacher() {
 
   //Set windialog open state
   const [isWinDialogOpen, setIsWinDialogOpen] = useState(false);
+
+  //Set update teacher dialog state
+  const [isUpdateTeacherDialogOpen, setIsUpdateTeacherDialogOpen] = useState(false);
+
+  //Set selected teacher state
+  const [selectedTeacher, setSelectedTeacher]= useState(null);
+
+  //Handle selected teacher state
+  const handleSetSelectedTeacher = (rowData) => {
+    setSelectedTeacher(rowData);
+    setIsUpdateTeacherDialogOpen(true);
+  }
+  //Handle update teacher dialog
+  const handleUpdateTeacherDialogClose = () => setIsUpdateTeacherDialogOpen(false);
 
   //Handle search dialog open
   const handleSearchOpen = () => setIsDialogOpen(true);
@@ -146,6 +161,7 @@ export default function Teacher() {
       flex: 1,
       cellClassName: "createdByUerId-column--cell",
     },
+
     {
       field: "createdAt",
       headerName: "Created Date",
@@ -177,7 +193,11 @@ export default function Teacher() {
               variant="outlined"
               color="success"
               startIcon={<ModeEditIcon />}
-              onClick={handleWinDialogOpen}
+              onClick={(event) => {
+                event.stopPropagation(); //prevent row selection
+                handleSetSelectedTeacher(params.row); //open update teacher dialog
+                console.log("setSelectedTeacher", selectedTeacher)
+              }}
             >
               Update
             </Button>
@@ -188,12 +208,15 @@ export default function Teacher() {
   ];
 
   return (
+    <>
     <Box m="20px">
       <Header title="Teacher" subtitle="Manging Teacher Members"></Header>
       <Box
         m="40px 0 0 0"
         minHeight={"500px"}
-        height="100%"
+        minWidth={"500px"}
+        width="99%"
+        height={"100%"}
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
@@ -241,12 +264,16 @@ export default function Teacher() {
             </Button>
           </Stack>
         </Box>
-        <TeacherList
+        <Box width={"auto"}>
+        <TeacherList 
           columns={columns}
           pageData={pageData}
           setPaginationModel={handlePaginationModel}
           setRowSelectionModel={setRowSelectionModel}
         ></TeacherList>
+
+        </Box>
+
       </Box>
 
       {/* Windialog to search a user before adding a teacher */}
@@ -262,6 +289,14 @@ export default function Teacher() {
       >
         Are you sure you want to delete the selected teacher?
       </WinDialog>
+
+      {/* Update teacher dialog */}
+      <UpdateTeacher 
+      open={isUpdateTeacherDialogOpen} 
+      onClose={handleUpdateTeacherDialogClose}
+      data={selectedTeacher}
+      />
     </Box>
+    </>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { List, ListItemButton, ListItemText, ListItemIcon, Divider, Box, Typography } from "@mui/material";
+import { List, ListItemButton, ListItemText, Box, Typography } from "@mui/material";
 import FileUploadPanel from './FileUploadPanel';
 import { useTheme } from "@mui/material/styles";
 import Link from '@mui/material/Link';

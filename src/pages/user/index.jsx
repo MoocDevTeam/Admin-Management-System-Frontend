@@ -191,6 +191,10 @@ export default function User() {
     }));
   };
 
+  const handleUpdate = (e, row) => {
+    e.stopPropagation();
+  };
+
   function handleAddUser() {
     navigate("/user/add");
   }
@@ -206,14 +210,13 @@ export default function User() {
     setIsUpdateDialogOpen(false);
   };
 
-
   //callback for child
   const handleUserUpdated = (updatedUser) => {
     setPageData((prevData) => {
-      const newItems = prevData.items.map((user) => 
-         (user.id === updatedUser.id ? updatedUser : user)
+      const newItems = prevData.items.map((user) =>
+        user.id === updatedUser.id ? updatedUser : user
       );
-      return {...prevData, items: newItems};
+      return { ...prevData, items: newItems };
     });
     setIsUpdateDialogOpen(false); //close the userUpdate dialog
   };
@@ -344,15 +347,13 @@ export default function User() {
           ></UserList>
 
           {selectedUser && (
-        <UpdateUser
-          open={isUpdateDialogOpen}
-          onClose={handleCloseUpdateDialog}
-          data={selectedUser}
-          onUserUpdated={handleUserUpdated}
-        />
-      )}
-
-
+            <UpdateUser
+              open={isUpdateDialogOpen}
+              onClose={handleCloseUpdateDialog}
+              data={selectedUser}
+              onUserUpdated={handleUserUpdated}
+            />
+          )}
         </Box>
         <AlterDialog
           title="Warning"

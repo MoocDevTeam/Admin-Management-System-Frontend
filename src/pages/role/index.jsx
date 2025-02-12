@@ -198,7 +198,6 @@ export default function Role() {
     );
     setAlertOpen(true);
   }
-
   const handleWinClose = async (data) => {
     let result;
     setAlertOpen(false);
