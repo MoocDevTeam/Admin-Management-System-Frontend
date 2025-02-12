@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Box, Stack, Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../../components/header";
 import TestList from "../../test/testList";
 import deleteRequest from "../../../request/delRequest";
@@ -27,21 +30,20 @@ export default function CourseLaunch() {
   //When user selects rows with IDs 1 and 5, onRowSelectionModelChange fires then setRowSelectionModel([1, 5]) updates state.
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [alertMessage, setAlertMessage] = useState("");
   const [modalMode, setModalMode] = useState("add"); //"add" or "update"
 
   //handlePageSearchChange
   const handlePaginationModel = (e) => {
     setPageSearch((preState) => ({
       ...preState,
-      page: e.page + 1,
+      page: e.page + 1, //The page value starts from 0 (zero-based index), so add 1 to make it user-friendly
       pageSize: e.pageSize,
     }));
   };
 
   const handleCourseInstanceUpdate = async (updatedCourseInstance) => {
     try {
-      console.log("updatedCourseInstance: ", updatedCourseInstance);
+      // console.log("updatedCourseInstance: ", updatedCourseInstance);
       const response = await postRequest("/CourseInstance/update", updatedCourseInstance);
       if (response.isSuccess) {
         toast.success("Course instance updated successfully!");
@@ -103,6 +105,7 @@ export default function CourseLaunch() {
         // console.log("API Response data:", result.data);
         setPageData(result.data);
       } else {
+        // If the new request fails, we need to clear the previous data
         setPageData({ items: [], total: 0 });
       }
     };
@@ -124,6 +127,7 @@ export default function CourseLaunch() {
             {/* Disable Add button if at least one row is selected */}
             <Button
               variant="contained"
+              startIcon={<AddIcon />}
               onClick={() => handleIsModalOpen("add")}
               disabled={rowSelectionModel.length > 0}>
               Add Course Launch
@@ -131,6 +135,7 @@ export default function CourseLaunch() {
             {/* Disable Update button if no row OR multiple rows are selected */}
             <Button
               variant="contained"
+              startIcon={<ModeEditIcon />}
               onClick={() => handleIsModalOpen("update")}
               disabled={rowSelectionModel.length !== 1}>
               Update
@@ -149,6 +154,7 @@ export default function CourseLaunch() {
             <Button
               color="secondary"
               variant="contained"
+              startIcon={<DeleteIcon />}
               onClick={handleDeleteCourseInstance}
               disabled={rowSelectionModel.length === 0}>
               Delete
