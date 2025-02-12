@@ -183,3 +183,4 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
             </Box>
         </Dialog>
     );
+  }
