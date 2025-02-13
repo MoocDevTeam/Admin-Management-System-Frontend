@@ -15,12 +15,11 @@ export default function AddCourseModal({
   const courses = useSelector((state) => state.course.filteredCourses);
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-  // 递归转换 categories 为 Tree 需要的格式
   const formatTreeData = (categories) => {
     return categories.map((category) => ({
-      key: category.id, // key 必须唯一
+      key: category.id,
       id: category.id,
-      title: category.categoryName, // 显示的名称
+      title: category.categoryName,
       children: category.children ? formatTreeData(category.children) : [],
     }));
   };
@@ -47,10 +46,7 @@ export default function AddCourseModal({
       [name]: value,
     });
   };
-  const onExpand = (newExpandedKeys) => {
-    setExpandedKeys(newExpandedKeys);
-    setAutoExpandParent(false);
-  };
+
   const onSelect = (selectedKeys, info) => {
     if (selectedKeys.length > 0) {
       console.log("id", selectedKeys[0]);
@@ -60,6 +56,7 @@ export default function AddCourseModal({
       }));
     }
   };
+
   return (
     <Box
       sx={{

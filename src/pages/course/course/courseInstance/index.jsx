@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   Box,
@@ -19,7 +20,7 @@ import {
 } from "@mui/material";
 import StyledSection from "../../../../components/course/shared/StyledSection";
 import Header from "../../../../components/header";
-import BackButton from "../../../../components/course/shared/ReturnButton";
+import ReturnButton from "../../../../components/course/shared/ReturnButton";
 import getRequest from "../../../../request/getRequest";
 import postRequest from "../../../../request/postRequest";
 import colors from "../../../../theme";
@@ -65,7 +66,7 @@ export default function CourseSingle() {
 
   return (
     <Box m="20px">
-      <BackButton />
+      <ReturnButton></ReturnButton>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Header
           title={data?.data?.title || "Loading..."}
@@ -91,7 +92,6 @@ export default function CourseSingle() {
             >
               Meta Data
             </Typography>
-
             <Button variant="contained" color="secondary" onClick={handleOpen}>
               Edit
             </Button>
@@ -137,8 +137,15 @@ export default function CourseSingle() {
         {!isLoading && !error && data && (
           <Box component="ul" sx={{ listStyle: "none", padding: 0, margin: 0 }}>
             {data.data.courseInstances?.map((instance) => (
-              <Box component="li" key={instance.id} sx={{ marginBottom: "8px" }}>
-                <Link to={`/course/${courseId}/CourseInstance/${instance.id}`} style={{ textDecoration: "none" }}>
+              <Box
+                component="li"
+                key={instance.id}
+                sx={{ marginBottom: "8px" }}
+              >
+                <Link
+                  to={`/course/${courseId}/CourseInstance/${instance.id}`}
+                  style={{ textDecoration: "none" }}
+                >
                   <Chip
                     sx={{
                       borderRadius: "8px",
