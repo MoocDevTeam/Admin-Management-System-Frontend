@@ -4,47 +4,30 @@ import toast from "react-hot-toast";
 import { setCourses } from "../../../../store/courseSlice";
 import { useDispatch, useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  IconButton,
-} from "@mui/material";
+import { Tree } from "antd";
+import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
+
 export default function AddCourseModal({
   CourseData,
   categories,
   handleClose,
 }) {
   const [newCourseData, setNewCourseData] = useState(CourseData);
-  const [selectedCategory, setSelectedCategory] = useState(null); // 存储选中的父级分类
   const courses = useSelector((state) => state.course.filteredCourses);
-  console.log("add course category", categories);
+  const [expandedKeys, setExpandedKeys] = useState([]);
+  const [autoExpandParent, setAutoExpandParent] = useState(true);
 
-  function flattenCategories(categories, parentPath = "") {
-    let result = [];
+  // 递归转换 categories 为 Tree 需要的格式
+  const formatTreeData = (categories) => {
+    return categories.map((category) => ({
+      key: category.id, // key 必须唯一
+      id: category.id,
+      title: category.categoryName, // 显示的名称
+      children: category.children ? formatTreeData(category.children) : [],
+    }));
+  };
 
-    for (const category of categories) {
-      const currentPath = parentPath
-        ? `${parentPath} - ${category.categoryName}`
-        : category.categoryName;
-      result.push({ path: currentPath, id: category.id });
-
-      if (category.children && category.children.length > 0) {
-        result = result.concat(
-          flattenCategories(category.children, currentPath)
-        );
-      }
-    }
-
-    return result;
-  }
-  const flatCategory = flattenCategories(categories);
-  console.log("flatCategory", flatCategory);
+  const treeData = formatTreeData(categories);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -68,10 +51,21 @@ export default function AddCourseModal({
       ...newCourseData,
       [name]: value,
     });
-    // if (name === "categoryId") {
-    //   setSelectedCategory(value);
-    //   setNewCourseData((prev) => ({ ...prev, subCategoryId: "" }));
-    // }
+  };
+
+  const onExpand = (newExpandedKeys) => {
+    setExpandedKeys(newExpandedKeys);
+    setAutoExpandParent(false);
+  };
+
+  const onSelect = (selectedKeys, info) => {
+    if (selectedKeys.length > 0) {
+      console.log("id", selectedKeys[0]);
+      setNewCourseData((prevData) => ({
+        ...prevData,
+        categoryId: selectedKeys[0],
+      }));
+    }
   };
 
   return (
@@ -125,23 +119,28 @@ export default function AddCourseModal({
           fullWidth
           margin="normal"
         />
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="category-select-label">Category</InputLabel>
-          <Select
-            labelId="category-select-label"
-            id="category-select"
-            name="categoryId"
-            value={newCourseData.categoryId || ""}
-            onChange={handleChange}
-            label="Category"
-          >
-            {flatCategory.map((category) => (
-              <MenuItem key={category.id} value={category.id}>
-                {category.path}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+
+        <Box
+          sx={{
+            minHeight: 252,
+            minWidth: 252,
+            border: "1px solid #ccc",
+            p: 1,
+            "& .ant-tree-title": {
+              fontSize: "18px",
+            },
+          }}
+        >
+          <Tree
+            onExpand={(expandedKeys) => setExpandedKeys(expandedKeys)}
+            expandedKeys={expandedKeys}
+            autoExpandParent={autoExpandParent}
+            treeData={treeData}
+            onSelect={onSelect}
+            selectedKeys={treeData.key}
+          />
+        </Box>
+
         <TextField
           label="Description"
           name="description"

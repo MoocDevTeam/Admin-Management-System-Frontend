@@ -74,7 +74,8 @@ export default function CourseList() {
   function processCategory(category) {
     const categoryWithChildren = {
       categoryName: category.categoryName,
-      id: category.id,
+      id: String(category.id),
+      label: category.categoryName,
       children: [],
     };
     category.childrenCategories.forEach((childCategory) => {
@@ -92,12 +93,12 @@ export default function CourseList() {
           setLoading
         );
         if (categoryResponse?.isSuccess) {
-          console.log("category", categoryResponse?.data);
+          console.log("get category", categoryResponse?.data);
           const uniqueCategoriesList = [];
           categoryResponse.data.forEach((category) => {
             uniqueCategoriesList.push(processCategory(category));
           });
-          console.log("uniqueCategoriesList", uniqueCategoriesList);
+          console.log("processCategory", uniqueCategoriesList);
           dispatch(setCurrentCategories(uniqueCategoriesList));
           setCategories(uniqueCategoriesList);
           setError("");
