@@ -115,15 +115,15 @@ function App() {
           />
 
           {/* Route for teacher */}
-          <Route key="teacher" path="/user/teacher" element={<Teacher />} />
+          {/* <Route key="teacher" path="/user/teacher" element={<Teacher />} /> */}
+          <Route key="teacher" path="/teacher" element={<Teacher />} />
+
+          {/* Exam-related routes */}
           <Route
-            key="teacher"
-            path="/teacher"
-            element={
-              <Teacher />
-            }
+            key="addTeacher"
+            path="/teacher/add"
+            element={<AddTeacher />}
           />
-          <Route key="addTeacher" path="/teacher/add" element={<AddTeacher/>}/>
 
           {/* Exam-related routes */}
           <Route

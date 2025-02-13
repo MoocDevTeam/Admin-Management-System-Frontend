@@ -19,14 +19,19 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { GridSearchIcon } from "@mui/x-data-grid";
 import { genderNameToEnum } from "../../components/util/gender";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setRoleNames } from "../../store/roleSlice";
+import { UpdateUser } from "./updateUser";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
 export default function User() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [open, setOpen] = useState(false);
   const [pageData, setPageData] = useState({ items: [], total: 0 });
   const [alertMessage, setAlertMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const roleNames = useSelector((state) => state.role.roleNames);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [filteredUserList, setFilteredUserList] = useState({
     items: [],
@@ -36,6 +41,12 @@ export default function User() {
     pageSize: 100,
     pageIndex: 1,
   });
+
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+
+  //store user data
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const baseUrl = process.env.REACT_APP_BASE_API_URL;
   const columns = [
     { field: "id", headerName: "ID" },
@@ -81,7 +92,7 @@ export default function User() {
       renderCell: (row) => {
         return (
           <Avatar
-            src={baseUrl + row.row.avatar}
+            // src={baseUrl + row.row.avatar}
             sx={{ width: 50, height: 50 }}
           ></Avatar>
         );
@@ -91,10 +102,15 @@ export default function User() {
       field: "operation",
       headerName: "operation",
       flex: 1,
-      renderCell: (row) => {
+      renderCell: (params) => {
         return (
           <Box>
-            <Button variant="text" onClick={(e) => handleUpdate(e, row)}>
+            <Button
+              color="success"
+              startIcon={<ModeEditIcon />}
+              variant="text"
+              onClick={(e) => handleOpenUpdateDialog(e, params.row)}
+            >
               Update
             </Button>
           </Box>
@@ -138,6 +154,35 @@ export default function User() {
     getUser(filterPagedResultRequestDto);
   }, [pageSearch]);
 
+  useEffect(() => {
+    async function getRole(param) {
+      let result;
+      try {
+        result = await getRequest("/Role/GetByPage", param);
+        if (result.isSuccess === true) {
+          dispatch(
+            setRoleNames({ items: result.data.items, total: result.data.total })
+          );
+        } else {
+          return;
+        }
+      } catch {
+        toast.error(result.message);
+      }
+    }
+    let filterPagedResultRequestDto = {
+      Filter: "",
+      PageIndex: pageSearch.page,
+      PageSize: pageSearch.pageSize,
+      Sorting: "",
+    };
+    if (roleNames.total > 0) {
+      return;
+    } else {
+      getRole(filterPagedResultRequestDto);
+    }
+  }, []);
+
   const handlePaginationModel = (e) => {
     setPageSearch((preState) => ({
       ...preState,
@@ -153,6 +198,28 @@ export default function User() {
   function handleAddUser() {
     navigate("/user/add");
   }
+
+  // This function is triggered when the user clicks "UPDATE"
+  const handleOpenUpdateDialog = (event, rowData) => {
+    event.stopPropagation(); // prevents row selection triggered by the DataGrid
+    setSelectedUser(rowData); // store the user data to pass to the dialog
+    setIsUpdateDialogOpen(true); // open the dialog
+  };
+
+  const handleCloseUpdateDialog = () => {
+    setIsUpdateDialogOpen(false);
+  };
+
+  //callback for child
+  const handleUserUpdated = (updatedUser) => {
+    setPageData((prevData) => {
+      const newItems = prevData.items.map((user) =>
+        user.id === updatedUser.id ? updatedUser : user
+      );
+      return { ...prevData, items: newItems };
+    });
+    setIsUpdateDialogOpen(false); //close the userUpdate dialog
+  };
 
   function handleDelete() {
     if (rowSelectionModel.length === 0) {
@@ -175,13 +242,6 @@ export default function User() {
     if (!data.isOk || rowSelectionModel.length === 0) {
       return;
     }
-    // let ids = rowSelectionModel.join(",");
-    // let result = await deleteRequest(`User/Delete/${ids}`);
-    // if (result.isSuccess) {
-    //   toast.success("delete success!");
-    // } else {
-    //   toast.error(result.message);
-    // }
     try {
       await Promise.all(
         rowSelectionModel.map((id) => {
@@ -285,6 +345,15 @@ export default function User() {
             setPaginationModel={handlePaginationModel}
             setRowSelectionModel={setRowSelectionModel}
           ></UserList>
+
+          {selectedUser && (
+            <UpdateUser
+              open={isUpdateDialogOpen}
+              onClose={handleCloseUpdateDialog}
+              data={selectedUser}
+              onUserUpdated={handleUserUpdated}
+            />
+          )}
         </Box>
         <AlterDialog
           title="Warning"

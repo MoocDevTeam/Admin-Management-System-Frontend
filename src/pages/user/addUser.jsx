@@ -26,10 +26,10 @@ export default function AddUser() {
   const [avatarData, setAvatarData] = useState("");
   const [roles, setRoles] = useState([]);
   const [selectRoles, setSelectRoles] = useState([]);
+  const roleNames = useSelector((state) => state.role.roleNames);
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const navigate = useNavigate();
-  const { roleNames } = useSelector((state) => state.role);
 
   const formik = useFormik({
     initialValues: {
@@ -108,8 +108,12 @@ export default function AddUser() {
   };
 
   useEffect(() => {
-    setRoles(roleNames);
-  }, [roleNames]);
+    if (roleNames.total > 0) {
+      setRoles(roleNames.items);
+    } else {
+      return;
+    }
+  }, []);
 
   return (
     <Box m="20px">
