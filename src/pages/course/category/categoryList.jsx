@@ -1,18 +1,18 @@
 import React from "react";
 import { Typography } from "@mui/material";
 import Skeleton from "@mui/material/Skeleton";
-import FlexList from "../../../components/course/category/FlexList";
+import FlexWrap from "../../../components/course/shared/FlexWrap";
 import CategoryCard from "../../../components/course/category/CategoryCard";
 
 export default function CategoryList({ currentCategories, handleCategoryClick, handleEdit,loading, error }) {
     
   if (loading) {
     return (
-      <FlexList>
+      <FlexWrap>
         {Array.from({ length: 6 }).map((_, index) => (
           <Skeleton key={index} variant="rounded" width={300} height={300} />
         ))}
-      </FlexList>
+      </FlexWrap>
     );
   }
 
@@ -29,7 +29,7 @@ export default function CategoryList({ currentCategories, handleCategoryClick, h
   }
 
 return(
-<FlexList>
+<FlexWrap>
   {currentCategories.map((category) => (
     <CategoryCard
       key={category.id}
@@ -42,6 +42,6 @@ return(
       onEdit={() => handleEdit(category)}
     />
   ))}
-</FlexList>
+</FlexWrap>
    )
 }

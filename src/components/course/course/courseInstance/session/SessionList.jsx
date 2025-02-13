@@ -3,7 +3,7 @@ import VideoManagement from "./videoManagement";
 import { styled } from "@mui/material/styles";
 import EditSessionModal from "./models/EditSessionModal";
 import AddSessionModal from "./models/AddSessionModal";
-import MoreButton from "../../../../shared/moreButton";
+import MoreButton from "../../../../shared/MoreButton";
 import { Box, Typography, Paper, Stack } from "@mui/material";
 
 const Item = styled(Paper)(({ theme }) => ({

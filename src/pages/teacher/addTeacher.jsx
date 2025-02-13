@@ -23,7 +23,7 @@ export default function AddTeacher() {
 
   //Get userId from the search dialog
   const location = useLocation();
-  const userId = location.state?.userId;
+  const userId = location.state?.userId;        
 
   const navigate = useNavigate();
   const handleOnClose = () => {
@@ -197,7 +197,6 @@ export default function AddTeacher() {
           <DatePicker
             label="Hired Date"
             format="DD/MM/YYYY"
-            // inputFormat="DD/MM/YYYY"
             onChange={(value) => {
               if(value&&value.isValid()){
                 const formattedDate = value.toISOString();

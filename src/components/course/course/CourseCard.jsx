@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Typography, styled, Box } from "@mui/material";
-import MoreButton from "../../shared/moreButton";
+import MoreButton from "../../shared/MoreButton";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(1),
