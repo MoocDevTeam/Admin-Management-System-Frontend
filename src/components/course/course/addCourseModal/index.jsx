@@ -1,22 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import postRequest from "../../../../request/postRequest";
 import toast from "react-hot-toast";
 import { setCourses } from "../../../../store/courseSlice";
 import { useDispatch, useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
-
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  IconButton,
-} from "@mui/material";
-
+import { Tree } from "antd";
+import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
 export default function AddCourseModal({
   CourseData,
   categories,
@@ -24,6 +13,18 @@ export default function AddCourseModal({
 }) {
   const [newCourseData, setNewCourseData] = useState(CourseData);
   const courses = useSelector((state) => state.course.filteredCourses);
+  const [expandedKeys, setExpandedKeys] = useState([]);
+  const [autoExpandParent, setAutoExpandParent] = useState(true);
+  // 递归转换 categories 为 Tree 需要的格式
+  const formatTreeData = (categories) => {
+    return categories.map((category) => ({
+      key: category.id, // key 必须唯一
+      id: category.id,
+      title: category.categoryName, // 显示的名称
+      children: category.children ? formatTreeData(category.children) : [],
+    }));
+  };
+  const treeData = formatTreeData(categories);
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -39,15 +40,26 @@ export default function AddCourseModal({
       toast.error("Failed to add course.");
     }
   };
-
   const handleChange = (event) => {
     const { name, value } = event.target;
     setNewCourseData({
       ...newCourseData,
-      [name]: name === "categoryId" ? Number(value) : value, // 动态更新字段值
+      [name]: value,
     });
   };
-
+  const onExpand = (newExpandedKeys) => {
+    setExpandedKeys(newExpandedKeys);
+    setAutoExpandParent(false);
+  };
+  const onSelect = (selectedKeys, info) => {
+    if (selectedKeys.length > 0) {
+      console.log("id", selectedKeys[0]);
+      setNewCourseData((prevData) => ({
+        ...prevData,
+        categoryId: selectedKeys[0],
+      }));
+    }
+  };
   return (
     <Box
       sx={{
@@ -99,23 +111,26 @@ export default function AddCourseModal({
           fullWidth
           margin="normal"
         />
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="category-select-label">Category</InputLabel>
-          <Select
-            labelId="category-select-label"
-            id="category-select"
-            name="categoryId"
-            value={newCourseData.categoryId}
-            onChange={handleChange}
-            label="Category"
-          >
-            {categories.map((category) => (
-              <MenuItem key={category.id} value={category.id}>
-                {category.categoryName}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Box
+          sx={{
+            minHeight: 252,
+            minWidth: 252,
+            border: "1px solid #ccc",
+            p: 1,
+            "& .ant-tree-title": {
+              fontSize: "18px",
+            },
+          }}
+        >
+          <Tree
+            onExpand={(expandedKeys) => setExpandedKeys(expandedKeys)}
+            expandedKeys={expandedKeys}
+            autoExpandParent={autoExpandParent}
+            treeData={treeData}
+            onSelect={onSelect}
+            selectedKeys={treeData.key}
+          />
+        </Box>
         <TextField
           label="Description"
           name="description"

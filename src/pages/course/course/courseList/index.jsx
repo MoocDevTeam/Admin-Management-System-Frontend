@@ -8,20 +8,22 @@ import {
   Stack,
   Skeleton,
   Modal,
-  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import postRequest from "../../../../request/postRequest";
+import toast from "react-hot-toast";
 import { setCourses } from "../../../../store/courseSlice";
 import getRequest from "../../../../request/getRequest";
 import CourseCard from "../../../../components/course/course/CourseCard";
-import FlexWrap from "../../../../components/course/shared/FlexWrap";
+import FlexList from "../../../../components/course/course/FlexList";
 import { setCurrentCategories } from "../../../../store/categorySlice";
+import { configureStore } from "@reduxjs/toolkit";
 import AddCourseModal from "../../../../components/course/course/addCourseModal";
-import FilterMenu from "../../../../components/course/course/FilterMenu";
-import Header from "../../../../components/header";
-
 export default function CourseList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,45 +39,28 @@ export default function CourseList() {
     description: "",
     categoryId: 1,
   });
-
   const dispatch = useDispatch();
   const courses = useSelector((state) => state.course.courses);
   const categoryLocal = useSelector((state) => state.category.setCategories);
-
+  // Pop up page add course control
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
+  // fetch data from backend
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getRequest(
+        const courseResponse = await getRequest(
           "/MoocCourse/getall",
           null,
           setLoading
         );
-        if (response?.isSuccess) {
-          dispatch(setCourses(response?.data));
-          setFilteredCourses(response?.data);
-          // store category name and id
-          const uniqueCategories = [];
-          response?.data.forEach((course) => {
-            if (
-              !uniqueCategories.some(
-                (item) => item.categoryName === course.categoryName
-              )
-            ) {
-              uniqueCategories.push({
-                id: course.categoryId,
-                categoryName: course.categoryName,
-              });
-            }
-          });
-          dispatch(setCurrentCategories(uniqueCategories));
-          setCategories(uniqueCategories);
+        if (courseResponse?.isSuccess) {
+          dispatch(setCourses(courseResponse?.data));
+          setFilteredCourses(courseResponse?.data);
           setError("");
         } else {
           setError(
-            response?.message || "An error occurred while fetching data."
+            courseResponse?.message || "An error occurred while fetching data."
           );
         }
       } catch (err) {
@@ -84,19 +69,64 @@ export default function CourseList() {
     };
     fetchData();
   }, [dispatch]);
-
+  // process category with unlimited level
+  // store categoryName,id and children
+  function processCategory(category) {
+    const categoryWithChildren = {
+      categoryName: category.categoryName,
+      id: String(category.id),
+      label: category.categoryName,
+      children: [],
+    };
+    category.childrenCategories.forEach((childCategory) => {
+      categoryWithChildren.children.push(processCategory(childCategory));
+    });
+    return categoryWithChildren;
+  }
+  // fetch category data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categoryResponse = await getRequest(
+          "/Category/GetAllCategories",
+          null,
+          setLoading
+        );
+        if (categoryResponse?.isSuccess) {
+          console.log("get category", categoryResponse?.data);
+          const uniqueCategoriesList = [];
+          categoryResponse.data.forEach((category) => {
+            uniqueCategoriesList.push(processCategory(category));
+          });
+          console.log("processCategory", uniqueCategoriesList);
+          dispatch(setCurrentCategories(uniqueCategoriesList));
+          setCategories(uniqueCategoriesList);
+          setError("");
+        } else {
+          setError(
+            categoryResponse?.message ||
+              "An error occurred while fetching data."
+          );
+        }
+      } catch (err) {
+        setError("Failed to fetch data", err);
+      }
+    };
+    fetchData();
+  }, [dispatch]);
+  // click chip for different category
   const handleChipClick = (chipIndex) => {
     setSelectedChip(chipIndex);
     const filtered =
-      chipIndex === null
+      chipIndex === null // all course
         ? courses
         : courses.filter(
-          (course) =>
-            course.categoryName === categories[chipIndex]?.categoryName
-        );
+            (course) =>
+              course.categoryName === categories[chipIndex]?.categoryName
+          );
     setFilteredCourses(filtered);
   };
-
+  //search for course title
   const handleSearchChange = (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
@@ -107,55 +137,70 @@ export default function CourseList() {
     );
     setFilteredCourses(filtered);
   };
-
   return (
     <Box m="20px">
-      <Header
-        title="Courses"
-        subtitle="Managing All Courses"
-      />
-
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} >
-        <Box display="flex" justifyContent="start" width="500px">
-          <Box>
-            <FilterMenu categories={categories} handleChipClick={handleChipClick} />
-          </Box>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search by Course Title"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            sx={{ ml: 2, width: 300 }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              },
-            }}
+      <Typography variant="h4" gutterBottom>
+        Courses
+      </Typography>
+      {/* Chips and Search Bar */}
+      <Box display="flex" alignItems="center" mb={2} flexWrap="wrap">
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            flexWrap: "wrap",
+            alignItems: "center",
+          }}
+        >
+          <Chip
+            onClick={() => handleChipClick(null)}
+            label="All Courses"
+            variant={selectedChip == null ? "filled" : "outlined"}
           />
+          {categories.map((category, index) => (
+            <Chip
+              key={category.id}
+              label={category.categoryName}
+              onClick={() => handleChipClick(index)}
+              variant={selectedChip === index ? "filled" : "outlined"}
+            />
+          ))}
         </Box>
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search by Course Title"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          sx={{ ml: 2, width: 300, height: 40, marginTop: 1 }}
+        />
+      </Box>
+      {/* Filter button and Add course button */}
+      <Stack
+        direction="row"
+        justifyContent="flex-end"
+        alignItems="center"
+        spacing={2}
+      >
+        {/* <FilterDropdown /> */}
         <Button variant="contained" color="secondary" onClick={handleOpen}>
           Add Course
         </Button>
-      </Box>
-
+      </Stack>
+      {/* Course List */}
       {loading && (
-        <FlexWrap>
+        <FlexList>
           {Array.from({ length: 6 }).map((_, index) => (
             <Skeleton key={index} variant="rounded" width={300} height={100} />
           ))}
-        </FlexWrap>
+        </FlexList>
       )}
       {error && <Typography color="error">{error}</Typography>}
       {!loading && !error && filteredCourses.length === 0 && (
         <Typography>No courses found.</Typography>
       )}
       {!loading && !error && filteredCourses.length > 0 && (
-        <FlexWrap>
+        <FlexList>
           {filteredCourses.map((course) => (
             <Link
               key={course.id}
@@ -170,7 +215,7 @@ export default function CourseList() {
               />
             </Link>
           ))}
-        </FlexWrap>
+        </FlexList>
       )}
       {/* Popup add course page */}
       <Modal open={open} onClose={handleClose}>
