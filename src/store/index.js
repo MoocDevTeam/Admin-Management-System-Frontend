@@ -4,6 +4,8 @@ import courseReducer from "./courseSlice";
 import categoryReducer from "./categorySlice";
 import roleReducer from "./roleSlice";
 import authReducer from "./authSlice";
+import avatarReducer from "./avatarSlice";
+
 const store = configureStore({
   reducer: {
     user: userReducer,
@@ -11,6 +13,7 @@ const store = configureStore({
     category: categoryReducer,
     role: roleReducer,
     auth: authReducer,
+    avatar: avatarReducer,
   },
 });
 
