@@ -139,6 +139,7 @@ export default function User() {
   useEffect(() => {
     let getUser = async (param) => {
       let result = await getRequest("user/GetByPage", param);
+      console.log("result", result);
       if (result.isSuccess === true) {
         setPageData(result.data);
       } else {
