@@ -27,6 +27,7 @@ import LoadingSpinner from "./components/loadingSpinner";
 import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { lazy } from "react";
+import { AssignCourseInstance } from "./pages/teacher/assignCourseInstance";
 
 function LazyLoad(componentPath) {
   const Module = lazy(() => import(`${componentPath}`));
@@ -104,9 +105,9 @@ function App() {
           />
 
           {/* Route for teacher */}
-          <Route key="teacher" path="/user/teacher" element={<Teacher />} />
           <Route key="teacher" path="/teacher" element={<Teacher />} />
           <Route key="addTeacher" path="/teacher/add" element={<AddTeacher />} />
+          <Route key= "assignTeacher" path="/teacher/assign" element={<AssignCourseInstance/>}/>
 
           {/* Exam-related routes */}
           <Route key="questions" path="/exam/questions" element={<Questions />} />
