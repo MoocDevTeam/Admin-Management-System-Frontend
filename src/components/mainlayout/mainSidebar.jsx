@@ -22,18 +22,20 @@ import CategoryIcon from "@mui/icons-material/Category";
 import SchoolIcon from "@mui/icons-material/School";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
-
+import { useNavigate } from "react-router-dom";
 export default function MainSidebar({ userName }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dispatch = useDispatch();
   const menuItems = useSelector((state) => state.auth.menuItems);
   const { user, status, error } = useSelector((state) => state.user);
   console.log("in mainSidebar,menu items:", menuItems);
+  const navigate = useNavigate();
   const renderTree = (nodes) =>
     nodes.map((node) => (
       <TreeItem
         key={node.id}
         itemId={node.id.toString()}
+        onClick={() => node.route && navigate(node.route)}
         label={
           <div style={{ display: "flex", alignItems: "center" }}>
             {/* <Checkbox
@@ -46,9 +48,14 @@ export default function MainSidebar({ userName }) {
           </div>
         }
       >
-        {node.children && node.children.length > 0 && renderTree(node.children)}
+        {node.children &&
+          node.children.every(
+            (item) => item.title !== ("Add" || "Update" || "Delete")
+          ) &&
+          renderTree(node.children)}
       </TreeItem>
     ));
+
   useEffect(() => {
     if (userName) {
       dispatch(fetchUserByName(userName));
@@ -118,9 +125,11 @@ export default function MainSidebar({ userName }) {
               )}
             </Box>
           )}
+
           {menuItems && (
-            <SimpleTreeView>{renderTree(menuItems)}</SimpleTreeView>
+            <SimpleTreeView>{renderTree(menuItems, navigate)}</SimpleTreeView>
           )}
+
           {/* <SubMenu icon={<PeopleOutlinedIcon />} label="People Management">
             <MenuItem
               icon={<PeopleOutlinedIcon />}
