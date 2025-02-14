@@ -12,6 +12,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  InputAdornment,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +25,10 @@ import FlexList from "../../../../components/course/course/FlexList";
 import { setCurrentCategories } from "../../../../store/categorySlice";
 import { configureStore } from "@reduxjs/toolkit";
 import AddCourseModal from "../../../../components/course/course/addCourseModal";
+import Header from "../../../../components/header";
+import FilterMenu from "../../../../components/course/course/FilterMenu";
+import { GridSearchIcon } from "@mui/x-data-grid";
+import SearchIcon from "@mui/icons-material/Search";
 export default function CourseList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -139,41 +144,42 @@ export default function CourseList() {
   };
   return (
     <Box m="20px">
-      <Typography variant="h4" gutterBottom>
-        Courses
-      </Typography>
+      <Header title="Courses" subtitle="Managing All Courses" />
       {/* Chips and Search Bar */}
-      <Box display="flex" alignItems="center" mb={2} flexWrap="wrap">
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            flexWrap: "wrap",
-            alignItems: "center",
-          }}
-        >
-          <Chip
-            onClick={() => handleChipClick(null)}
-            label="All Courses"
-            variant={selectedChip == null ? "filled" : "outlined"}
-          />
-          {categories.map((category, index) => (
-            <Chip
-              key={category.id}
-              label={category.categoryName}
-              onClick={() => handleChipClick(index)}
-              variant={selectedChip === index ? "filled" : "outlined"}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Box display="flex" justifyContent="start" width="500px">
+          <Box>
+            <FilterMenu
+              categories={categories}
+              handleChipClick={handleChipClick}
             />
-          ))}
+          </Box>
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="Search by Course Title"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            sx={{ ml: 2, width: 300 }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
         </Box>
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Search by Course Title"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          sx={{ ml: 2, width: 300, height: 40, marginTop: 1 }}
-        />
+        <Button variant="contained" color="secondary" onClick={handleOpen}>
+          Add Course
+        </Button>
       </Box>
       {/* Filter button and Add course button */}
       <Stack
@@ -183,9 +189,6 @@ export default function CourseList() {
         spacing={2}
       >
         {/* <FilterDropdown /> */}
-        <Button variant="contained" color="secondary" onClick={handleOpen}>
-          Add Course
-        </Button>
       </Stack>
       {/* Course List */}
       {loading && (
