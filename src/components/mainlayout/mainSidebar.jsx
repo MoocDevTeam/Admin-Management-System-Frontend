@@ -20,15 +20,18 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CategoryIcon from "@mui/icons-material/Category";
 import SchoolIcon from "@mui/icons-material/School";
+import { getAvatarByUserName } from "../../store/avatarSlice";
 
 export default function MainSidebar({ userName }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dispatch = useDispatch();
   const { user, status, error } = useSelector((state) => state.user);
+  const { avatar, avatarStatus, avatarError } = useSelector((state) => state.avatar);
 
   useEffect(() => {
     if (userName) {
       dispatch(fetchUserByName(userName));
+      dispatch(getAvatarByUserName(userName));
     }
   }, [dispatch, userName]);
 
@@ -63,15 +66,27 @@ export default function MainSidebar({ userName }) {
           </MenuItem>
           {!isCollapsed && (
             <Box mb="25px">
-              <Box display="flex" justifyContent="center" alignItems="center">
-                <img
-                  alt="profile-user"
-                  width="100px"
-                  height="100px"
-                  src={`../../assets/user.png`}
-                  style={{ cursor: "pointer", borderRadius: "50%" }}
-                />
-              </Box>
+              {avatarStatus === "succeeded" && (
+                <Box display="flex" justifyContent="center" alignItems="center">
+                  <img
+                    alt="profile-user"
+                    width="100px"
+                    height="100px"
+                    src={avatar?.avatarUrl || `../../assets/user.png`}
+                    style={{ cursor: "pointer", borderRadius: "50%" }}
+                  />
+                </Box>
+              )}
+              {avatarStatus === "loading" && (
+                <Box display="flex" justifyContent="center" alignItems="center">
+                  <LoadingSpinner />
+                </Box>
+              )}
+              {avatarStatus === "failed" && (
+                <Alert severity="error">
+                  {avatarError || "Failed to load avatar data"}
+                </Alert>
+              )}
 
               {status === "loading" && <LoadingSpinner />}
               {status === "failed" && (
