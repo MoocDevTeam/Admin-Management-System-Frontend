@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Typography, styled, Box } from "@mui/material";
-import MoreButton from "../../shared/moreMenu";
+import MoreButton from "../../shared/MoreButton";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(1),
@@ -10,7 +10,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   transition: "transform 0.3s ease, box-shadow 0.3s ease",
   display: "flex",
   justifyContent: "space-between",
-  alignItems: "flex-start", 
+  alignItems: "flex-start",
   "&:hover": {
     backgroundColor: theme.palette.background.light,
     boxShadow: theme.shadows[4],
@@ -20,7 +20,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 const ContentBox = styled(Box)(({ theme }) => ({
   display: "flex",
   flex: 1,
-  alignItems: "center", 
+  alignItems: "center",
 }));
 
 const ImageBox = styled(Box)(({ theme }) => ({
@@ -36,12 +36,12 @@ const ImageBox = styled(Box)(({ theme }) => ({
 const TextBox = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "center", 
+  justifyContent: "center",
 }));
 
 export default function CourseCard({ title, category, description, imageUrl }) {
-  const handleEdit = () => {console.log("clicked!")};
-  const handleDelete = () => {console.log("clicked!")};
+  const handleEdit = () => { console.log("clicked!") };
+  const handleDelete = () => { console.log("clicked!") };
 
   return (
     <StyledCard style={{ width: "380px" }}>

@@ -1,37 +1,49 @@
 import * as React from 'react';
-import Card from '@mui/material/Card';
+import { Card, styled } from '@mui/material';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
-import CardActionArea from '@mui/material/CardActionArea';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import toast from "react-hot-toast";
 import {
-  openModal,
   setCurrentCategories,
 } from "../../../store/categorySlice";
 import { useSelector, useDispatch } from "react-redux";
 import deleteRequest from "../../../request/delRequest";
 
-
-
 const ITEM_HEIGHT = 48;
 
-export default function CategoryCard({ categoryName, description, imageUrl, subCategoryCounts, onClick, categoryId }) {
+const StyledCard = styled(Card)(({ theme }) => ({
+  boxShadow: theme.shadows[2],
+  borderRadius: theme.shape.borderRadius * 2,
+  backgroundColor: theme.palette.background.paper,
+  maxWidth: 300,
+  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+  "&:hover": {
+    cursor: "pointer",
+    backgroundColor: theme.palette.background.light,
+    boxShadow: theme.shadows[4],
+  },
+}));
 
-
+export default function CategoryCard({
+  categoryName,
+  description,
+  imageUrl,
+  subCategoryCounts,
+  onClick,
+  categoryId,
+  onEdit, 
+}) {
   const dispatch = useDispatch();
   const { currentCategories } = useSelector((state) => state.category);
 
-
   const handleDelete = async () => {
-
     const category = currentCategories.find((cat) => cat.id === categoryId);
-
     if (category && category.childrenCategories?.length > 0) {
       toast.error("Cannot delete a category that has subcategories.");
       return;
@@ -39,10 +51,11 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
 
     try {
       const response = await deleteRequest(`/Category/Delete/${categoryId}`);
-      console.log("Delete Response:", response);
       if (response.isSuccess) {
         toast.success("Category deleted successfully!");
-        const updatedCategories = currentCategories.filter((cat) => cat.id !== categoryId);
+        const updatedCategories = currentCategories.filter(
+          (cat) => cat.id !== categoryId
+        );
         dispatch(setCurrentCategories(updatedCategories));
       } else {
         console.error("Error from backend:", response);
@@ -52,36 +65,40 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
       console.error("Error in catch block:", error);
       toast.error("Failed to delete category.");
     }
-
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
   const handleButtonClick = (event) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+
+  const handleClose = (event) => {
+    event.stopPropagation();
     setAnchorEl(null);
   };
 
   return (
-    <Card sx={{ maxWidth: 300 }}>
+    <StyledCard>
       <CardHeader
         action={
-          <><IconButton
-            aria-label="more"
-            id="long-button"
-            aria-controls={open ? 'long-menu' : undefined}
-            aria-expanded={open ? 'true' : undefined}
-            aria-haspopup="true"
-            onClick={handleButtonClick}>
-            <MoreVertIcon />
-          </IconButton>
+          <>
+            <IconButton
+              aria-label="more"
+              id="long-button"
+              aria-controls={open ? "long-menu" : undefined}
+              aria-expanded={open ? "true" : undefined}
+              aria-haspopup="true"
+              onClick={handleButtonClick}
+            >
+              <MoreVertIcon />
+            </IconButton>
             <Menu
               id="long-menu"
               MenuListProps={{
-                'aria-labelledby': 'long-button',
+                "aria-labelledby": "long-button",
               }}
               anchorEl={anchorEl}
               open={open}
@@ -90,48 +107,47 @@ export default function CategoryCard({ categoryName, description, imageUrl, subC
                 paper: {
                   style: {
                     maxHeight: ITEM_HEIGHT * 4.5,
-                    width: '20ch',
+                    width: "20ch",
                   },
                 },
               }}
             >
-              <MenuItem onClick={() => dispatch(
-                openModal({
-                  isEdit: true,
-                  selectedCategory: {
+              <MenuItem
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onEdit({
                     id: categoryId,
                     categoryName,
                     description,
-                    imageUrl
-                  }
-                })
-
-              )} >Edit</MenuItem>
+                    imageUrl,
+                  });
+                }}
+              >
+                Edit
+              </MenuItem>
               <MenuItem onClick={handleDelete}>Delete</MenuItem>
             </Menu>
           </>
         }
         title={categoryName}
         subheader={`Includes a total of ${subCategoryCounts} subcategories`}
-
       />
-      < CardActionArea onClick={onClick} >
-        <CardMedia
-          component="img"
-          height="194"
-          image={imageUrl}
-          alt="Paella dish"
-        />
-        <CardContent>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            {description}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    </Card>
+      <CardMedia
+        component="img"
+        height="194"
+        image={imageUrl}
+        alt="Paella dish"
+        onClick={onClick}
+      />
+      <CardContent>
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary" }}
+          onClick={onClick}
+        >
+          {description}
+        </Typography>
+      </CardContent>
+    </StyledCard>
   );
-
 }
-
-
-

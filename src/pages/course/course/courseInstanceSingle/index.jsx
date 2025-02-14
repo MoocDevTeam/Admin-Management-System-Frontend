@@ -2,7 +2,7 @@ import React from "react";
 import Header from "../../../../components/header";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import colors from "../../../../theme";
 import toast from "react-hot-toast";
 import StyledSection from "../../../../components/course/shared/StyledSection";
@@ -22,7 +22,7 @@ export default function CourseInstanceSingle() {
     ["courseInstance", courseId, courseInstanceId],
     async () => {
       const response = await getRequest(`/MoocCourse/GetById/${courseId}`);
-      console.log("response: ", response.data)
+      console.log("response: ", response.data);
       if (!response.isSuccess) {
         throw new Error(response.message || "Failed to fetch data.");
       }
@@ -54,7 +54,9 @@ export default function CourseInstanceSingle() {
     <Box m="20px">
       <Header
         title={courseInstance?.moocCourseTitle}
-        subtitle={`Managing ${courseInstance?.moocCourseTitle} ${courseInstance?.description.toLowerCase()}`}
+        subtitle={`Managing ${
+          courseInstance?.moocCourseTitle
+        } ${courseInstance?.description.toLowerCase()}`}
       />
 
       <StyledBreadcrumbs courseId={courseId} courseInstance={courseInstance} />
@@ -65,13 +67,24 @@ export default function CourseInstanceSingle() {
         </Typography>
         <Typography variant="body1">{`Total Sessions: ${courseInstance.sessions.length}`}</Typography>
         <Typography variant="body1">{`Created by faculty staff: ${courseInstance.createdByUserId}`}</Typography>
-        <Typography variant="body1">{`Last Update: ${formatToAustralianDate(courseInstance.updatedAt)}`}</Typography>
-        <Typography variant="body1">{`Start Date: ${formatToAustralianDate(courseInstance.startDate)}`}</Typography>
-        <Typography variant="body1">{`End Date: ${formatToAustralianDate(courseInstance.endDate)}`}</Typography>
+        <Typography variant="body1">{`Last Update: ${formatToAustralianDate(
+          courseInstance.updatedAt
+        )}`}</Typography>
+        <Typography variant="body1">{`Start Date: ${formatToAustralianDate(
+          courseInstance.startDate
+        )}`}</Typography>
+        <Typography variant="body1">{`End Date: ${formatToAustralianDate(
+          courseInstance.endDate
+        )}`}</Typography>
       </StyledSection>
 
-      <StyledSection sx={{ marginTop: "16px", backgroundColor: colors.primary[400] }}>
-        <SessionList sessions={courseInstance.sessions} />
+      <StyledSection
+        sx={{ marginTop: "16px", backgroundColor: colors.primary[400] }}
+      >
+        <SessionList
+          sessions={courseInstance.sessions}
+          courseInstanceId={courseInstanceId}
+        />
       </StyledSection>
     </Box>
   );

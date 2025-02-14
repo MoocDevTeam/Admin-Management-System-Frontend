@@ -129,7 +129,7 @@ export default function MainSidebar({ userName }) {
             <MenuItem
               icon={<CastForEducationIcon />}
               component={<Link />}
-              to="user/teacher"
+              to="teacher"
             >
               Teacher
             </MenuItem>

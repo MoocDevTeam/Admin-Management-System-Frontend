@@ -25,10 +25,7 @@ import postRequest from "../../../../request/postRequest";
 import colors from "../../../../theme";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentCategories } from "../../../../store";
-import EditCourseModal from "../../../../components/course/course/editCourse/index"
-import deleteRequest from "../../../../request/delRequest";
-import { useNavigate } from "react-router-dom";
-import StyledBreadcrumbs from "../../../../components/course/course/Breadcrumbs";
+import EditCourseModal from "../../../../components/course/course/editCourse";
 
 function useCourse(courseId) {
   return useQuery(["course", courseId], () =>
@@ -52,7 +49,7 @@ export default function CourseSingle() {
 
   const categories = useSelector((state) => state.category.currentCategories);
   // console.log("course single currentCategories", categories);
-  const navigate = useNavigate();
+
   const handleOpen = () => {
     setCourseData({
       id: data?.data?.id,
@@ -66,38 +63,15 @@ export default function CourseSingle() {
 
   const handleClose = () => setModalOpen(false);
 
-  const handleDelete = async () => {
-    // Not allow delete course unless all course instance is deleted
-    if (!data.data.courseInstances || data.data.courseInstances.length === 0) {
-      try {
-        const response = await deleteRequest(
-          `/MoocCourse/delete/${data.data.id}`
-        );
-        if (response?.isSuccess) {
-          toast.success("Course deleted successfully!");
-          navigate(-1);
-        } else {
-          toast.error(response?.message || "Failed to delete the course.");
-        }
-      } catch (err) {
-        toast.error("An error occurred during deletion.");
-      }
-    } else {
-      toast.error(
-        `The course cannot be deleted because it still has ${data.data.courseInstances.length} instance(s). Please delete all instances first.`
-      );
-    }
-  };
-
   return (
     <Box m="20px">
-      <Header
-        title={data?.data?.title || "Loading..."}
-        subtitle="Managing single course"
-      />
-
-      <StyledBreadcrumbs courseTitle={data?.data?.title} />
-
+      <BackButton />
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Header
+          title={data?.data?.title || "Loading..."}
+          subtitle="Managing single course"
+        />
+      </Stack>
       {isLoading && <Skeleton variant="rounded" width="100%" height={100} />}
       {error && (
         <Typography sx={{ marginBottom: 4 }}>
@@ -105,34 +79,22 @@ export default function CourseSingle() {
         </Typography>
       )}
       {!isLoading && !error && data && (
-        <StyledSection sx={{ marginTop: "16px" }}>
+        <StyledSection>
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            sx={{ mb: 2 }}
           >
-            <Typography variant="h4" sx={{ fontWeight: "bold"}}>
-              Description
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: "bold", marginBottom: "16px" }}
+            >
+              Meta Data
             </Typography>
-            <Box display="flex" alignItems="center" gap={2}>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleOpen}
-                sx={{ px: 3 }}
-              >
-                Edit
-              </Button>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={handleDelete}
-                sx={{ px: 3 }}
-              >
-                Delete
-              </Button>
-            </Box>
+
+            <Button variant="contained" color="secondary" onClick={handleOpen}>
+              Edit
+            </Button>
           </Box>
           <Typography variant="body1">{`Course Code: ${data.data.courseCode}`}</Typography>
           <Typography variant="body1">{`Description: ${data.data.description}`}</Typography>
@@ -148,6 +110,7 @@ export default function CourseSingle() {
               size="small"
             />
           </Typography>
+
           <Modal open={modalOpen} onClose={handleClose}>
             <EditCourseModal
               courseId={courseId}
@@ -174,15 +137,8 @@ export default function CourseSingle() {
         {!isLoading && !error && data && (
           <Box component="ul" sx={{ listStyle: "none", padding: 0, margin: 0 }}>
             {data.data.courseInstances?.map((instance) => (
-              <Box
-                component="li"
-                key={instance.id}
-                sx={{ marginBottom: "8px" }}
-              >
-                <Link
-                  to={`/course/${courseId}/CourseInstance/${instance.id}`}
-                  style={{ textDecoration: "none" }}
-                >
+              <Box component="li" key={instance.id} sx={{ marginBottom: "8px" }}>
+                <Link to={`/course/${courseId}/CourseInstance/${instance.id}`} style={{ textDecoration: "none" }}>
                   <Chip
                     sx={{
                       borderRadius: "8px",
