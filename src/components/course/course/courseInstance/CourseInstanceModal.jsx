@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Modal,
   Box,
@@ -15,56 +15,22 @@ import CloseIcon from "@mui/icons-material/Close";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useCourseInstanceForm } from "../../../util/useCourseInstanceForm"; // Custom hook
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc"; // Import the UTC plugin
 dayjs.extend(utc); // Enable UTC support
 
 export default function CourseInstanceModal({ open, courses, onSubmit, onUpdate, onClose, selectedRowData }) {
-  const [courseInstance, setCourseInstance] = useState({
-    moocCourseId: "",
-    status: "",
-    permission: "",
-    startDate: null,
-    endDate: null,
-    description: "",
-  });
+  const { courseInstance, handleInputChange, handleDateInputChange } = useCourseInstanceForm(selectedRowData);
 
-  // Sync selectedRowData when modal opens (for updates)
-  useEffect(() => {
-    if (selectedRowData) {
-      setCourseInstance({
-        moocCourseId: selectedRowData.moocCourseId,
-        status: selectedRowData.status === "Open" ? 1 : 0,
-        permission: selectedRowData.permission === "Public" ? 1 : 0,
-        startDate: selectedRowData.startDate ? dayjs.utc(selectedRowData.startDate) : null, // Treat as UTC
-        endDate: selectedRowData.endDate ? dayjs.utc(selectedRowData.endDate) : null,
-        description: selectedRowData.description,
-      });
-    }
-  }, [selectedRowData, open]);
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setCourseInstance((prev) => ({
-      ...prev,
-      // Dynamically updates the field based on 'name'
-      // convert the status and permission back to numeric values (0 or 1)
-      [name]: name === "status" || name === "permission" ? Number(value) : value,
-    }));
-  };
-
-  const handleDateInputChange = (name, date) => {
-    setCourseInstance((prev) => ({
-      ...prev,
-      [name]: date ? dayjs.utc(date).toISOString() : null, // Convert to UTC and store as ISO string
-    }));
-  };
-
+  // By keeping handleSubmit in Modal, the useCourseInstanceForm hook can be reused in other components
+  // that need similar form state management but have different submission logic.
   const handleSubmit = (event) => {
     event.preventDefault();
     const formattedInstance = {
       ...courseInstance,
-      //Although we have converted format in handleDateInputChange, we still need to ensure the date-time values are in the correct UTC format
+      // Although we have converted format in handleDateInputChange,
+      // we still need to ensure the date-time values are in the correct UTC format
       startDate: courseInstance.startDate ? dayjs(courseInstance.startDate).utc().toISOString() : null,
       endDate: courseInstance.endDate ? dayjs(courseInstance.endDate).utc().toISOString() : null,
     };
@@ -93,6 +59,7 @@ export default function CourseInstanceModal({ open, courses, onSubmit, onUpdate,
         }}>
         <IconButton
           onClick={onClose}
+          aria-label="Close" //for screen readers
           sx={{
             position: "absolute",
             top: "10px",
