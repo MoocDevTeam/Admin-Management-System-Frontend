@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Box, Stack, Button } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Box } from "@mui/material";
 import Header from "../../../components/header";
 import TestList from "../../test/testList";
 import deleteRequest from "../../../request/delRequest";
@@ -12,8 +9,9 @@ import postRequest from "../../../request/postRequest";
 import toast from "react-hot-toast";
 import { fetchCourses } from "../../../store/courseSlice";
 import Container from "../../../components/course/course/courseInstance/Container";
-import columns from "../../../components/course/course/courseInstance/columns";
+import columns from "../../../components/util/columns";
 import CourseInstanceModal from "../../../components/course/course/courseInstance/CourseInstanceModal";
+import DataGridActionButtons from "../../../components/course/course/courseInstance/DataGridActionButtons";
 
 export default function CourseLaunch() {
   const dispatch = useDispatch();
@@ -77,8 +75,15 @@ export default function CourseLaunch() {
       dispatch(fetchCourses());
     }
     setModalMode(mode);
+
+    if (mode === "add") {
+      // Clear selected row IDs (clear selectedRowData)
+      setRowSelectionModel([]);
+    }
+
     setIsModalOpen(true);
   };
+
   const handleIsModalClose = () => setIsModalOpen(false);
 
   const handleSubmit = async (courseInstance) => {
@@ -123,49 +128,33 @@ export default function CourseLaunch() {
       <Header title="Course Launch" subtitle="Managing the course launch" />
       <Container>
         <Box sx={{ mb: "15px" }}>
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
-            {/* Disable Add button if at least one row is selected */}
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => handleIsModalOpen("add")}
-              disabled={rowSelectionModel.length > 0}>
-              Add Course Launch
-            </Button>
-            {/* Disable Update button if no row OR multiple rows are selected */}
-            <Button
-              variant="contained"
-              startIcon={<ModeEditIcon />}
-              onClick={() => handleIsModalOpen("update")}
-              disabled={rowSelectionModel.length !== 1}>
-              Update
-            </Button>
-            <CourseInstanceModal
-              open={isModalOpen}
-              courses={courses}
-              onSubmit={handleSubmit} // for ADD
-              onUpdate={handleCourseInstanceUpdate} // for UPDATE
-              onClose={handleIsModalClose}
-              mode={modalMode}
-              selectedRowData={
-                rowSelectionModel.length > 0 ? pageData.items.find((item) => item.id === rowSelectionModel[0]) : null
-              }
-            />
-            <Button
-              color="secondary"
-              variant="contained"
-              startIcon={<DeleteIcon />}
-              onClick={handleDeleteCourseInstance}
-              disabled={rowSelectionModel.length === 0}>
-              Delete
-            </Button>
-          </Stack>
+          <DataGridActionButtons
+            onAdd={() => handleIsModalOpen("add")}
+            onUpdate={() => handleIsModalOpen("update")}
+            onDelete={handleDeleteCourseInstance}
+            isRowSelected={rowSelectionModel.length > 0}
+            isSingleRowSelected={rowSelectionModel.length === 1}
+          />
         </Box>
         <TestList
           columns={columns}
           pageData={pageData}
           setPaginationModel={handlePaginationModel}
           setRowSelectionModel={setRowSelectionModel}></TestList>
+        <CourseInstanceModal
+          open={isModalOpen}
+          courses={courses}
+          onSubmit={handleSubmit} // for ADD
+          onUpdate={handleCourseInstanceUpdate} // for UPDATE
+          onClose={handleIsModalClose}
+          mode={modalMode}
+          selectedRowData={
+            //Only pass selectedRowData when in update mode
+            modalMode === "update" && rowSelectionModel.length > 0
+              ? pageData.items.find((item) => item.id === rowSelectionModel[0])
+              : null
+          }
+        />
       </Container>
     </Box>
   );
