@@ -11,6 +11,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import getRequest from "../../request/getRequest";
+import dayjs from "dayjs";
 
 export const AssignCourseInstance = () => {
   const location = useLocation();
@@ -47,43 +48,18 @@ export const AssignCourseInstance = () => {
           minWidth={"500px"}
           width="99%"
           height={"100%"}
-          sx={{
-            "& .MuiDataGrid-root": {
-              border: "none",
-            },
-            "& .MuiDataGrid-cell": {
-              borderBottom: "none",
-            },
-            "& .name-column--cell": {
-              color: colors.greenAccent[300],
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: colors.blueAccent[700],
-              borderBottom: "none",
-            },
-            "& .MuiDataGrid-virtualScroller": {
-              backgroundColor: colors.primary[400],
-            },
-            "& .MuiDataGrid-footerContainer": {
-              borderTop: "none",
-              backgroundColor: colors.blueAccent[700],
-            },
-            "& .MuiCheckbox-root": {
-              color: `${colors.greenAccent[200]} !important`,
-            },
-          }}
         >
           <Box>
-            <h3>"Course(s) assigned to teacher id {teacherId}</h3>
+            <h3>Course(s) assigned to teacher id {teacherId}</h3>
           </Box>
 
           <Box>
             {courseInstanceDetail.length === 0 ? (
-              "No course assigned to this teacher" 
+              "No course assigned to this teacher!" 
             ) : (
-              <TableContainer component={Paper}>
+              <TableContainer component={Paper} sx={{ minWidth: 650 }}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
+                <TableHead sx={{backgroundColor: colors.blueAccent[700]}}>
                   <TableRow>
                     <TableCell>Assigned Course</TableCell>
                     <TableCell align="right">Publish Details</TableCell>
@@ -103,8 +79,8 @@ export const AssignCourseInstance = () => {
                       </TableCell>
                       <TableCell align="right">{item.description}</TableCell>
                       <TableCell align="right">{item.status}</TableCell>
-                      <TableCell align="right">{item.startDate}</TableCell>
-                      <TableCell align="right">{item.endDate}</TableCell>
+                      <TableCell align="right">{dayjs(item.startDate).format('lll')}</TableCell>
+                      <TableCell align="right">{dayjs(item.startDate).format('lll')}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
