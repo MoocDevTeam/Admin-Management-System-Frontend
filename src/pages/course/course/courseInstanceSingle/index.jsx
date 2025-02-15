@@ -10,6 +10,7 @@ import SessionList from "../../../../components/course/course/courseInstance/ses
 import formatToAustralianDate from "../../../../utils/formatToAustralianDate";
 import getRequest from "../../../../request/getRequest";
 import StyledBreadcrumbs from "../../../../components/course/course/courseInstance/Breadcrumbs";
+import ReturnButton from "../../../../components/course/shared/ReturnButton";
 
 export default function CourseInstanceSingle() {
   const { courseId, courseInstanceId } = useParams();
@@ -60,7 +61,7 @@ export default function CourseInstanceSingle() {
       />
 
       <StyledBreadcrumbs courseId={courseId} courseInstance={courseInstance} />
-
+      <ReturnButton></ReturnButton>
       <StyledSection sx={{ marginTop: "16px" }}>
         <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
           Details
