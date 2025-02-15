@@ -28,7 +28,8 @@ import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { lazy } from "react";
 import { useDispatch } from "react-redux";
-import { setMenuItems } from "./store/authSlice";
+import { setMenuItems, setRouteMenuData } from "./store/authSlice";
+import Menus from "./pages/menu";
 function LazyLoad(componentPath) {
   const Module = lazy(() => import(`${componentPath}`));
   return Module;
@@ -38,7 +39,6 @@ function App() {
   const [menus, setMenus] = useState([]);
   const [routes, setRoutes] = useState([]);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const menuItems = useSelector((state) => state.auth.menuItems);
   const dispatch = useDispatch();
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -59,7 +59,7 @@ function App() {
           }
         }
         console.log("routerMenuData is:", routerMenuData);
-
+        dispatch(setRouteMenuData([...routerMenuData]));
         const dynamicRoutes = routerMenuData.map((item) => {
           return (
             <Route
@@ -80,7 +80,7 @@ function App() {
       }
     }
     getMenu();
-  }, [isAuthenticated]);
+  }, [dispatch, isAuthenticated]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -92,6 +92,7 @@ function App() {
           <Route key="dashboard" path="/" element={<Dashboard />} />
           <Route key="user" path="/user" element={<User />} />
           <Route key="role" path="/role" element={<Role />} />
+          <Route key="menu" path="/menu" element={<Menus />} />
           <Route key="addUser" path="/user/add" element={<AddUser />} />
           <Route key="addRole" path="/role/add" element={<AddRole />} />
           <Route key="profile" path="/profile" element={<UserProfile />} />

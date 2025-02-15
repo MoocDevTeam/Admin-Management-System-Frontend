@@ -23,6 +23,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { useNavigate } from "react-router-dom";
+import Menus from "../../pages/menu";
 export default function MainSidebar({ userName }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dispatch = useDispatch();
@@ -127,7 +128,7 @@ export default function MainSidebar({ userName }) {
           )}
 
           {menuItems && (
-            <SimpleTreeView>{renderTree(menuItems, navigate)}</SimpleTreeView>
+            <SimpleTreeView>{renderTree(menuItems)}</SimpleTreeView>
           )}
 
           {/* <SubMenu icon={<PeopleOutlinedIcon />} label="People Management">

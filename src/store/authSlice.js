@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { closeModal } from "./categorySlice";
 
 const initialState = {
   isAuthenticated: false,
@@ -6,6 +7,7 @@ const initialState = {
   status: "idle",
   error: null,
   menuItems: [],
+  routeMenuData: [],
 };
 const authSlice = createSlice({
   name: "auth",
@@ -20,8 +22,15 @@ const authSlice = createSlice({
     setMenuItems: (state, action) => {
       state.menuItems = action.payload;
     },
+    setRouteMenuData: (state, action) => {
+      state.routeMenuData = action.payload;
+    },
   },
 });
-export const { setAuthenticated, clearAuthentication, setMenuItems } =
-  authSlice.actions;
+export const {
+  setAuthenticated,
+  clearAuthentication,
+  setMenuItems,
+  setRouteMenuData,
+} = authSlice.actions;
 export default authSlice.reducer;
