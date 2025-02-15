@@ -14,7 +14,7 @@ import AddIcon from "@mui/icons-material/Add";
 import WarningIcon from "@mui/icons-material/Warning";
 import { UpdateTeacher } from "../../components/course/teacher/updateTeacher";
 import { MoreActionButton } from "../../components/course/teacher/MoreActionButton";
-import { useNavigate, UseNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Teacher() {
   //set default page size
