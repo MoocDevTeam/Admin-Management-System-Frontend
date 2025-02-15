@@ -32,6 +32,7 @@ import * as Yup from "yup";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { useDispatch } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
+import PermissionTree from "./permission";
 
 export default function Role() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
@@ -40,6 +41,7 @@ export default function Role() {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
+  const [isPermissionOpen, setIsPermissionOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -159,6 +161,15 @@ export default function Role() {
     };
     getRole(filterPagedResultRequestDto);
   }, [pageSearch]);
+
+  function handlePermissionClose() {
+    setIsPermissionOpen(false);
+    console.log("in handle permission open");
+  }
+  function handlePermissionOpen() {
+    setIsPermissionOpen(true);
+    console.log("in handle permission close");
+  }
 
   const handlePaginationModel = (e) => {
     setPageSearch((preState) => ({
@@ -289,12 +300,7 @@ export default function Role() {
               <Button variant="contained" onClick={handleAddRole}>
                 Add Role
               </Button>
-              <Button
-                variant="contained"
-                onClick={() => {
-                  console.log("permission");
-                }}
-              >
+              <Button variant="contained" onClick={handlePermissionOpen}>
                 Permission
               </Button>
               <Button
@@ -390,6 +396,12 @@ export default function Role() {
             </Form>
           </Formik>
         </Dialog>
+        {isPermissionOpen && (
+          <PermissionTree
+            onOpen={handlePermissionOpen}
+            onClose={handlePermissionClose}
+          />
+        )}
       </Box>
       {/* <WinDialog title="test dialog" open={open} onClose={handleWinClose}>
         
