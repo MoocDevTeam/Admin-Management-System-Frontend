@@ -71,7 +71,7 @@ export default function Role() {
     }),
     onSubmit: async (values) => {
       let result = await postRequest("/Role/Update", {
-        id: selectedRowId,
+        id: selectedRowId[0],
         roleName: values.roleName,
         description: values.description,
       });
