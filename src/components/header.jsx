@@ -1,6 +1,6 @@
-import { Typography, Box, useTheme } from "@mui/material";
+import { Typography, Box, useTheme, Link } from "@mui/material";
 import colors from "../theme";
-import { Link } from "react-router-dom";
+import { Link as RouterLink} from "react-router-dom";
 
 const Header = ({ title, subtitle, url, urltitle }) => {
   return (
@@ -16,7 +16,11 @@ const Header = ({ title, subtitle, url, urltitle }) => {
       <Typography variant="h5" color={colors.greenAccent[400]}>
         {url ? (
           <>
-            <Link  title={urltitle} to={url}>
+            <Link component={RouterLink}      // Tell MUI <Link> to use react-router <Link> internally
+              to={url}                    // Actual route path
+              underline="none"           // Removes the underline
+              style={{ color: colors.greenAccent[400] }} // Inherit the same color as the Typography
+              title={urltitle}>
               {urltitle}
             </Link>
             <span>-</span>
