@@ -67,12 +67,27 @@ export default function Role() {
     }),
     onSubmit: async (values) => {
       let result = await postRequest("/Role/Update", {
-        id: selectedRowId[0],
+        id: selectedRowId,
         roleName: values.roleName,
         description: values.description,
       });
+      console.log("selectedRowId is: ", selectedRowId);
+
       if (result.isSuccess) {
         toast.success("Add Role Success !");
+        setPageData((prevData) => {
+          const newRoles = prevData.items.map((role) =>
+            role.id === selectedRowId
+              ? {
+                  id: selectedRowId,
+                  roleName: values.roleName,
+                  description: values.description,
+                }
+              : role
+          );
+          console.log("after update roles, newRoles:", newRoles);
+          return { ...prevData, items: newRoles };
+        });
         formik.resetForm();
         navigate("/role", { replace: true });
       } else {
@@ -99,14 +114,14 @@ export default function Role() {
       field: "Operation",
       headerName: "Operation",
       flex: 1,
-      renderCell: (row) => {
+      renderCell: (params) => {
         return (
           <Box>
             <Button
               variant="outlined"
               color="success"
               startIcon={<ModeEditIcon />}
-              onClick={(e) => handleUpdate(e, row)}
+              onClick={(e) => handleUpdate(e, params.row)}
             >
               Update
             </Button>
@@ -175,13 +190,13 @@ export default function Role() {
   const handleUpdate = (e, row) => {
     e.stopPropagation();
     //only for one item update
+    console.log("get row is:", row);
     if (rowSelectionModel.length === 0 || rowSelectionModel.length > 1) {
       setAlertMessage("Please select one role to update");
       setAlertOpen(true);
       return;
     }
-    setSelectedRowId((pre) => [...pre, row.id]);
-
+    setSelectedRowId(row.id);
     setUpdateOpen(true);
   };
 
