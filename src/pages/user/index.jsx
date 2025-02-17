@@ -49,7 +49,7 @@ export default function User() {
 
   const baseUrl = process.env.REACT_APP_BASE_API_URL;
   const columns = [
-    { field: "id", headerName: "ID" },
+    // { field: "id", headerName: "ID" },
     {
       field: "userName",
       headerName: "Name",
