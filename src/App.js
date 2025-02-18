@@ -41,7 +41,7 @@ function App() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
   useEffect(() => {
-    if (!isAuthenticated) return;
+    // if (!isAuthenticated) return;
     async function getMenu() {
       const res = await getRequest("menu/GetMenuTree");
       if (res.isSuccess) {
