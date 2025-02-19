@@ -21,7 +21,8 @@ import { getGenderName } from "../../components/util/gender";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import toast from "react-hot-toast";
-import request from "../../request/postRequest";
+import post from "../../request/postRequest";
+import del from "../../request/delRequest";
 
 export default function UserProfile() {
   const dispatch = useDispatch();
@@ -30,6 +31,7 @@ export default function UserProfile() {
   const userName = localStorage.getItem("userName") || user?.userName;
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar || "");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   
 
@@ -95,19 +97,42 @@ export default function UserProfile() {
       setSelectedFile(e.target.files[0]);
     }
   };
+  
 
   const handleUploadAvatar = async() => {
     if(!selectedFile || !userName) return;
     const formData = new FormData();
     formData.append("file", selectedFile);
     try{
-      const res = await request(`/Avatar/UploadAvatar/${userName}`, formData, {
+      const res = await post(`/Avatar/UploadAvatar/${userName}`, formData, setLoading, {
         headers: {"Content-Type": "multipart/form-data"},
       });
+      if (res && res.avatarUrl){
+        setAvatarUrl(res.avatarUrl);
+        toast.success("avatar uploaded successfully")
+      }else{
+        toast.error("avatar upload failed");
+      }
     }catch(err){
-
+      console.error("error uploading avatar:", err);
+      toast.error("error uploading avatar:" + err.message);
     }
 
+  };
+
+  const handleDeleteAvatar = async () => {
+    if(!userName) return;
+    try{
+      const res = del(`/Avatar/DeleteAvatar/${userName}`);
+      if(res){
+        toast.success("Avatar deleted successfully!");
+        setAvatarUrl("");
+
+      }
+    }catch(err){
+      console.error("Error deleting avatar:", err);
+      toast.error("Error deleting avatar: " + err.message);
+    }
   }
 
   return (
@@ -130,18 +155,12 @@ export default function UserProfile() {
               gap: 2,
             }}
           >
-            <TextField
-              fullWidth
-              label="Username"
-              value={user.userName || ""}
-              disabled={true}
-            />
-
             <Stack direction="row" alignItems="center" spacing={2}>
               <Avatar
-                src={avatarUrl || ""}
+                src={ "https://jr-prac.s3.ap-southeast-2.amazonaws.com/user3.png"|| ""}
                 alt="User Avatar"
-                sx={{ width: 80, height: 80 }}
+                sx={{ width: 80, height: 80, cursor:"pointer"}}
+              
               />
               {/* Upload / Delete Buttons */}
               {isEditMode && (
@@ -170,6 +189,12 @@ export default function UserProfile() {
                 </>
               )}
             </Stack>
+            <TextField
+              fullWidth
+              label="Username"
+              value={user.userName || ""}
+              disabled={true}
+            />
 
             <TextField
               fullWidth

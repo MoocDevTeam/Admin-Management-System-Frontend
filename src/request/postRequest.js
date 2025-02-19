@@ -6,7 +6,7 @@ const postRequest = async (url, param, setLoading) => {
   }
   try {
     let result = await request.post(url, param);
-    return result;
+    return result; // = result.data in instance 
   } catch (error) {
     return { isSuccess: false,status: 400,message: error.message, data: {} };
   } finally {
