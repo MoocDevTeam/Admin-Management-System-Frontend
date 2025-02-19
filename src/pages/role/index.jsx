@@ -69,14 +69,14 @@ export default function Role() {
     }),
     onSubmit: async (values) => {
       let result = await postRequest("/Role/Update", {
-        id: selectedRowId[0],
+        id: selectedRowId,
         roleName: values.roleName,
         description: values.description,
       });
       console.log("selectedRowId is: ", selectedRowId);
 
       if (result.isSuccess) {
-        toast.success("Add Role Success !");
+        toast.success("Update Role Success !");
         setPageData((prevData) => {
           const newRoles = prevData.items.map((role) =>
             role.id === selectedRowId
