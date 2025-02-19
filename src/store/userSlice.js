@@ -34,6 +34,7 @@ const userSlice = createSlice({
       userName: userNameFromLocalStorage,
       password: "",
       email: "admin@demo.com",
+      address: "Australia",
       age: 30,
       access: 0,
     },

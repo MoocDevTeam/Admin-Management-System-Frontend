@@ -49,7 +49,7 @@ export default function User() {
 
   const baseUrl = process.env.REACT_APP_BASE_API_URL;
   const columns = [
-    { field: "id", headerName: "ID" },
+    // { field: "id", headerName: "ID" },
     {
       field: "userName",
       headerName: "Name",
@@ -89,10 +89,10 @@ export default function User() {
       field: "avatar",
       headerName: "Avatar",
       flex: 1,
-      renderCell: (row) => {
+      renderCell: (param) => {
         return (
           <Avatar
-            // src={baseUrl + row.row.avatar}
+            src="https://jr-prac.s3.ap-southeast-2.amazonaws.com/user3.png"
             sx={{ width: 50, height: 50 }}
           ></Avatar>
         );
