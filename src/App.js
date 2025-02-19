@@ -28,6 +28,8 @@ import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { lazy } from "react";
 import Menus from "./pages/menu";
+import { AssignCourseInstance } from "./pages/teacher/assignCourseInstance";
+
 function LazyLoad(componentPath) {
   const Module = lazy(() => import(`${componentPath}`));
   return Module;
@@ -110,20 +112,37 @@ function App() {
             element={<CourseSingle />}
           />
           <Route
+            key="category"
+            path="/course/category"
+            element={<CategoryTree />}
+          />
+          <Route
+            key="courseLaunch"
+            path="/course/courseLaunch"
+            element={<CourseLaunch />}
+          />
+          <Route
+            key="courseSingle"
+            path="/course/:courseId"
+            element={<CourseSingle />}
+          />
+          <Route
             key="courseInstanceSingle"
             path="/course/:courseId/CourseInstance/:courseInstanceId"
             element={<CourseInstanceSingle />}
           />
 
           {/* Route for teacher */}
-          {/* <Route key="teacher" path="/user/teacher" element={<Teacher />} /> */}
           <Route key="teacher" path="/teacher" element={<Teacher />} />
-
-          {/* Exam-related routes */}
           <Route
             key="addTeacher"
             path="/teacher/add"
             element={<AddTeacher />}
+          />
+          <Route
+            key="assignTeacher"
+            path="/teacher/assign"
+            element={<AssignCourseInstance />}
           />
 
           {/* Exam-related routes */}

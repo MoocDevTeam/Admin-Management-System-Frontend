@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-const BackButton = ({
+const ReturnButton = ({
   variant = "contained",
   color = "secondary",
   text = "Back",
@@ -24,6 +24,8 @@ const BackButton = ({
         "&:hover": {
           backgroundColor: "secondary",
         },
+        marginTop: "16px",
+        marginBottom: "16px",
         ...sx,
       }}
     >
@@ -32,4 +34,4 @@ const BackButton = ({
   );
 };
 
-export default BackButton;
+export default ReturnButton;

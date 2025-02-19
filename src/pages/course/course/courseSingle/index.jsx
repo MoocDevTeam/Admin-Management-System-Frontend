@@ -25,10 +25,11 @@ import postRequest from "../../../../request/postRequest";
 import colors from "../../../../theme";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentCategories } from "../../../../store";
-import EditCourseModal from "../../../../components/course/course/editCourse/index"
+import EditCourseModal from "../../../../components/course/course/editCourse/index";
 import deleteRequest from "../../../../request/delRequest";
 import { useNavigate } from "react-router-dom";
 import StyledBreadcrumbs from "../../../../components/course/course/Breadcrumbs";
+import ReturnButton from "../../../../components/course/shared/ReturnButton";
 
 function useCourse(courseId) {
   return useQuery(["course", courseId], () =>
@@ -97,7 +98,7 @@ export default function CourseSingle() {
       />
 
       <StyledBreadcrumbs courseTitle={data?.data?.title} />
-
+      <ReturnButton></ReturnButton>
       {isLoading && <Skeleton variant="rounded" width="100%" height={100} />}
       {error && (
         <Typography sx={{ marginBottom: 4 }}>
@@ -112,7 +113,7 @@ export default function CourseSingle() {
             alignItems="center"
             sx={{ mb: 2 }}
           >
-            <Typography variant="h4" sx={{ fontWeight: "bold"}}>
+            <Typography variant="h4" sx={{ fontWeight: "bold" }}>
               Description
             </Typography>
             <Box display="flex" alignItems="center" gap={2}>
