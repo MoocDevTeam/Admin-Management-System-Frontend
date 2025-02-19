@@ -13,17 +13,25 @@ import {
   MenuItem,
   InputLabel,
   FormHelperText,
+  Avatar,
+  Stack
 } from "@mui/material";
 import LoadingSpinner from "../../components/loadingSpinner";
 import { getGenderName } from "../../components/util/gender";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import toast from "react-hot-toast";
+import request from "../../request/postRequest";
 
 export default function UserProfile() {
   const dispatch = useDispatch();
   const { user, status, error } = useSelector((state) => state.user);
   const [isEditMode, setIsEditMode] = useState(false);
-  const userName = localStorage.getItem("userName");
+  const userName = localStorage.getItem("userName") || user?.userName;
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar || "");
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  
 
   const validationSchema = Yup.object({
     age: Yup.number()
@@ -34,6 +42,7 @@ export default function UserProfile() {
     email: Yup.string()
       .required("Email is required")
       .email("Invalid email format"),
+    address: Yup.string().max(100, "max 100 characters"),
   });
 
   const formik = useFormik({
@@ -42,9 +51,10 @@ export default function UserProfile() {
       age: user.age || "",
       gender: user.gender || "",
       email: user.email || "",
+      address: user.address || "",
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       const payload = {
         id: user.id,
         userName: user.userName,
@@ -57,9 +67,16 @@ export default function UserProfile() {
         age: values.age,
         gender: values.gender,
         email: values.email,
+        address: values.address
       };
-      dispatch(updateUser(payload));
-      setIsEditMode(false);
+      const resultAction = await dispatch(updateUser(payload));
+      if(updateUser.fulfilled.match(resultAction)){
+        toast.success("user updated successfully");
+        setIsEditMode(false);
+      }else{
+        toast.error("failed to update user");
+      }
+      
     },
   });
 
@@ -68,6 +85,30 @@ export default function UserProfile() {
       dispatch(fetchUserByName(userName));
     }
   }, [dispatch, userName]);
+
+  useEffect(() => {
+    setAvatarUrl(user.avatar || "");
+  }, [user]);
+
+  const handleFileChange = (e) => {
+    if(e.target.value && e.target.files[0]){
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleUploadAvatar = async() => {
+    if(!selectedFile || !userName) return;
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    try{
+      const res = await request(`/Avatar/UploadAvatar/${userName}`, formData, {
+        headers: {"Content-Type": "multipart/form-data"},
+      });
+    }catch(err){
+
+    }
+
+  }
 
   return (
     <Container>
@@ -95,6 +136,41 @@ export default function UserProfile() {
               value={user.userName || ""}
               disabled={true}
             />
+
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <Avatar
+                src={avatarUrl || ""}
+                alt="User Avatar"
+                sx={{ width: 80, height: 80 }}
+              />
+              {/* Upload / Delete Buttons */}
+              {isEditMode && (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleUploadAvatar}
+                  >
+                    Upload Avatar
+                  </Button>
+                  {avatarUrl && (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={handleDeleteAvatar}
+                    >
+                      Delete Avatar
+                    </Button>
+                  )}
+                </>
+              )}
+            </Stack>
+
             <TextField
               fullWidth
               label="Age"
@@ -118,6 +194,18 @@ export default function UserProfile() {
               error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}
               disabled={!isEditMode}
+            />
+            <TextField
+              fullWidth
+              label="Address"
+              name="address"
+              type="string"
+              value={formik.values.address}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.address && Boolean(formik.errors.address)}
+              helperText={formik.touched.address && formik.errors.address}
+              disable={!isEditMode}
             />
             <FormControl
               fullWidth
