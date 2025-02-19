@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import postRequest from "../../../../request/postRequest";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { Tree } from "antd";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   Box,
@@ -43,11 +44,23 @@ export default function EditCourseModal({
   handleClose,
 }) {
   const updateCourseMutation = useUpdateCourse(courseId);
-  const [courseData, setCourseData] = useState(courseDataInput);
+  const [newCourseData, setNewCourseData] = useState(courseDataInput);
+  const [expandedKeys, setExpandedKeys] = useState([]);
+  const [autoExpandParent, setAutoExpandParent] = useState(true);
+
+  const formatTreeData = (categories) => {
+    return categories.map((category) => ({
+      key: category.id,
+      id: category.id,
+      title: category.categoryName,
+      children: category.children ? formatTreeData(category.children) : [],
+    }));
+  };
+  const treeData = formatTreeData(categories);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    updateCourseMutation.mutate(courseData, {
+    updateCourseMutation.mutate(newCourseData, {
       onSuccess: () => {
         handleClose();
       },
@@ -55,10 +68,20 @@ export default function EditCourseModal({
   };
 
   const handleChange = (event) => {
-    setCourseData({
-      ...courseData,
+    setNewCourseData({
+      ...newCourseData,
       [event.target.name]: event.target.value,
     });
+  };
+
+  const onSelect = (selectedKeys, info) => {
+    if (selectedKeys.length > 0) {
+      console.log("id", selectedKeys[0]);
+      setNewCourseData((prevData) => ({
+        ...prevData,
+        categoryId: selectedKeys[0],
+      }));
+    }
   };
 
   return (
@@ -91,7 +114,7 @@ export default function EditCourseModal({
         <TextField
           label="Title"
           name="title"
-          value={courseData.title}
+          value={newCourseData.title}
           onChange={handleChange}
           fullWidth
           margin="normal"
@@ -99,7 +122,7 @@ export default function EditCourseModal({
         <TextField
           label="Course Code"
           name="courseCode"
-          value={courseData.courseCode}
+          value={newCourseData.courseCode}
           onChange={handleChange}
           fullWidth
           margin="normal"
@@ -107,30 +130,33 @@ export default function EditCourseModal({
         <TextField
           label="Description"
           name="description"
-          value={courseData.description}
+          value={newCourseData.description}
           onChange={handleChange}
           fullWidth
           multiline
           rows={4}
           margin="normal"
         />
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="category-select-label">Category</InputLabel>
-          <Select
-            labelId="category-select-label"
-            id="category-select"
-            name="categoryId"
-            value={courseData.categoryId}
-            onChange={handleChange}
-            label="Category"
-          >
-            {categories.map((category) => (
-              <MenuItem key={category.id} value={category.id}>
-                {category.categoryName}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Box
+          sx={{
+            minHeight: 252,
+            minWidth: 252,
+            border: "1px solid #ccc",
+            p: 1,
+            "& .ant-tree-title": {
+              fontSize: "18px",
+            },
+          }}
+        >
+          <Tree
+            onExpand={(expandedKeys) => setExpandedKeys(expandedKeys)}
+            expandedKeys={expandedKeys}
+            autoExpandParent={autoExpandParent}
+            treeData={treeData}
+            onSelect={onSelect}
+            selectedKeys={treeData.key}
+          />
+        </Box>
 
         <Button type="submit" variant="contained" color="primary">
           Save Changes

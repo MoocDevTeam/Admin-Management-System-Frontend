@@ -76,7 +76,7 @@ export default function Role() {
       console.log("selectedRowId is: ", selectedRowId);
 
       if (result.isSuccess) {
-        toast.success("Add Role Success !");
+        toast.success("Update Role Success !");
         setPageData((prevData) => {
           const newRoles = prevData.items.map((role) =>
             role.id === selectedRowId
