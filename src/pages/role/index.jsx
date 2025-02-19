@@ -31,6 +31,7 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { useDispatch } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
 import { theme } from "../../theme";
+import PermissionTree from "./permission";
 export default function Role() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,6 +40,7 @@ export default function Role() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState([]);
+  const [isPermissionOpen, setIsPermissionOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -67,12 +69,27 @@ export default function Role() {
     }),
     onSubmit: async (values) => {
       let result = await postRequest("/Role/Update", {
-        id: selectedRowId[0],
+        id: selectedRowId,
         roleName: values.roleName,
         description: values.description,
       });
+      console.log("selectedRowId is: ", selectedRowId);
+
       if (result.isSuccess) {
         toast.success("Add Role Success !");
+        setPageData((prevData) => {
+          const newRoles = prevData.items.map((role) =>
+            role.id === selectedRowId
+              ? {
+                  id: selectedRowId,
+                  roleName: values.roleName,
+                  description: values.description,
+                }
+              : role
+          );
+          console.log("after update roles, newRoles:", newRoles);
+          return { ...prevData, items: newRoles };
+        });
         formik.resetForm();
         navigate("/role", { replace: true });
       } else {
@@ -99,14 +116,14 @@ export default function Role() {
       field: "Operation",
       headerName: "Operation",
       flex: 1,
-      renderCell: (row) => {
+      renderCell: (params) => {
         return (
           <Box>
             <Button
               variant="outlined"
               color="success"
               startIcon={<ModeEditIcon />}
-              onClick={(e) => handleUpdate(e, row)}
+              onClick={(e) => handleUpdate(e, params.row)}
             >
               Update
             </Button>
@@ -168,20 +185,27 @@ export default function Role() {
       pageSize: e.pageSize,
     }));
   };
-
+  function handlePermissionClose() {
+    setIsPermissionOpen(false);
+    console.log("in handle permission open");
+  }
+  function handlePermissionOpen() {
+    setIsPermissionOpen(true);
+    console.log("in handle permission close");
+  }
   function handleAddRole() {
     navigate("/role/add");
   }
   const handleUpdate = (e, row) => {
     e.stopPropagation();
     //only for one item update
+    console.log("get row is:", row);
     if (rowSelectionModel.length === 0 || rowSelectionModel.length > 1) {
       setAlertMessage("Please select one role to update");
       setAlertOpen(true);
       return;
     }
-    setSelectedRowId((pre) => [...pre, row.id]);
-
+    setSelectedRowId(row.id);
     setUpdateOpen(true);
   };
 
@@ -293,12 +317,7 @@ export default function Role() {
               <Button variant="contained" onClick={handleAddRole}>
                 Add Role
               </Button>
-              <Button
-                variant="contained"
-                onClick={() => {
-                  console.log("permission");
-                }}
-              >
+              <Button variant="contained" onClick={handlePermissionOpen}>
                 Permission
               </Button>
               <Button
@@ -399,6 +418,12 @@ export default function Role() {
             </Form>
           </Formik>
         </Dialog>
+        {isPermissionOpen && (
+          <PermissionTree
+            onOpen={handlePermissionOpen}
+            onClose={handlePermissionClose}
+          />
+        )}
       </Box>
       {/* <WinDialog title="test dialog" open={open} onClose={handleWinClose}>
         

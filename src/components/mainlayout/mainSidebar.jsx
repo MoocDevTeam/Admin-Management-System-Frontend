@@ -26,7 +26,9 @@ export default function MainSidebar({ userName }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dispatch = useDispatch();
   const { user, status, error } = useSelector((state) => state.user);
-  const { avatar, avatarStatus, avatarError } = useSelector((state) => state.avatar);
+  const { avatar, avatarStatus, avatarError } = useSelector(
+    (state) => state.avatar
+  );
 
   useEffect(() => {
     if (userName) {
@@ -87,7 +89,6 @@ export default function MainSidebar({ userName }) {
                   {avatarError || "Failed to load avatar data"}
                 </Alert>
               )}
-
               {status === "loading" && <LoadingSpinner />}
               {status === "failed" && (
                 <Alert severity="error">
@@ -125,6 +126,13 @@ export default function MainSidebar({ userName }) {
               to="role"
             >
               Role
+            </MenuItem>
+            <MenuItem
+              icon={<MenuOutlinedIcon />}
+              component={<Link />}
+              to="menu"
+            >
+              Menu
             </MenuItem>
             <MenuItem
               icon={<CastForEducationIcon />}
