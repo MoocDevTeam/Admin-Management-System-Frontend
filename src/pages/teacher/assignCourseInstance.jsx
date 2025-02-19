@@ -20,7 +20,6 @@ import {
   CircularProgress,
   Typography,
 } from "@mui/material";
-import { filterCourses } from "../../store/courseSlice";
 
 export const AssignCourseInstance = () => {
   const location = useLocation();
@@ -28,6 +27,26 @@ export const AssignCourseInstance = () => {
   const [courseInstanceDetail, setCourseInstanceDetail] = useState([]);
   const [courses, setCourses] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
+  const [searchText, setSearchText] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [activeCourseId, setActiveCourseId] = useState(null);
+  const [instances, setInstances] = useState([]);
+
+  console.log("filtered course",filteredCourses);
+  console.log("course",courses);
+  console.log("instances",instances);
+
+  //handle search
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchText(value);
+    setFilteredCourses(
+      courses.filter((course) => 
+        course.title.toLowerCase().includes(value)
+      )
+    );
+  }
 
   //Get assigned courses section
   const getAssignedCourses = async (id) => {
@@ -41,6 +60,7 @@ export const AssignCourseInstance = () => {
       setCourseInstanceDetail([]);
     }
   };
+
   useEffect(() => {
     if (teacherId) {
       getAssignedCourses(teacherId);
@@ -64,6 +84,36 @@ export const AssignCourseInstance = () => {
     fetchCourses();
   }, []);
 
+
+  //fetch courseInstance by course id (when hovering over actiuon button)
+  const fetchCourseInstanceByCourseId = async (courseId) => {
+    setLoading(true);
+    let result = await getRequest(`/MoocCourse/GetCourseInstancesByCourseId/${courseId}`);
+    if (result.isSuccess) {
+      console.log("hover result",result.data);
+      setInstances(result.data);
+      setLoading(false);
+    } else {
+      console.log("Failed to fetch course instance");
+      setInstances([]);
+      setLoading(false);
+    }
+  }
+
+  //handel hover to load course instance
+  const handleHover = (event, courseId) => {
+    setAnchorEl(event.currentTarget);
+    setActiveCourseId(courseId);
+    console.log("instances now", instances);
+    //need help here
+    fetchCourseInstanceByCourseId(courseId);
+    
+  }
+
+  //handle close popover
+  const handleClose = () => {
+    setAnchorEl(null);
+  }
   return (
     <>
       <Box m="20px">
@@ -141,15 +191,14 @@ export const AssignCourseInstance = () => {
             height={"100%"}
             sx={{
               borderRadius: "5px",
-              
             }}
           >
             <div>
               <TextField
                 label="Search Courses"
                 variant="outlined"
-                // value={searchText}
-                // onChange={handleSearch}
+                value={searchText}
+                onChange={handleSearch}
                 style={{ marginBottom: 20 }}
               ></TextField>
             </div>
@@ -159,6 +208,8 @@ export const AssignCourseInstance = () => {
                 <TableHead sx={{backgroundColor: colors.blueAccent[700]}}>
                   <TableRow>
                     <TableCell>Course Title</TableCell>
+                    <TableCell>Course Code</TableCell>
+                    <TableCell>Course Category</TableCell>
                     <TableCell>Action</TableCell>
                   </TableRow>
                 </TableHead>
@@ -166,8 +217,11 @@ export const AssignCourseInstance = () => {
                   {filteredCourses.map((course) => (
                     <TableRow key={course.courseCode}>
                       <TableCell>{course.title}</TableCell>
+                      <TableCell>{course.courseCode}</TableCell>
+                      <TableCell>{course.categoryName}</TableCell>
                       <TableCell>
                         <Button
+                          onMouseEnter = {(e) => handleHover(e, course.id)}
                           variant="contained"
                           color="primary"
                         >View Details</Button>
@@ -178,6 +232,28 @@ export const AssignCourseInstance = () => {
 
               </Table>
             </TableContainer>
+            <Popover
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            >
+              This is a popover!
+              {instances.length === 0 ? (
+                <CircularProgress />
+              ) : (
+                <Box>
+                  {instances.map((instance) => (
+                    <Box key={instance.id}>
+                      1233
+                    </Box>
+                  ))}
+                  </Box>)}
+                
+            </Popover>
           </Box>
         </Box>
       </Box>
