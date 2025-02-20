@@ -29,6 +29,7 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { lazy } from "react";
 import Menus from "./pages/menu";
 import { AssignCourseInstance } from "./pages/teacher/assignCourseInstance";
+import ExamPreview from "./pages/exam/preview";
 
 function LazyLoad(componentPath) {
   const Module = lazy(() => import(`${componentPath}`));
