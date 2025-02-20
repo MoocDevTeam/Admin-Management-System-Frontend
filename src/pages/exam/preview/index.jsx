@@ -12,12 +12,19 @@ import Header from "../../../components/header";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from "react-router-dom";
 
-// 题目组件
+/**
+ * QuestionItem Component - Renders a single question with its options and answers
+ * @param {Object} question - Question data including content, options, and answer
+ * @param {number} index - Question index for display
+ * @param {string} type - Type of question (Choice, Multiple Choice, etc.)
+ */
 const QuestionItem = ({ question, index, type }) => {
+  // State to toggle answer visibility
   const [showAnswer, setShowAnswer] = useState(false);
 
   return (
     <Paper sx={{ p: 2, mb: 2 }}>
+      {/* Question header with number, type and answer toggle */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Typography variant="h6">
           Question {index + 1}
@@ -43,11 +50,13 @@ const QuestionItem = ({ question, index, type }) => {
         </Box>
       </Box>
 
+      {/* Question content */}
       <Typography variant="body1" gutterBottom>
         {question.content}
       </Typography>
       
-      {/* options and answer display */}
+      {/* Render different answer sections based on question type */}
+      {/* Choice and Multiple Choice questions */}
       {(type === "Choice Question" || type === "Multiple Choice Question") && (
         <Box sx={{ pl: 2 }}>
           {question.options.map((option, idx) => (
@@ -56,6 +65,7 @@ const QuestionItem = ({ question, index, type }) => {
               variant="body2" 
               sx={{ 
                 mb: 1,
+                // Highlight correct answers when shown
                 color: showAnswer && (
                   type === "Choice Question" 
                     ? question.answer === option
@@ -71,6 +81,7 @@ const QuestionItem = ({ question, index, type }) => {
               )}
             </Typography>
           ))}
+          {/* Show all correct answers for multiple choice */}
           {showAnswer && type === "Multiple Choice Question" && (
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               Correct answers: {question.answer.join(", ")}
@@ -79,6 +90,7 @@ const QuestionItem = ({ question, index, type }) => {
         </Box>
       )}
       
+      {/* True/False questions */}
       {type === "Judgement Question" && (
         <Box sx={{ pl: 2 }}>
           <Typography variant="body2">True / False</Typography>
@@ -97,6 +109,7 @@ const QuestionItem = ({ question, index, type }) => {
         </Box>
       )}
 
+      {/* Short answer questions */}
       {type === "Short Answer Question" && (
         <Box sx={{ pl: 2, mt: 2 }}>
           <Typography variant="body2" color="text.secondary">
@@ -115,11 +128,15 @@ const QuestionItem = ({ question, index, type }) => {
   );
 };
 
+/**
+ * ExamPreview Component - Displays a complete exam with all questions and answers
+ * Allows teachers to review the exam before publishing
+ */
 export default function ExamPreview() {
   const navigate = useNavigate();
   const { examId } = useParams();
 
-  // Mock data - should be obtained from API in actual application
+  // Mock exam data structure - will be replaced with API call
   const examData = {
     id: 1,
     title: "Frontend Skill Check",
@@ -174,6 +191,7 @@ export default function ExamPreview() {
 
   return (
     <Box m="20px" sx={{ height: 'calc(100vh - 140px)' }}>
+      {/* Header with back navigation */}
       <Header 
         title="Exam Preview" 
         subtitle={examData.title}
@@ -189,7 +207,7 @@ export default function ExamPreview() {
       />
 
       <Grid container spacing={2}>
-        {/* left: exam information */}
+        {/* Left sidebar: Exam information and summary */}
         <Grid item xs={12} md={3}>
           <Paper sx={{ p: 2, mb: 2 }}>
             <Typography variant="h6" gutterBottom>
@@ -236,7 +254,7 @@ export default function ExamPreview() {
           </Paper>
         </Grid>
 
-        {/* right: question list */}
+        {/* Main content: Question list */}
         <Grid item xs={12} md={9}>
           <Paper sx={{ p: 2, mb: 2 }}>
             {Object.entries(examData.questions).map(([type, questions]) => (

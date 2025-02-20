@@ -10,34 +10,37 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchUserByName } from "../../store/userSlice";
 import LoadingSpinner from "../loadingSpinner";
-import { getAccessName } from '../util/access';
-import QuizIcon from '@mui/icons-material/Quiz';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import PublishIcon from '@mui/icons-material/Publish';
-import CastForEducationIcon from '@mui/icons-material/CastForEducation';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import CategoryIcon from '@mui/icons-material/Category';
-import SchoolIcon from '@mui/icons-material/School';
+import { getAccessName } from "../util/access";
+import QuizIcon from "@mui/icons-material/Quiz";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import PublishIcon from "@mui/icons-material/Publish";
+import CastForEducationIcon from "@mui/icons-material/CastForEducation";
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import CategoryIcon from "@mui/icons-material/Category";
+import SchoolIcon from "@mui/icons-material/School";
+import { getAvatarByUserName } from "../../store/avatarSlice";
 
 export default function MainSidebar({ userName }) {
-
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dispatch = useDispatch();
   const { user, status, error } = useSelector((state) => state.user);
+  const { avatar, avatarStatus, avatarError } = useSelector(
+    (state) => state.avatar
+  );
 
   useEffect(() => {
     if (userName) {
       dispatch(fetchUserByName(userName));
+      dispatch(getAvatarByUserName(userName));
     }
   }, [dispatch, userName]);
 
   return (
     <Box>
       <Sidebar collapsed={isCollapsed}>
-        <Menu style={{ height: '99vh' }}>
-          
+        <Menu style={{ height: "99vh" }}>
           {/* LOGO AND MENU ICON */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -54,7 +57,9 @@ export default function MainSidebar({ userName }) {
                 alignItems="center"
                 ml="15px"
               >
-                <Typography color={colors.grey[100]}>{user ? getAccessName(user.access) : ''}</Typography>
+                <Typography color={colors.grey[100]}>
+                  {user ? getAccessName(user.access) : ""}
+                </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
                 </IconButton>
@@ -63,31 +68,44 @@ export default function MainSidebar({ userName }) {
           </MenuItem>
           {!isCollapsed && (
             <Box mb="25px">
-              <Box display="flex" justifyContent="center" alignItems="center">
-                <img
-                  alt="profile-user"
-                  width="100px"
-                  height="100px"
-                  src={`../../assets/user.png`}
-                  style={{ cursor: "pointer", borderRadius: "50%" }}
-                />
-              </Box>
-
-              {status === 'loading' && (<LoadingSpinner />)}
-              {status === 'failed' && (
-                <Alert severity="error">{error || 'Failed to load user data'}</Alert>
+              {avatarStatus === "succeeded" && (
+                <Box display="flex" justifyContent="center" alignItems="center">
+                  <img
+                    alt="profile-user"
+                    width="100px"
+                    height="100px"
+                    src={avatar?.avatarUrl || `../../assets/user.png`}
+                    style={{ cursor: "pointer", borderRadius: "50%" }}
+                  />
+                </Box>
               )}
-              {status === 'succeeded' && (
+              {avatarStatus === "loading" && (
+                <Box display="flex" justifyContent="center" alignItems="center">
+                  <LoadingSpinner />
+                </Box>
+              )}
+              {avatarStatus === "failed" && (
+                <Alert severity="error">
+                  {avatarError || "Failed to load avatar data"}
+                </Alert>
+              )}
+              {status === "loading" && <LoadingSpinner />}
+              {status === "failed" && (
+                <Alert severity="error">
+                  {error || "Failed to load user data"}
+                </Alert>
+              )}
+              {status === "succeeded" && (
                 <Box textAlign="center">
                   <Typography
                     color={colors.grey[100]}
                     fontWeight="bold"
                     sx={{ m: "10px 0 0 0" }}
                   >
-                    {user.userName || 'n/a'}
+                    {user.userName || "n/a"}
                   </Typography>
                   <Typography color={colors.greenAccent[500]}>
-                    {user.email || 'n/a'}
+                    {user.email || "n/a"}
                   </Typography>
                 </Box>
               )}
@@ -110,20 +128,23 @@ export default function MainSidebar({ userName }) {
               Role
             </MenuItem>
             <MenuItem
+              icon={<MenuOutlinedIcon />}
+              component={<Link />}
+              to="menu"
+            >
+              Menu
+            </MenuItem>
+            <MenuItem
               icon={<CastForEducationIcon />}
               component={<Link />}
-              to="user/teacher"
+              to="teacher"
             >
               Teacher
             </MenuItem>
           </SubMenu>
 
           <SubMenu icon={<AutoStoriesIcon />} label="Course Management">
-            <MenuItem
-              icon={<MenuBookIcon />}
-              component={<Link />}
-              to="course"
-            >
+            <MenuItem icon={<MenuBookIcon />} component={<Link />} to="course">
               Courses
             </MenuItem>
             <MenuItem
@@ -165,9 +186,8 @@ export default function MainSidebar({ userName }) {
               Publish
             </MenuItem>
           </SubMenu>
-
         </Menu>
       </Sidebar>
     </Box>
-  )
+  );
 }

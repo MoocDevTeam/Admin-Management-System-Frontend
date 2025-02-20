@@ -1,18 +1,21 @@
-import Header from "../../../components/header";
-import { Box, Button, Stack, Dialog, Typography } from "@mui/material";
-import TeacherList from "./teacherList";
+import Header from "../../components/header";
+import { Box, Button, Stack, Dialog, Typography,InputAdornment, TextField, IconButton } from "@mui/material";
+import TeacherList from "../../components/course/teacher/teacherList";
 import React, { useState, useEffect } from "react";
-import getRequest from "../../../request/getRequest";
-import colors from "../../../theme";
+import getRequest from "../../request/getRequest";
+import colors from "../../theme";
 import dayjs from "dayjs";
-import { UserSelectDialog } from "./userSelectDialog";
-import deleteRequest from "../../../request/delRequest";
+import { UserSelectDialog } from "../../components/course/teacher/userSelectDialog";
+import deleteRequest from "../../request/delRequest";
 import toast from "react-hot-toast";
-import WinDialog from "../../../components/winDialog";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import WinDialog from "../../components/winDialog";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import WarningIcon from "@mui/icons-material/Warning";
+import { UpdateTeacher } from "../../components/course/teacher/updateTeacher";
+import { MoreActionButton } from "../../components/course/teacher/MoreActionButton";
+import { useNavigate } from "react-router-dom";
+import { GridSearchIcon } from "@mui/x-data-grid";
 
 export default function Teacher() {
   //set default page size
@@ -31,6 +34,19 @@ export default function Teacher() {
   //Set windialog open state
   const [isWinDialogOpen, setIsWinDialogOpen] = useState(false);
 
+  //Set update teacher dialog state
+  const [isUpdateTeacherDialogOpen, setIsUpdateTeacherDialogOpen] = useState(false);
+
+  //Set selected teacher state
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
+
+  //Handle selected teacher state
+  const handleSetSelectedTeacher = (rowData) => {
+    setSelectedTeacher(rowData);
+    setIsUpdateTeacherDialogOpen(true);
+  };
+  //Handle update teacher dialog
+  const handleUpdateTeacherDialogClose = () => setIsUpdateTeacherDialogOpen(false);
   //Handle search dialog open
   const handleSearchOpen = () => setIsDialogOpen(true);
   const handleSearchClose = () => setIsDialogOpen(false);
@@ -49,7 +65,7 @@ export default function Teacher() {
       for (const id of rowSelectionModel) {
         try {
           const result = await deleteRequest(`/teacher/Delete/${id}`);
-          if (result.status === 200) {
+          if (result.isSuccess === true) {
             toast("Teacher deleted successfully");
             console.log(`deleted teacher with id: ${id}`);
           } else {
@@ -61,10 +77,24 @@ export default function Teacher() {
         }
       }
       setRowSelectionModel([]); //clear selected row
-      setIsWinDialogOpen(false); //close the dialog after deletion
+      handleWinDialogClose(); //close the dialog after deletion
       setPageSearch((preState) => ({ ...preState, page: 1 }));
     }
   };
+
+  //delete single teacher from more action button
+  const deleteSingleTeacher = async (id) => {
+    console.log("id for delettion", id)
+    try{
+      const result = await deleteRequest(`/teacher/delete/${id}`);
+      if (result.isSuccess === true) {
+        toast("Teacher deleted successfully");
+      } 
+    } catch (err){
+        toast("Failed to delete teacher");
+        console.log(err)
+    }
+  }
 
   //Set up setPaginationModel
   const handlePaginationModel = (e) => {
@@ -79,7 +109,7 @@ export default function Teacher() {
   useEffect(() => {
     let getTeacher = async (param) => {
       let result = await getRequest("/teacher/GetByPage", param);
-      if (result.status === 200) {
+      if (result.isSuccess === true) {
         setPageData(result.data);
       } else {
         setPageData({ items: [], total: 0 });
@@ -102,7 +132,6 @@ export default function Teacher() {
 
   //set teacherlist columns
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
     {
       field: "displayName",
       headerName: "Name",
@@ -140,12 +169,13 @@ export default function Teacher() {
       cellClassName: "active-column--cell",
       renderCell: (params) => (params.row.isActive ? "Yes" : "No"),
     },
-    {
-      field: "createdByUserId",
-      headerName: "Created By",
-      flex: 1,
-      cellClassName: "createdByUerId-column--cell",
-    },
+    // {
+    //   field: "createdByUserId",
+    //   headerName: "Created By",
+    //   flex: 1,
+    //   cellClassName: "createdByUerId-column--cell",
+    // },
+
     {
       field: "createdAt",
       headerName: "Created Date",
@@ -153,12 +183,12 @@ export default function Teacher() {
       cellClassName: "createdAt-column--cell",
       valueFormatter: (params) => dayjs(params.value).format("DD/MM/YYYY"),
     },
-    {
-      field: "updatedByUserId",
-      headerName: "Updated By",
-      flex: 1,
-      cellClassName: "updatedByUserId-column--cell",
-    },
+    // {
+    //   field: "updatedByUserId",
+    //   headerName: "Updated By",
+    //   flex: 1,
+    //   cellClassName: "updatedByUserId-column--cell",
+    // },
     {
       field: "updatedAt",
       headerName: "Updated Date",
@@ -169,31 +199,33 @@ export default function Teacher() {
     {
       field: "operation",
       headerName: "Operation",
-      flex: 1,
+      flex:1,
       renderCell: (params) => {
         return (
           <Box>
-            <Button
-              variant="outlined"
-              color="success"
-              startIcon={<ModeEditIcon />}
-              onClick={handleWinDialogOpen}
-            >
-              Update
-            </Button>
+            <MoreActionButton 
+            onUpdate={() => handleSetSelectedTeacher(params.row)}
+            onDelete={() => {deleteSingleTeacher(params.row.id); navigate(0);}}//() => deleteSingleTeacher(params.row.id)}
+            onAssign={() => {navigate(`/teacher/assign`, {state: {teacherId: params.row.id}})}}
+            ></MoreActionButton>
           </Box>
-        );
-      },
-    },
+        )
+      }
+    }
   ];
 
+  const navigate = useNavigate();
+
   return (
+    <>
     <Box m="20px">
       <Header title="Teacher" subtitle="Manging Teacher Members"></Header>
       <Box
         m="40px 0 0 0"
         minHeight={"500px"}
-        height="100%"
+        minWidth={"500px"}
+        width="99%"
+        height={"100%"}
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
@@ -222,6 +254,38 @@ export default function Teacher() {
       >
         <Box sx={{ mb: "15px" }}>
           <Stack direction="row" spacing={2} justifyContent="flex-end">
+
+          <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Search a teacher ..."
+                fullWidth
+                // value={searchQuery}
+                // onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{ ml: 2, width: 250, height: 40, marginTop: 1 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <IconButton>
+                        <GridSearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        // onClick={() => (
+                        //   // setFilteredUserList({ items: [], total: 0 }),
+                        //   setSearchQuery("")
+                        // )}
+                      >
+                        {/* {searchQuery.length > 0 ? "x" : ""} */}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -234,34 +298,44 @@ export default function Teacher() {
               color="error"
               variant="contained"
               startIcon={<DeleteIcon />}
-              onClick={setIsWinDialogOpen}
+              onClick={() => handleWinDialogOpen()}
               disabled={rowSelectionModel.length === 0}
             >
               DELETE
             </Button>
           </Stack>
         </Box>
-        <TeacherList
+        <Box width={"auto"}>
+        <TeacherList 
           columns={columns}
           pageData={pageData}
           setPaginationModel={handlePaginationModel}
           setRowSelectionModel={setRowSelectionModel}
         ></TeacherList>
+        </Box>
+
       </Box>
 
-      {/* Windialog to search a user before adding a teacher */}
-      <UserSelectDialog isOpen={isDialogOpen} onClose={handleSearchClose} />
-      
-      {/* Alter windialog for delete teacher */}
-      <WinDialog 
-      open={isWinDialogOpen} 
-      onClose={handleWinDialogClose} 
-      onOK={handleDeleteTeacher} 
-      title={"Confirm Deletion"}
-      icon={<WarningIcon color="warning"/>}
-      >
-      Are you sure you want to delete the selected teacher?
-      </WinDialog>
+        {/* Windialog to search a user before adding a teacher */}
+        <UserSelectDialog isOpen={isDialogOpen} onClose={handleSearchClose} />
+
+        {/* Alter windialog for delete teacher */}
+        <WinDialog
+          open={isWinDialogOpen}
+          onClose={handleWinDialogClose}
+          onOK={handleDeleteTeacher}
+          title={"Confirm Deletion"}
+          icon={<WarningIcon color="warning" />}>
+          Are you sure you want to delete the selected teacher?
+        </WinDialog>
+
+      {/* Update teacher dialog */}
+      <UpdateTeacher 
+      open={isUpdateTeacherDialogOpen} 
+      onClose={handleUpdateTeacherDialogClose}
+      data={selectedTeacher}
+      />
     </Box>
+    </>
   );
 }

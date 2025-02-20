@@ -25,9 +25,11 @@ import postRequest from "../../../../request/postRequest";
 import colors from "../../../../theme";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentCategories } from "../../../../store";
-import EditCourseModal from "../editCourse";
+import EditCourseModal from "../../../../components/course/course/editCourse/index";
 import deleteRequest from "../../../../request/delRequest";
 import { useNavigate } from "react-router-dom";
+import StyledBreadcrumbs from "../../../../components/course/course/Breadcrumbs";
+import ReturnButton from "../../../../components/course/shared/ReturnButton";
 
 function useCourse(courseId) {
   return useQuery(["course", courseId], () =>
@@ -90,15 +92,13 @@ export default function CourseSingle() {
 
   return (
     <Box m="20px">
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Header
-          title={data?.data?.title || "Loading..."}
-          subtitle="Managing single course"
-        />
-      </Stack>
-      <Box sx={{ marginBottom: 3 }}>
-        <BackButton />
-      </Box>
+      <Header
+        title={data?.data?.title || "Loading..."}
+        subtitle="Managing single course"
+      />
+
+      <StyledBreadcrumbs courseTitle={data?.data?.title} />
+      <ReturnButton></ReturnButton>
       {isLoading && <Skeleton variant="rounded" width="100%" height={100} />}
       {error && (
         <Typography sx={{ marginBottom: 4 }}>
@@ -106,15 +106,15 @@ export default function CourseSingle() {
         </Typography>
       )}
       {!isLoading && !error && data && (
-        <StyledSection>
+        <StyledSection sx={{ marginTop: "16px" }}>
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="center"
             sx={{ mb: 2 }}
           >
-            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
-              Meta Data
+            <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+              Description
             </Typography>
             <Box display="flex" alignItems="center" gap={2}>
               <Button

@@ -48,7 +48,7 @@ export default function FileUploadPanel({ courseId, courseInstanceId, sessionId 
 
     const onProgressUpdate = (data) => {
       if (data.uploadId === uploadId) {
-        setProgress(data.percentage);
+        setProgress(data.progress);
       }
     };
 
