@@ -51,20 +51,6 @@ export const MoreActionButton = ({onUpdate, onDelete, onAssign}) => {
             update
           </Button>
         </MenuItem>
-        <MenuItem>
-          <Button
-            variant="text"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={(event) => {
-              event.stopPropagation(); //prevent row selection
-              onDelete();
-              handleClose();
-            }}
-          >
-            Delete
-          </Button>
-        </MenuItem>
       </Menu>
     </Box>
   );
