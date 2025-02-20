@@ -161,6 +161,12 @@ function App() {
             element={<ExamPreview />}
           />
 
+          <Route
+            key="examPreview"
+            path="/exam/preview/:examId"
+            element={<ExamPreview />}
+          />
+
           <Route key="page404" path="*" element={<Page404 />} />
         </Route>
       </Routes>
