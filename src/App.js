@@ -21,6 +21,7 @@ import Questions from "./pages/exam/questions";
 import Exams from "./pages/exam/exams";
 import ExamPublish from "./pages/exam/publish";
 import AddTeacher from "./pages/user/teacher/addTeacher";
+import ExamPreview from "./pages/exam/preview";
 
 function App() {
   return (
@@ -87,6 +88,12 @@ function App() {
             key="publish"
             path="/exam/publish"
             element={<ExamPublish />}
+          />
+
+          <Route
+            key="examPreview"
+            path="/exam/preview/:examId"
+            element={<ExamPreview />}
           />
 
           <Route key="page404" path="*" element={<Page404 />} />
