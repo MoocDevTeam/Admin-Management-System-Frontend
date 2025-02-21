@@ -11,11 +11,9 @@ import Header from "../../components/header";
 import colors from "../../theme";
 import AlterDialog from "../../components/alterDialog";
 import RoleList from "./roleList";
-
 import { useEffect } from "react";
 import getRequest from "../../request/getRequest";
 import deleteRequest from "../../request/delRequest";
-
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { GridSearchIcon } from "@mui/x-data-grid";
@@ -32,7 +30,8 @@ import * as Yup from "yup";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import { useDispatch } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
-
+import { theme } from "../../theme";
+import PermissionTree from "./permission";
 export default function Role() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,6 +40,7 @@ export default function Role() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState([]);
+  const [isPermissionOpen, setIsPermissionOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -73,8 +73,23 @@ export default function Role() {
         roleName: values.roleName,
         description: values.description,
       });
+      console.log("selectedRowId is: ", selectedRowId);
+
       if (result.isSuccess) {
-        toast.success("Add Role Success !");
+        toast.success("Update Role Success !");
+        setPageData((prevData) => {
+          const newRoles = prevData.items.map((role) =>
+            role.id === selectedRowId
+              ? {
+                  id: selectedRowId,
+                  roleName: values.roleName,
+                  description: values.description,
+                }
+              : role
+          );
+          console.log("after update roles, newRoles:", newRoles);
+          return { ...prevData, items: newRoles };
+        });
         formik.resetForm();
         navigate("/role", { replace: true });
       } else {
@@ -101,14 +116,14 @@ export default function Role() {
       field: "Operation",
       headerName: "Operation",
       flex: 1,
-      renderCell: (row) => {
+      renderCell: (params) => {
         return (
           <Box>
             <Button
               variant="outlined"
               color="success"
               startIcon={<ModeEditIcon />}
-              onClick={(e) => handleUpdate(e, row)}
+              onClick={(e) => handleUpdate(e, params.row)}
             >
               Update
             </Button>
@@ -142,7 +157,10 @@ export default function Role() {
             items: result.data.items,
             total: result.data.total,
           });
-          dispatch(setRoleNames(result.data.items));
+          console.log("result.data", result.data);
+          dispatch(
+            setRoleNames({ items: result.data.items, total: result.data.total })
+          );
         } else {
           setPageData({ items: [], total: 0 });
         }
@@ -167,20 +185,27 @@ export default function Role() {
       pageSize: e.pageSize,
     }));
   };
-
+  function handlePermissionClose() {
+    setIsPermissionOpen(false);
+    console.log("in handle permission open");
+  }
+  function handlePermissionOpen() {
+    setIsPermissionOpen(true);
+    console.log("in handle permission close");
+  }
   function handleAddRole() {
     navigate("/role/add");
   }
   const handleUpdate = (e, row) => {
     e.stopPropagation();
     //only for one item update
+    console.log("get row is:", row);
     if (rowSelectionModel.length === 0 || rowSelectionModel.length > 1) {
       setAlertMessage("Please select one role to update");
       setAlertOpen(true);
       return;
     }
-    setSelectedRowId((pre) => [...pre, row.id]);
-
+    setSelectedRowId(row.id);
     setUpdateOpen(true);
   };
 
@@ -203,22 +228,25 @@ export default function Role() {
     if (!data.isOk || rowSelectionModel.length === 0) {
       return;
     }
+    const ids = rowSelectionModel;
+
     try {
-      await Promise.all(
-        rowSelectionModel.map((id) => {
-          result = deleteRequest(`Role/Delete/${id}`);
-          return result;
-        })
-      );
-      setRowSelectionModel([]);
+      if (rowSelectionModel.length === 1) {
+        result = await deleteRequest(`Role/Delete/${rowSelectionModel[0]}`);
+      }
+      if (rowSelectionModel.length >= 1) {
+        result = await deleteRequest("Role/BatchDelete", {
+          data: ids,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
       toast.success("Delete Success!");
     } catch (error) {
       toast.error(result.message);
+      setRowSelectionModel([]);
     }
-    //setPageSearch({ page: pageSearch.page, pageSize: pageSearch.pageSize });
     setPageSearch((preState) => ({ ...preState, page: 1 }));
   };
-
   return (
     <>
       <Box m="20px">
@@ -289,12 +317,7 @@ export default function Role() {
               <Button variant="contained" onClick={handleAddRole}>
                 Add Role
               </Button>
-              <Button
-                variant="contained"
-                onClick={() => {
-                  console.log("permission");
-                }}
-              >
+              <Button variant="contained" onClick={handlePermissionOpen}>
                 Permission
               </Button>
               <Button
@@ -328,7 +351,12 @@ export default function Role() {
         </AlterDialog>
         <Dialog open={updateOpen} onClose={() => setUpdateOpen(false)}>
           <DialogTitle
-            sx={{ color: "#000", fontWeight: "bold", fontSize: "2rem" }}
+            sx={{
+              color: "#fff",
+              fontWeight: "bold",
+              fontSize: "2rem",
+              bgcolor: theme.palette.secondary.main,
+            }}
           >
             Update Role
           </DialogTitle>
@@ -376,20 +404,26 @@ export default function Role() {
                 />
               </DialogContent>
               <DialogActions>
-                <Button type="submit" color="secondary" variant="contained">
-                  Save
-                </Button>
                 <Button
                   onClick={() => setUpdateOpen(false)}
-                  color="secondary"
                   variant="contained"
+                  sx={{ bgcolor: "#fff", color: "#000" }}
                 >
-                  Cancel
+                  CANCEL
+                </Button>
+                <Button type="submit" color="primary" variant="contained">
+                  UPDATE
                 </Button>
               </DialogActions>
             </Form>
           </Formik>
         </Dialog>
+        {isPermissionOpen && (
+          <PermissionTree
+            onOpen={handlePermissionOpen}
+            onClose={handlePermissionClose}
+          />
+        )}
       </Box>
       {/* <WinDialog title="test dialog" open={open} onClose={handleWinClose}>
         

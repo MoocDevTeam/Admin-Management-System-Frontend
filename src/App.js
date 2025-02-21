@@ -27,6 +27,8 @@ import LoadingSpinner from "./components/loadingSpinner";
 import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { lazy } from "react";
+import Menus from "./pages/menu";
+import { AssignCourseInstance } from "./pages/teacher/assignCourseInstance";
 
 function LazyLoad(componentPath) {
   const Module = lazy(() => import(`${componentPath}`));
@@ -39,7 +41,7 @@ function App() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    // if (!isAuthenticated) return;
     async function getMenu() {
       const res = await getRequest("menu/GetMenuTree");
       if (res.isSuccess) {
@@ -64,7 +66,9 @@ function App() {
               path={item.route}
               element={
                 <Suspense fallback={<LoadingSpinner />}>
-                  <ProtectedRoute>{LazyLoad(item.componentPath)}</ProtectedRoute>
+                  <ProtectedRoute>
+                    {LazyLoad(item.componentPath)}
+                  </ProtectedRoute>
                 </Suspense>
               }
             />
@@ -87,16 +91,41 @@ function App() {
           <Route key="dashboard" path="/" element={<Dashboard />} />
           <Route key="user" path="/user" element={<User />} />
           <Route key="role" path="/role" element={<Role />} />
+          <Route key="menu" path="/menu" element={<Menus />} />
           <Route key="addUser" path="/user/add" element={<AddUser />} />
           <Route key="addRole" path="/role/add" element={<AddRole />} />
           <Route key="profile" path="/profile" element={<UserProfile />} />
           <Route key="courseList" path="/course" element={<CourseList />} />
-          <Route key="category" path="/course/category" element={<CategoryTree />} />
-          <Route key="courseLaunch" path="/course/courseLaunch" element={<CourseLaunch />} />
-          <Route key="courseSingle" path="/course/:courseId" element={<CourseSingle />} />
-          <Route key="category" path="/course/category" element={<CategoryTree />} />
-          <Route key="courseLaunch" path="/course/courseLaunch" element={<CourseLaunch />} />
-          <Route key="courseSingle" path="/course/:courseId" element={<CourseSingle />} />
+          <Route
+            key="category"
+            path="/course/category"
+            element={<CategoryTree />}
+          />
+          <Route
+            key="courseLaunch"
+            path="/course/courseLaunch"
+            element={<CourseLaunch />}
+          />
+          <Route
+            key="courseSingle"
+            path="/course/:courseId"
+            element={<CourseSingle />}
+          />
+          <Route
+            key="category"
+            path="/course/category"
+            element={<CategoryTree />}
+          />
+          <Route
+            key="courseLaunch"
+            path="/course/courseLaunch"
+            element={<CourseLaunch />}
+          />
+          <Route
+            key="courseSingle"
+            path="/course/:courseId"
+            element={<CourseSingle />}
+          />
           <Route
             key="courseInstanceSingle"
             path="/course/:courseId/CourseInstance/:courseInstanceId"
@@ -104,12 +133,24 @@ function App() {
           />
 
           {/* Route for teacher */}
-          <Route key="teacher" path="/user/teacher" element={<Teacher />} />
           <Route key="teacher" path="/teacher" element={<Teacher />} />
-          <Route key="addTeacher" path="/teacher/add" element={<AddTeacher />} />
+          <Route
+            key="addTeacher"
+            path="/teacher/add"
+            element={<AddTeacher />}
+          />
+          <Route
+            key="assignTeacher"
+            path="/teacher/assign"
+            element={<AssignCourseInstance />}
+          />
 
           {/* Exam-related routes */}
-          <Route key="questions" path="/exam/questions" element={<Questions />} />
+          <Route
+            key="questions"
+            path="/exam/questions"
+            element={<Questions />}
+          />
           <Route key="exams" path="/exam/exams" element={<Exams />} />
           <Route key="publish" path="/exam/publish" element={<ExamPublish />} />
 

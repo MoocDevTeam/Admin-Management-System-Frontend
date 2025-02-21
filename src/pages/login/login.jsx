@@ -54,9 +54,9 @@ const LoginPage = () => {
           password: values.password,
         });
         if (res && res.isSuccess === true) {
-          localStorage.setItem("access_token", res.message);
-          localStorage.setItem("userName", values.username);
-          dispatch(setAuthenticated());
+          dispatch(
+            setAuthenticated({ token: res.message, userName: values.username })
+          );
           navigate("/");
         } else {
           formik.setFieldError("username", "Invalid username or password");
