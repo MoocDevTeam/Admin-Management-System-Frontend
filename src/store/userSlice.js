@@ -37,6 +37,7 @@ const userSlice = createSlice({
       address: "Australia",
       age: 30,
       access: 0,
+      avatar: "",
     },
     status: "idle",
     error: null,
