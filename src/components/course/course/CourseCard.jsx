@@ -40,8 +40,12 @@ const TextBox = styled(Box)(({ theme }) => ({
 }));
 
 export default function CourseCard({ title, category, description, imageUrl }) {
-  const handleEdit = () => { console.log("clicked!") };
-  const handleDelete = () => { console.log("clicked!") };
+  const handleEdit = () => {
+    console.log("clicked!");
+  };
+  const handleDelete = () => {
+    console.log("clicked!");
+  };
 
   return (
     <StyledCard style={{ width: "380px" }}>
@@ -60,14 +64,14 @@ export default function CourseCard({ title, category, description, imageUrl }) {
         </TextBox>
       </ContentBox>
 
-      <Box>
+      {/* <Box>
         <MoreButton
           showEdit={true}
           showDelete={true}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
-      </Box>
+      </Box> */}
     </StyledCard>
   );
 }
