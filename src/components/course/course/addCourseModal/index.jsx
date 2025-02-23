@@ -1,19 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import postRequest from "../../../../request/postRequest";
 import toast from "react-hot-toast";
 import { setCourses } from "../../../../store/courseSlice";
 import { useDispatch, useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 import { Tree } from "antd";
+import getRequest from "../../../../request/getRequest";
+import { setCurrentCategories } from "../../../../store/categorySlice";
+
 import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
 export default function AddCourseModal({
   CourseData,
-  categories,
+
   handleClose,
 }) {
   const [newCourseData, setNewCourseData] = useState(CourseData);
   const courses = useSelector((state) => state.course.filteredCourses);
   const [expandedKeys, setExpandedKeys] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const dispatch = useDispatch();
+  const [error, setError] = useState("");
+
   const [autoExpandParent, setAutoExpandParent] = useState(true);
   const formatTreeData = (categories) => {
     return categories.map((category) => ({
@@ -56,6 +64,48 @@ export default function AddCourseModal({
       }));
     }
   };
+  function processCategory(category) {
+    const categoryWithChildren = {
+      categoryName: category.categoryName,
+      id: String(category.id),
+      label: category.categoryName,
+      children: [],
+    };
+    category.childrenCategories.forEach((childCategory) => {
+      categoryWithChildren.children.push(processCategory(childCategory));
+    });
+    return categoryWithChildren;
+  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categoryResponse = await getRequest(
+          "/Category/GetAllCategories",
+          null,
+          setLoading
+        );
+        if (categoryResponse?.isSuccess) {
+          console.log("get category", categoryResponse?.data);
+          const uniqueCategoriesList = [];
+          categoryResponse.data.forEach((category) => {
+            uniqueCategoriesList.push(processCategory(category));
+          });
+          console.log("processCategory", uniqueCategoriesList);
+          dispatch(setCurrentCategories(uniqueCategoriesList));
+          setCategories(uniqueCategoriesList);
+          setError("");
+        } else {
+          setError(
+            categoryResponse?.message ||
+              "An error occurred while fetching data."
+          );
+        }
+      } catch (err) {
+        setError("Failed to fetch data", err);
+      }
+    };
+    fetchData();
+  }, [dispatch]);
 
   return (
     <Box

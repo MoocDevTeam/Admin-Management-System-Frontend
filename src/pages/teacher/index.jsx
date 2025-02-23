@@ -1,5 +1,5 @@
 import Header from "../../components/header";
-import { Box, Button, Stack, Dialog, Typography } from "@mui/material";
+import { Box, Button, Stack, Dialog, Typography,InputAdornment, TextField, IconButton } from "@mui/material";
 import TeacherList from "../../components/course/teacher/teacherList";
 import React, { useState, useEffect } from "react";
 import getRequest from "../../request/getRequest";
@@ -15,6 +15,7 @@ import WarningIcon from "@mui/icons-material/Warning";
 import { UpdateTeacher } from "../../components/course/teacher/updateTeacher";
 import { MoreActionButton } from "../../components/course/teacher/MoreActionButton";
 import { useNavigate } from "react-router-dom";
+import { GridSearchIcon } from "@mui/x-data-grid";
 
 export default function Teacher() {
   //set default page size
@@ -131,7 +132,6 @@ export default function Teacher() {
 
   //set teacherlist columns
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
     {
       field: "displayName",
       headerName: "Name",
@@ -254,6 +254,38 @@ export default function Teacher() {
       >
         <Box sx={{ mb: "15px" }}>
           <Stack direction="row" spacing={2} justifyContent="flex-end">
+
+          <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Search a teacher ..."
+                fullWidth
+                // value={searchQuery}
+                // onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{ ml: 2, width: 250, height: 40, marginTop: 1 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <IconButton>
+                        <GridSearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        // onClick={() => (
+                        //   // setFilteredUserList({ items: [], total: 0 }),
+                        //   setSearchQuery("")
+                        // )}
+                      >
+                        {/* {searchQuery.length > 0 ? "x" : ""} */}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
             <Button
               variant="contained"
               startIcon={<AddIcon />}

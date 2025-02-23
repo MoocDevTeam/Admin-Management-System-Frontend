@@ -59,6 +59,7 @@ export default function CourseSingle() {
       id: data?.data?.id,
       title: data?.data?.title || "",
       courseCode: data?.data?.courseCode || "",
+      categoryId: data?.data?.categoryId || "",
       coverImage: data?.data?.coverImage || "",
       description: data?.data?.description || "",
     });
@@ -153,7 +154,7 @@ export default function CourseSingle() {
             <EditCourseModal
               courseId={courseId}
               courseDataInput={courseData}
-              categories={categories}
+              categoryId={courseData.categoryId}
               handleClose={handleClose}
             />
           </Modal>
