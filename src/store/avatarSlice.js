@@ -27,17 +27,17 @@ const avatarSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getAvatarByUserName.pending, (state) => {
-                state.avatarStatus = "loading";
+                state.Status = "loading";
                 state.error = null;
                 console.log("Avatar loading")
             })
             .addCase(getAvatarByUserName.fulfilled, (state, action) => {
-                state.avatarStatus = "succeeded";
+                state.Status = "succeeded";
                 state.avatar = action.payload;
                 console.log("Avatar success")
             })
             .addCase(getAvatarByUserName.rejected, (state, action) => {
-                state.avatarStatus = "failed";
+                state.Status = "failed";
                 state.error = action.payload;
                 console.log("Avatar failed");
             });
