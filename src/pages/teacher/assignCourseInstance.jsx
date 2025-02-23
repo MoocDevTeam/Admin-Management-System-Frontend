@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-import colors from "../../theme";
 import Header from "../../components/header";
 import { useLocation } from "react-router-dom";
 import getRequest from "../../request/getRequest";
+import postRequest from "../../request/postRequest";
 import dayjs from "dayjs";
+import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { toast } from "react-hot-toast";
+import colors, { theme } from "../../theme";
 import {
   Box,
   TextField,
@@ -18,7 +22,6 @@ import {
   Button,
   Popover,
   CircularProgress,
-  Typography,
 } from "@mui/material";
 
 export const AssignCourseInstance = () => {
@@ -33,20 +36,18 @@ export const AssignCourseInstance = () => {
   const [activeCourseId, setActiveCourseId] = useState(null);
   const [instances, setInstances] = useState([]);
 
-  console.log("filtered course",filteredCourses);
-  console.log("course",courses);
-  console.log("instances",instances);
+  console.log("filtered course", filteredCourses);
+  console.log("course", courses);
+  console.log("instances", instances);
 
   //handle search
   const handleSearch = (event) => {
     const value = event.target.value.toLowerCase();
     setSearchText(value);
     setFilteredCourses(
-      courses.filter((course) => 
-        course.title.toLowerCase().includes(value)
-      )
+      courses.filter((course) => course.title.toLowerCase().includes(value))
     );
-  }
+  };
 
   //Get assigned courses section
   const getAssignedCourses = async (id) => {
@@ -73,10 +74,10 @@ export const AssignCourseInstance = () => {
     let result = await getRequest("/mooccourse/getall");
     if (result.isSuccess) {
       setCourses(result.data);
-      setFilteredCourses(result.data)
+      setFilteredCourses(result.data);
     } else {
       setCourses([]);
-      setFilteredCourses([])
+      setFilteredCourses([]);
     }
   };
 
@@ -84,13 +85,19 @@ export const AssignCourseInstance = () => {
     fetchCourses();
   }, []);
 
-
   //fetch courseInstance by course id (when hovering over actiuon button)
+  useEffect( () => {
+    if (activeCourseId) {
+      fetchCourseInstanceByCourseId(activeCourseId);
+    }
+  }, [activeCourseId]);
   const fetchCourseInstanceByCourseId = async (courseId) => {
     setLoading(true);
-    let result = await getRequest(`/MoocCourse/GetCourseInstancesByCourseId/${courseId}`);
+    let result = await getRequest(
+      `/MoocCourse/GetCourseInstancesByCourseId/${courseId}`
+    );
     if (result.isSuccess) {
-      console.log("hover result",result.data);
+      console.log("hover result", result.data);
       setInstances(result.data);
       setLoading(false);
     } else {
@@ -98,22 +105,38 @@ export const AssignCourseInstance = () => {
       setInstances([]);
       setLoading(false);
     }
-  }
+  };
 
   //handel hover to load course instance
   const handleHover = (event, courseId) => {
     setAnchorEl(event.currentTarget);
     setActiveCourseId(courseId);
     console.log("instances now", instances);
-    //need help here
-    fetchCourseInstanceByCourseId(courseId);
-    
-  }
+  };
 
   //handle close popover
   const handleClose = () => {
     setAnchorEl(null);
-  }
+  };
+
+  //handle assign course
+  const handleAssignCourse = async (courseInstanceId) => {
+    let result = await postRequest(`/TeacherCourseInstance/AssignTeacherToCourseInstance`, {
+      teacherId: teacherId,
+      courseInstanceId: courseInstanceId
+    }
+    );
+    if (result.isSuccess) {
+      console.log("course assigned successfully");
+      toast.success("Course assigned successfully!");
+      getAssignedCourses(teacherId);
+      handleClose();
+    } else {
+      console.log("Failed to assign course");
+      toast.error("Failed to assign course!");
+    }
+  };
+
   return (
     <>
       <Box m="20px">
@@ -200,12 +223,22 @@ export const AssignCourseInstance = () => {
                 value={searchText}
                 onChange={handleSearch}
                 style={{ marginBottom: 20 }}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                
               ></TextField>
             </div>
             {/* Table content */}
             <TableContainer component={Paper} sx={{ minWidth: 650 }}>
               <Table>
-                <TableHead sx={{backgroundColor: colors.blueAccent[700]}}>
+                <TableHead sx={{ backgroundColor: colors.blueAccent[700] }}>
                   <TableRow>
                     <TableCell>Course Title</TableCell>
                     <TableCell>Course Code</TableCell>
@@ -221,38 +254,82 @@ export const AssignCourseInstance = () => {
                       <TableCell>{course.categoryName}</TableCell>
                       <TableCell>
                         <Button
-                          onMouseEnter = {(e) => handleHover(e, course.id)}
+                          onMouseEnter={(e) => handleHover(e, course.id)}
                           variant="contained"
                           color="primary"
-                        >View Details</Button>
+                          onClose={handleClose}
+                        >
+                          View Details
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
-
               </Table>
             </TableContainer>
             <Popover
-            open={Boolean(anchorEl)}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
+              open={Boolean(anchorEl)}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
             >
-              This is a popover!
+              <Box
+                sx={{
+                  p: 1,
+                  paddingLeft: 2,
+                  bgcolor: theme.palette.secondary.main,
+                  color: "white",
+                }}
+              >
+                <h4>Available Course Launch</h4>
+              </Box>
+
               {instances.length === 0 ? (
-                <CircularProgress />
+                loading ? (
+                  <Box display="flex" justifyContent="center" m="20px">
+                    <CircularProgress />
+                  </Box>
+                ) : (
+                  <Box display="flex" justifyContent="center" m="20px">
+                  <h5>"No course launch under this course."</h5>
+                  </Box>
+                )
               ) : (
-                <Box>
-                  {instances.map((instance) => (
-                    <Box key={instance.id}>
-                      1233
-                    </Box>
-                  ))}
-                  </Box>)}
-                
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Start Date</TableCell>
+                        <TableCell>End Date</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {instances.map((instance) => (
+                        <TableRow key={instance.id}>
+                          <TableCell>
+                            {dayjs(instance.startDate).format("lll")}
+                          </TableCell>
+                          <TableCell>
+                            {dayjs(instance.endDate).format("lll")}
+                          </TableCell>
+                          <TableCell>
+                            <Button 
+                            variant="contained" 
+                            color="primary"
+                            onClick={() => handleAssignCourse(instance.id)}
+                            >
+                              Assign
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
             </Popover>
           </Box>
         </Box>

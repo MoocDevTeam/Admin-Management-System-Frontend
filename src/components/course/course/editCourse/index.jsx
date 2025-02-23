@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import postRequest from "../../../../request/postRequest";
+import getRequest from "../../../../request/getRequest";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentCategories } from "../../../../store/categorySlice";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { Tree } from "antd";
@@ -40,13 +43,16 @@ function useUpdateCourse(courseId) {
 export default function EditCourseModal({
   courseId,
   courseDataInput,
-  categories,
+  categoryId,
   handleClose,
 }) {
+  const [loading, setLoading] = useState(true);
   const updateCourseMutation = useUpdateCourse(courseId);
   const [newCourseData, setNewCourseData] = useState(courseDataInput);
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [error, setError] = useState("");
 
   const formatTreeData = (categories) => {
     return categories.map((category) => ({
@@ -56,6 +62,8 @@ export default function EditCourseModal({
       children: category.children ? formatTreeData(category.children) : [],
     }));
   };
+  const dispatch = useDispatch();
+  console.log("categoryId", categoryId);
   const treeData = formatTreeData(categories);
 
   const handleSubmit = (event) => {
@@ -83,6 +91,50 @@ export default function EditCourseModal({
       }));
     }
   };
+
+  function processCategory(category) {
+    const categoryWithChildren = {
+      categoryName: category.categoryName,
+      id: String(category.id),
+      label: category.categoryName,
+      children: [],
+    };
+    category.childrenCategories.forEach((childCategory) => {
+      categoryWithChildren.children.push(processCategory(childCategory));
+    });
+    return categoryWithChildren;
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const categoryResponse = await getRequest(
+          "/Category/GetAllCategories",
+          null,
+          setLoading
+        );
+        if (categoryResponse?.isSuccess) {
+          console.log("get category", categoryResponse?.data);
+          const uniqueCategoriesList = [];
+          categoryResponse.data.forEach((category) => {
+            uniqueCategoriesList.push(processCategory(category));
+          });
+          console.log("processCategory", uniqueCategoriesList);
+          dispatch(setCurrentCategories(uniqueCategoriesList));
+          setCategories(uniqueCategoriesList);
+          setError("");
+        } else {
+          setError(
+            categoryResponse?.message ||
+              "An error occurred while fetching data."
+          );
+        }
+      } catch (err) {
+        setError("Failed to fetch data", err);
+      }
+    };
+    fetchData();
+  }, [dispatch]);
 
   return (
     <Box
