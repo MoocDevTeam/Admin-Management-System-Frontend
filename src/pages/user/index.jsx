@@ -89,10 +89,10 @@ export default function User() {
       field: "avatar",
       headerName: "Avatar",
       flex: 1,
-      renderCell: (param) => {
+      renderCell: (row) => {
         return (
           <Avatar
-            src="https://jr-prac.s3.ap-southeast-2.amazonaws.com/user3.png"
+            src={row.row.avatar}
             sx={{ width: 50, height: 50 }}
           ></Avatar>
         );
