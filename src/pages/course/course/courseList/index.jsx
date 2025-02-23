@@ -222,11 +222,7 @@ export default function CourseList() {
       )}
       {/* Popup add course page */}
       <Modal open={open} onClose={handleClose}>
-        <AddCourseModal
-          CourseData={newCourseData}
-          categories={categories}
-          handleClose={handleClose}
-        />
+        <AddCourseModal CourseData={newCourseData} handleClose={handleClose} />
       </Modal>
     </Box>
   );
