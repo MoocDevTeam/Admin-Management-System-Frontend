@@ -157,7 +157,7 @@ export default function UserProfile() {
           >
             <Stack direction="row" alignItems="center" spacing={2}>
               <Avatar
-                src={ "https://jr-prac.s3.ap-southeast-2.amazonaws.com/user3.png"|| ""}
+                src={ user.avatar|| ""}
                 alt="User Avatar"
                 sx={{ width: 80, height: 80, cursor:"pointer"}}
               
