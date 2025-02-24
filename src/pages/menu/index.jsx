@@ -7,8 +7,8 @@ import { Table, Button, Modal, Form, Input, message } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import getRequest from "../../request/getRequest";
 import postRequest from "../../request/postRequest";
-import { TreeSelect } from 'antd';
-import { Select } from 'antd';
+import { TreeSelect } from "antd";
+import { Select } from "antd";
 import { InputNumber } from "antd";
 const { Column } = Table;
 
@@ -55,23 +55,22 @@ function Menus() {
   };
   const handleSave = async () => {
     try {
-
       let values = await form.validateFields();
 
-      let resp = await postRequest('/Menu/Add', {
-        ParentId: selectParentId == 0 ? null : selectParentId,
+      let resp = await postRequest("/Menu/Add", {
+        ParentId: selectParentId === 0 ? null : selectParentId,
         title: values.menuName,
         Route: values.path,
         Permission: values.Permission,
         MenuType: +selectMenuTypeValue,
         OrderNum: values.OrderNum,
-        ComponentPath: values.ComponentPath
+        ComponentPath: values.ComponentPath,
       });
       if (resp.isSuccess) {
         setRefresh(!refresh);
       }
       setSelectParentId(0);
-      debugger
+      debugger;
       // const newData = [...data];
       // const updateNode = (nodes) => {
       //   return nodes.map((node) => {
@@ -92,9 +91,7 @@ function Menus() {
       //   message.success("Add Success !");
       // }
       setIsModalOpen(false);
-    } catch (e) {
-
-    }
+    } catch (e) {}
   };
   useEffect(() => {
     async function getMenu() {
@@ -119,14 +116,13 @@ function Menus() {
           setDefalutSelectMenuType(res.data.items[0].value);
           setSelectMenuTypeValue(res.data.items[0].value);
         } else {
-          setDefalutSelectMenuType('');
+          setDefalutSelectMenuType("");
           setSelectMenuTypes([]);
-          setSelectMenuTypeValue('');
+          setSelectMenuTypeValue("");
         }
       }
     }
     getMenuType();
-
   }, [refresh]);
 
   const [selectParentId, setSelectParentId] = useState(0);
@@ -137,30 +133,29 @@ function Menus() {
     console.log(`selected ${value}`);
   };
 
-
-  const [defalutSelectMenuType, setDefalutSelectMenuType] = useState('');
-  const [selectMenuTypeValue, setSelectMenuTypeValue] = useState('');
+  const [defalutSelectMenuType, setDefalutSelectMenuType] = useState("");
+  const [selectMenuTypeValue, setSelectMenuTypeValue] = useState("");
   const [selectMenuTypes, setSelectMenuTypes] = useState([]);
 
   const onSearch = (value) => {
-    console.log('search:', value);
+    console.log("search:", value);
   };
 
   const handleSelectMenuTypeChange = (value) => {
     //setSelectMenuTypeValue(value);
-  }
+  };
 
   const [orderNum, setOrderNum] = useState(0);
   const onOrderNumChange = (value) => {
     setOrderNum(value);
-  }
+  };
 
   const [selectMemu, setSelectMemu] = useState([]);
 
   let tmpMenuList = [];
   function buildSelect(menuList, level = 0) {
-    menuList.forEach(element => {
-      const sp = '--'.repeat(level);
+    menuList.forEach((element) => {
+      const sp = "--".repeat(level);
       tmpMenuList.push({ value: element.id, label: sp + element.title });
       if (element.children && element.children.length > 0) {
         buildSelect(element.children, level + 1); // Corrected increment
@@ -168,7 +163,6 @@ function Menus() {
     });
     return tmpMenuList;
   }
-
 
   return (
     <Box m="20px">
@@ -250,23 +244,26 @@ function Menus() {
         onOk={handleSave}
         onCancel={() => setIsModalOpen(false)}
       >
-        <Form form={form} layout="vertical"
+        <Form
+          form={form}
+          layout="vertical"
           initialValues={{
-            OrderNum: '0',
-            menuType: 'Directory'
-          }}>
+            OrderNum: "0",
+            menuType: "Directory",
+          }}
+        >
           <Form.Item name="parentMenu" label="Parent Menu">
             <TreeSelect
               showSearch
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               value={selectParentId}
-              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
               placeholder="Please select"
               allowClear
               treeDefaultExpandAll
               onChange={onChange}
               treeData={selectTreeData}
-              fieldNames={{ label: 'title', value: 'id', children: 'children' }}
+              fieldNames={{ label: "title", value: "id", children: "children" }}
             />
           </Form.Item>
           <Form.Item
@@ -280,19 +277,27 @@ function Menus() {
           <Form.Item name="Permission" label="Permission">
             <Input />
           </Form.Item>
-          <Form.Item name="menuType" label="Menu Type"
+          <Form.Item
+            name="menuType"
+            label="Menu Type"
             rules={[{ required: true, message: "Please enter the menu type" }]}
           >
             <Select
               defaultValue={defalutSelectMenuType}
               value={selectMenuTypeValue}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               onChange={handleSelectMenuTypeChange}
               options={selectMenuTypes}
             />
           </Form.Item>
           <Form.Item name="OrderNum" label="OrderNum">
-            <InputNumber min={0} max={10000} defaultValue={0} value={0} style={{ width: '100%' }} />
+            <InputNumber
+              min={0}
+              max={10000}
+              defaultValue={0}
+              value={0}
+              style={{ width: "100%" }}
+            />
           </Form.Item>
           <Form.Item name="Route" label="Route">
             <Input />
@@ -300,7 +305,6 @@ function Menus() {
           <Form.Item name="ComponentPath" label="ComponentPath">
             <Input />
           </Form.Item>
-
         </Form>
       </Modal>
     </Box>
