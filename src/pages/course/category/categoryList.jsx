@@ -4,8 +4,13 @@ import Skeleton from "@mui/material/Skeleton";
 import FlexWrap from "../../../components/course/shared/FlexWrap";
 import CategoryCard from "../../../components/course/category/CategoryCard";
 
-export default function CategoryList({ currentCategories, handleCategoryClick, handleEdit,loading, error }) {
-    
+export default function CategoryList({
+  currentCategories,
+  handleCategoryClick,
+  handleEdit,
+  loading,
+  error,
+}) {
   if (loading) {
     return (
       <FlexWrap>
@@ -15,7 +20,6 @@ export default function CategoryList({ currentCategories, handleCategoryClick, h
       </FlexWrap>
     );
   }
-
   if (error) {
     return <Typography sx={{ marginBottom: 4 }}>{error}</Typography>;
   }
@@ -28,20 +32,20 @@ export default function CategoryList({ currentCategories, handleCategoryClick, h
     );
   }
 
-return(
-<FlexWrap>
-  {currentCategories.map((category) => (
-    <CategoryCard
-      key={category.id}
-      categoryId={category.id}
-      categoryName={category.categoryName}
-      description={category.description || "No description available"}
-      imageUrl={category.iconUrl}
-      subCategoryCounts={category.childrenCategories?.length || 0}
-      onClick={() => handleCategoryClick(category)}
-      onEdit={() => handleEdit(category)}
-    />
-  ))}
-</FlexWrap>
-   )
+  return (
+    <FlexWrap>
+      {currentCategories.map((category) => (
+        <CategoryCard
+          key={category.id}
+          categoryId={category.id}
+          categoryName={category.categoryName}
+          description={category.description || "No description available"}
+          imageUrl={category.iconUrl}
+          subCategoryCounts={category.childrenCategories?.length || 0}
+          onClick={() => handleCategoryClick(category)}
+          onEdit={() => handleEdit(category)}
+        />
+      ))}
+    </FlexWrap>
+  );
 }
