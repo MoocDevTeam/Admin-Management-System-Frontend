@@ -23,7 +23,7 @@ import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import postRequest from "../../request/postRequest";
 import { useDispatch } from "react-redux";
-import { setAuthenticated } from "../../store/authSlice";
+import { setAuthenticated ,setPermissions} from "../../store/authSlice";
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -55,8 +55,9 @@ const LoginPage = () => {
         });
         if (res && res.isSuccess === true) {
           dispatch(
-            setAuthenticated({ token: res.message, userName: values.username })
+            setAuthenticated({ token: res.data.token, userName: values.username })
           );
+          dispatch(setPermissions(res.data.permissions));
           navigate("/");
         } else {
           formik.setFieldError("username", "Invalid username or password");

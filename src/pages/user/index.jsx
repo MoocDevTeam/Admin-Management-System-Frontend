@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
 import { UpdateUser } from "./updateUser";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import AuthButton from "../../components/authButton/authButton";
 export default function User() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [open, setOpen] = useState(false);
@@ -324,9 +325,12 @@ export default function User() {
                   ),
                 }}
               />
+              {/* <AuthButton permission="Admin.User.Add"> */}
               <Button variant="contained" onClick={handleAddUser}>
                 Add User
               </Button>
+              {/* </AuthButton> */}
+              <AuthButton permission="Admin.User.Delete">
               <Button
                 color="secondary"
                 variant="contained"
@@ -334,6 +338,7 @@ export default function User() {
               >
                 Delete
               </Button>
+              </AuthButton>
             </Stack>
           </Box>
           <UserList

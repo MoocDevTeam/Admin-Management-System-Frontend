@@ -186,6 +186,12 @@ function PermissionTree({ onOpen, onClose }) {
           <Button variant="contained" color="success" onClick={handleSave}>
             OK
           </Button>
+          {/* <Button variant="contained" color="success" onClick={()=>onClose({status:'ok',permission:checked})}>
+            OK
+          </Button>
+          <Button variant="outlined" color="error" onClick={()=>onClose({status:'cancel'})}>
+            CANCEL
+          </Button> */}
         </Box>
       </Box>
     </Dialog>

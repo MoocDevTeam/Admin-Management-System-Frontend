@@ -6,6 +6,7 @@ import { Table, Button, Modal, Form, Input, message } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import getRequest from "../../request/getRequest";
 import postRequest from "../../request/postRequest";
+import delRequest from "../../request/delRequest";
 import { TreeSelect } from "antd";
 import { Select } from "antd";
 import { InputNumber } from "antd";
@@ -71,6 +72,24 @@ function Menus() {
       });
     };
     setData(deleteNode(data));
+  };
+
+  const handleDeleteLily = async (key) => {
+    const res = await delRequest(`menu/Delete/${key}`);
+    if (res.isSuccess) {
+      setRefresh(!refresh);
+      message.success("Delete Success !");
+    } else {
+      message.error(res.message);
+    }
+    // const deleteNode = (nodes) => {
+    //   return nodes.filter((node) => {
+    //     if (node.key === key) return false;
+    //     if (node.children) node.children = deleteNode(node.children);
+    //     return true;
+    //   });
+    // };
+    // setData(deleteNode(data));
   };
 
   const handleSave = async () => {
@@ -254,6 +273,7 @@ function Menus() {
             </span>
           )}
         />
+        <Column title="Permission" dataIndex="permission" key="permission" />
         <Column title="Route" dataIndex="route" key="route" />
         <Column title="Level" dataIndex="orderNum" key="orderNum" />
 
@@ -277,7 +297,7 @@ function Menus() {
               <Button
                 type="link"
                 icon={<DeleteOutlined />}
-                onClick={() => handleDelete(record.key)}
+                onClick={() => handleDelete(record.id)}
                 style={{ color: "red" }}
               ></Button>
             </span>
@@ -309,7 +329,11 @@ function Menus() {
               treeDefaultExpandAll
               onChange={onChange}
               treeData={selectTreeData}
-              fieldNames={{ label: "title", value: "id", children: "children" }}
+              fieldNames={{
+                label: "title",
+                value: "id",
+                children: "children",
+              }}
             />
           </Form.Item>
           <Form.Item
