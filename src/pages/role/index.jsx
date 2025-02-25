@@ -81,10 +81,10 @@ export default function Role() {
           const newRoles = prevData.items.map((role) =>
             role.id === selectedRowId
               ? {
-                  id: selectedRowId,
-                  roleName: values.roleName,
-                  description: values.description,
-                }
+                id: selectedRowId,
+                roleName: values.roleName,
+                description: values.description,
+              }
               : role
           );
           console.log("after update roles, newRoles:", newRoles);
@@ -185,11 +185,28 @@ export default function Role() {
       pageSize: e.pageSize,
     }));
   };
-  function handlePermissionClose() {
+  async function handlePermissionClose(data) {
+    debugger
+    if (data.status == 'ok') {
+
+      const res = await postRequest(`role/RolePermission`, { id: rowSelectionModel[0], menuIds: data.permission });
+      if (res.isSuccess) {
+        //setRefresh(!refresh);
+        //message.success("Delete Success !");
+      } else {
+        // message.error(res.message);
+      }
+
+    }
     setIsPermissionOpen(false);
     console.log("in handle permission open");
   }
   function handlePermissionOpen() {
+    if (rowSelectionModel.length === 0 || rowSelectionModel.length > 1) {
+      setAlertMessage("Please select one role to Permission");
+      setAlertOpen(true);
+      return;
+    }
     setIsPermissionOpen(true);
     console.log("in handle permission close");
   }
@@ -216,13 +233,13 @@ export default function Role() {
       return;
     }
     setAlertMessage(
-      `Are you sure to delete ${rowSelectionModel.length} ${
-        rowSelectionModel.length > 1 ? "roles" : "role"
+      `Are you sure to delete ${rowSelectionModel.length} ${rowSelectionModel.length > 1 ? "roles" : "role"
       } ?`
     );
     setAlertOpen(true);
   }
   const handleWinClose = async (data) => {
+
     let result;
     setAlertOpen(false);
     if (!data.isOk || rowSelectionModel.length === 0) {
