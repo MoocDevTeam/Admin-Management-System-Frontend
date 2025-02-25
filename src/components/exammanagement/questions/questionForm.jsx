@@ -16,6 +16,7 @@ import {
   FormControlLabel,
   Checkbox
 } from '@mui/material';
+import getRequest from "../../../request/getRequest";
 import Header from "../../header";
 
 // TODO: API Integration Points:
@@ -27,6 +28,7 @@ import Header from "../../header";
 export default function QuestionForm({ open, onClose, question = null, mode = 'add' }) {
   // TODO: Initial form data structure should match API response format
   // This structure will be used for both creating and updating questions
+  const [questionTypes, setQuestionTypes] = useState([]);
   const [formData, setFormData] = useState(question || {
     id: "",
     title: "",
@@ -85,6 +87,43 @@ export default function QuestionForm({ open, onClose, question = null, mode = 'a
       });
     }
   }, [open, question]);
+
+  const mapQuestionTypeName = (dbName) => {
+    const mapping = {
+      "Choice": "Choice Question",
+      "Multiple Choice": "Multiple Choice Question",
+      "Judgement": "Judgement Question",
+      "Short Answer": "Short Answer Question"
+    };
+    return mapping[dbName] || dbName;
+  };
+  
+
+  useEffect(() => {
+    const fetchQuestionTypes = async () => {
+      try {
+        const response = await getRequest(
+          "QuestionType/GetByPage", 
+          { PageIndex: 1, PageSize: 10 }
+        );
+  
+        if (response.isSuccess && response.data.items) {
+          const mappedTypes = response.data.items.map((type) => ({
+            id: type.id,
+            questionTypeName: mapQuestionTypeName(type.questionTypeName), 
+          }));
+          setQuestionTypes(mappedTypes);
+        } else {
+          console.error("Error fetching question types:", response.message);
+        }
+      } catch (error) {
+        console.error("Error fetching question types:", error);
+      }
+    };
+  
+    fetchQuestionTypes();
+  }, []);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -280,10 +319,15 @@ export default function QuestionForm({ open, onClose, question = null, mode = 'a
                   label="Type"
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 >
-                  <MenuItem value="Choice Question">Choice Question</MenuItem>
-                  <MenuItem value="Multiple Choice Question">Multiple Choice Question</MenuItem>
-                  <MenuItem value="Judgement Question">Judgement Question</MenuItem>
-                  <MenuItem value="Short Answer Question">Short Answer Question</MenuItem>
+                  {questionTypes.length === 0 ? (
+                    <MenuItem disabled>Loading...</MenuItem>
+                  ) : (
+                    questionTypes.map((type) => (
+                      <MenuItem key={type.id} value={type.questionTypeName}>
+                        {type.questionTypeName}
+                      </MenuItem>
+                      ))
+                    )}
                 </Select>
               </FormControl>
 
