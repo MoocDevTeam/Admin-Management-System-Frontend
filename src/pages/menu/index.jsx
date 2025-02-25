@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Box, Stack } from "@mui/material";
-import { useSelector } from "react-redux";
 import Header from "../../components/header";
 
 import { Table, Button, Modal, Form, Input, message } from "antd";
@@ -10,15 +9,16 @@ import postRequest from "../../request/postRequest";
 import { TreeSelect } from "antd";
 import { Select } from "antd";
 import { InputNumber } from "antd";
+import deleteRequest from "../../request/delRequest";
 const { Column } = Table;
 
 function Menus() {
-  //const { menuItems } = useSelector((state) => state.auth);
   const [data, setData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState(null);
   const [refresh, setRefresh] = useState(false);
+  const [editId, setEditId] = useState(0);
 
   function generateKeys(data, parentKey = "") {
     return data.map((item, index) => {
@@ -30,47 +30,87 @@ function Menus() {
       };
     });
   }
-  // const menuDataWithKeys = generateKeys(menuItems);
-  // console.log("in menu index, get menu is:", menuDataWithKeys);
+  //const menuDataWithKeys = generateKeys(menuItems);
+  //console.log("in menu index, get menu is:", menuDataWithKeys);
   const handleAdd = () => {
     form.resetFields();
     setEditingKey(null);
     setIsModalOpen(true);
   };
-  const handleEdit = (record) => {
+  const handleEdit = async (record) => {
     form.setFieldsValue(record);
     setEditingKey(record.key);
     setIsModalOpen(true);
+    setEditId(record.id);
+    console.log("in handle edit record is: ", record);
   };
+
   const handleDelete = (key) => {
     const deleteNode = (nodes) => {
-      return nodes.filter((node) => {
-        if (node.key === key) return false;
-        if (node.children) node.children = deleteNode(node.children);
+      return nodes.filter(async (node) => {
+        if (node.key === key) {
+          if (node.children.length > 0) {
+            message.warning("The node has children and cannot be deleted !");
+          } else {
+            try {
+              let res = await deleteRequest(`/Menu/Delete/${node.id}`);
+              if (res.isSuccess === true) {
+                message.success("Delete Menu Success !");
+                setRefresh(!refresh);
+                return false;
+              }
+            } catch (error) {
+              message.success("Delete Menu Failed  !");
+            }
+          }
+        }
+        if (node.children) {
+          node.children = deleteNode(node.children);
+        }
         return true;
       });
     };
     setData(deleteNode(data));
-    message.success("Delete Success !");
   };
+
   const handleSave = async () => {
     try {
       let values = await form.validateFields();
-
-      let resp = await postRequest("/Menu/Add", {
-        ParentId: selectParentId === 0 ? null : selectParentId,
-        title: values.menuName,
-        Route: values.path,
-        Permission: values.Permission,
-        MenuType: +selectMenuTypeValue,
-        OrderNum: values.OrderNum,
-        ComponentPath: values.ComponentPath,
-      });
-      if (resp.isSuccess) {
-        setRefresh(!refresh);
+      if (editingKey) {
+        let resp = await postRequest("/Menu/Update", {
+          Id: editId,
+          ParentId: selectParentId === 0 ? null : selectParentId,
+          title: values.menuName,
+          Route: values.Route,
+          Permission: values.Permission,
+          MenuType: +selectMenuTypeValue,
+          OrderNum: values.OrderNum,
+          ComponentPath: values.ComponentPath,
+        });
+        if (resp.isSuccess) {
+          setRefresh(!refresh);
+          message.success("Edit Menu Success !");
+        }
+      } else {
+        let resp = await postRequest("/Menu/Add", {
+          ParentId: selectParentId === 0 ? null : selectParentId,
+          title: values.menuName,
+          Route: values.Route,
+          Permission: values.Permission,
+          MenuType: +selectMenuTypeValue,
+          OrderNum: values.OrderNum,
+          ComponentPath: values.ComponentPath,
+        });
+        if (resp.isSuccess) {
+          setRefresh(!refresh);
+          message.success("Add Menu Success !");
+        }
       }
       setSelectParentId(0);
-      debugger;
+      setEditId(0);
+      setEditingKey(null);
+      setIsModalOpen(false);
+      // debugger;
       // const newData = [...data];
       // const updateNode = (nodes) => {
       //   return nodes.map((node) => {
@@ -90,9 +130,11 @@ function Menus() {
       //   setData([...newData, newNode]);
       //   message.success("Add Success !");
       // }
-      setIsModalOpen(false);
-    } catch (e) {}
+    } catch (e) {
+      message.error("Add or Edit Menu Failed !");
+    }
   };
+
   useEffect(() => {
     async function getMenu() {
       const res = await getRequest("menu/GetMenuTree");
@@ -112,11 +154,12 @@ function Menus() {
       const res = await getRequest("menu/GetMenuType");
       if (res.isSuccess) {
         if (res.data.items) {
+          console.log("in getMenuType, res.data.items:", res.data.items);
           setSelectMenuTypes(res.data.items);
-          setDefalutSelectMenuType(res.data.items[0].value);
+          setDefaultSelectMenuType(res.data.items[0].value);
           setSelectMenuTypeValue(res.data.items[0].value);
         } else {
-          setDefalutSelectMenuType("");
+          setDefaultSelectMenuType("");
           setSelectMenuTypes([]);
           setSelectMenuTypeValue("");
         }
@@ -133,7 +176,7 @@ function Menus() {
     console.log(`selected ${value}`);
   };
 
-  const [defalutSelectMenuType, setDefalutSelectMenuType] = useState("");
+  const [defaultSelectMenuType, setDefaultSelectMenuType] = useState("");
   const [selectMenuTypeValue, setSelectMenuTypeValue] = useState("");
   const [selectMenuTypes, setSelectMenuTypes] = useState([]);
 
@@ -142,7 +185,8 @@ function Menus() {
   };
 
   const handleSelectMenuTypeChange = (value) => {
-    //setSelectMenuTypeValue(value);
+    console.log("in handle select Menu type change:", value);
+    setSelectMenuTypeValue(value);
   };
 
   const [orderNum, setOrderNum] = useState(0);
@@ -153,6 +197,7 @@ function Menus() {
   const [selectMemu, setSelectMemu] = useState([]);
 
   let tmpMenuList = [];
+
   function buildSelect(menuList, level = 0) {
     menuList.forEach((element) => {
       const sp = "--".repeat(level);
@@ -216,12 +261,12 @@ function Menus() {
           key="action"
           render={(_, record) => (
             <span>
-              <Button
+              {/* <Button
                 type="link"
                 icon={<PlusOutlined />}
                 onClick={() => console.log("add child node")}
                 style={{ color: "black" }}
-              ></Button>
+              ></Button> */}
               <Button
                 type="link"
                 icon={<EditOutlined />}
@@ -273,7 +318,6 @@ function Menus() {
           >
             <Input />
           </Form.Item>
-
           <Form.Item name="Permission" label="Permission">
             <Input />
           </Form.Item>
@@ -283,7 +327,7 @@ function Menus() {
             rules={[{ required: true, message: "Please enter the menu type" }]}
           >
             <Select
-              defaultValue={defalutSelectMenuType}
+              defaultValue={defaultSelectMenuType}
               value={selectMenuTypeValue}
               style={{ width: "100%" }}
               onChange={handleSelectMenuTypeChange}
