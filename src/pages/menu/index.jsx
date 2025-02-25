@@ -254,8 +254,8 @@ function Menus() {
         rowKey="key"
         expandable={{
           childrenColumnName: "children",
-
-          defaultExpandAllRows: true,
+          defaultExpandAllRows: false,
+          defaultExpandParent: true,
         }}
       >
         <Column
