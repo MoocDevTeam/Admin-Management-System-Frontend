@@ -213,7 +213,7 @@ function Menus() {
     <Box m="20px">
       <Header title="Menus" subtitle="Managing the menus" />
       <Box sx={{ mb: "15px" }}>
-        <Stack direction="row" spacing={2} justifyContent="center">
+        <Stack direction="row" spacing={3} justifyContent="right">
           <Button
             variant="contained"
             type="primary"
@@ -223,10 +223,11 @@ function Menus() {
               marginBottom: 16,
               backgroundColor: "#000",
               color: "#fff",
-              fontWeight: "400",
+              fontWeight: "450",
+              padding: "1.2rem",
             }}
           >
-            Add Root Menu
+            Add Menu
           </Button>
         </Stack>
       </Box>
