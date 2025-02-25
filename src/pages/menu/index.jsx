@@ -45,7 +45,6 @@ function Menus() {
     setEditId(record.id);
     console.log("in handle edit record is: ", record);
   };
-
   const handleDelete = (key) => {
     const deleteNode = (nodes) => {
       return nodes.filter(async (node) => {
@@ -297,7 +296,7 @@ function Menus() {
               <Button
                 type="link"
                 icon={<DeleteOutlined />}
-                onClick={() => handleDelete(record.id)}
+                onClick={() => handleDelete(record.key)}
                 style={{ color: "red" }}
               ></Button>
             </span>
@@ -369,9 +368,6 @@ function Menus() {
             />
           </Form.Item>
           <Form.Item name="Route" label="Route">
-            <Input />
-          </Form.Item>
-          <Form.Item name="ComponentPath" label="ComponentPath">
             <Input />
           </Form.Item>
           <Form.Item name="ComponentPath" label="ComponentPath">
