@@ -14,7 +14,7 @@ import {
   InputLabel,
   FormHelperText,
   Avatar,
-  Stack
+  Stack,
 } from "@mui/material";
 import LoadingSpinner from "../../components/loadingSpinner";
 import { getGenderName } from "../../components/util/gender";
@@ -23,6 +23,9 @@ import { useFormik } from "formik";
 import toast from "react-hot-toast";
 import post from "../../request/postRequest";
 import del from "../../request/delRequest";
+import UploadIcon from "@mui/icons-material/Upload";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
 
 export default function UserProfile() {
   const dispatch = useDispatch();
@@ -33,7 +36,7 @@ export default function UserProfile() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  
+  const navigate = useNavigate();
 
   const validationSchema = Yup.object({
     age: Yup.number()
@@ -69,16 +72,15 @@ export default function UserProfile() {
         age: values.age,
         gender: values.gender,
         email: values.email,
-        address: values.address
+        address: values.address,
       };
       const resultAction = await dispatch(updateUser(payload));
-      if(updateUser.fulfilled.match(resultAction)){
+      if (updateUser.fulfilled.match(resultAction)) {
         toast.success("user updated successfully");
         setIsEditMode(false);
-      }else{
+      } else {
         toast.error("failed to update user");
       }
-      
     },
   });
 
@@ -93,47 +95,49 @@ export default function UserProfile() {
   }, [user]);
 
   const handleFileChange = (e) => {
-    if(e.target.value && e.target.files[0]){
+    if (e.target.value && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
     }
   };
-  
 
-  const handleUploadAvatar = async() => {
-    if(!selectedFile || !userName) return;
+  const handleUploadAvatar = async () => {
+    if (!selectedFile || !userName) return;
     const formData = new FormData();
     formData.append("file", selectedFile);
-    try{
-      const res = await post(`/Avatar/UploadAvatar/${userName}`, formData, setLoading, {
-        headers: {"Content-Type": "multipart/form-data"},
-      });
-      if (res && res.avatarUrl){
+    try {
+      const res = await post(
+        `/Avatar/UploadAvatar/${userName}`,
+        formData,
+        setLoading,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      if (res && res.avatarUrl) {
         setAvatarUrl(res.avatarUrl);
-        toast.success("avatar uploaded successfully")
-      }else{
+        toast.success("avatar uploaded successfully");
+      } else {
         toast.error("avatar upload failed");
       }
-    }catch(err){
+    } catch (err) {
       console.error("error uploading avatar:", err);
       toast.error("error uploading avatar:" + err.message);
     }
-
   };
 
   const handleDeleteAvatar = async () => {
-    if(!userName) return;
-    try{
+    if (!userName) return;
+    try {
       const res = del(`/Avatar/DeleteAvatar/${userName}`);
-      if(res){
+      if (res) {
         toast.success("Avatar deleted successfully!");
         setAvatarUrl("");
-
       }
-    }catch(err){
+    } catch (err) {
       console.error("Error deleting avatar:", err);
       toast.error("Error deleting avatar: " + err.message);
     }
-  }
+  };
 
   return (
     <Container>
@@ -157,10 +161,9 @@ export default function UserProfile() {
           >
             <Stack direction="row" alignItems="center" spacing={2}>
               <Avatar
-                src={ user.avatar|| ""}
+                src={user.avatar || ""}
                 alt="User Avatar"
-                sx={{ width: 80, height: 80, cursor:"pointer"}}
-              
+                sx={{ width: 80, height: 80, cursor: "pointer" }}
               />
               {/* Upload / Delete Buttons */}
               {isEditMode && (
@@ -173,14 +176,16 @@ export default function UserProfile() {
                   <Button
                     variant="contained"
                     color="primary"
+                    startIcon={<UploadIcon />}
                     onClick={handleUploadAvatar}
                   >
                     Upload Avatar
                   </Button>
                   {avatarUrl && (
                     <Button
-                      variant="outlined"
-                      color="error"
+                      variant="contained"
+                      color="secondary"
+                      startIcon={<DeleteIcon />}
                       onClick={handleDeleteAvatar}
                     >
                       Delete Avatar
@@ -257,14 +262,28 @@ export default function UserProfile() {
             </FormControl>
 
             {isEditMode && (
-              <Button
-                color="primary"
-                variant="contained"
-                sx={{ m: "24px 0 0 0" }}
-                type="submit"
-              >
-                Save
-              </Button>
+              <Stack direction="row" spacing={2} justifyContent="end">
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  sx={{ m: "24px 0 0 0" }}
+                  type="submit"
+                >
+                  Save
+                </Button>
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  sx={{ m: "24px 0 0 0" }}
+                  type="cancel"
+                  onClick={() => {
+                    formik.resetForm();
+                    navigate("/user");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Stack>
             )}
           </Box>
 

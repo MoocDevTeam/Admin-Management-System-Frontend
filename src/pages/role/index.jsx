@@ -32,6 +32,9 @@ import { useDispatch } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
 import { theme } from "../../theme";
 import PermissionTree from "./permission";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 export default function Role() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,10 +84,10 @@ export default function Role() {
           const newRoles = prevData.items.map((role) =>
             role.id === selectedRowId
               ? {
-                id: selectedRowId,
-                roleName: values.roleName,
-                description: values.description,
-              }
+                  id: selectedRowId,
+                  roleName: values.roleName,
+                  description: values.description,
+                }
               : role
           );
           console.log("after update roles, newRoles:", newRoles);
@@ -186,17 +189,18 @@ export default function Role() {
     }));
   };
   async function handlePermissionClose(data) {
-    debugger
-    if (data.status == 'ok') {
-
-      const res = await postRequest(`role/RolePermission`, { id: rowSelectionModel[0], menuIds: data.permission });
+    debugger;
+    if (data.status == "ok") {
+      const res = await postRequest(`role/RolePermission`, {
+        id: rowSelectionModel[0],
+        menuIds: data.permission,
+      });
       if (res.isSuccess) {
         //setRefresh(!refresh);
         //message.success("Delete Success !");
       } else {
         // message.error(res.message);
       }
-
     }
     setIsPermissionOpen(false);
     console.log("in handle permission open");
@@ -233,13 +237,13 @@ export default function Role() {
       return;
     }
     setAlertMessage(
-      `Are you sure to delete ${rowSelectionModel.length} ${rowSelectionModel.length > 1 ? "roles" : "role"
+      `Are you sure to delete ${rowSelectionModel.length} ${
+        rowSelectionModel.length > 1 ? "roles" : "role"
       } ?`
     );
     setAlertOpen(true);
   }
   const handleWinClose = async (data) => {
-
     let result;
     setAlertOpen(false);
     if (!data.isOk || rowSelectionModel.length === 0) {
@@ -331,15 +335,24 @@ export default function Role() {
                 }}
               />
 
-              <Button variant="contained" onClick={handleAddRole}>
+              <Button
+                variant="contained"
+                onClick={handleAddRole}
+                startIcon={<AddIcon />}
+              >
                 Add Role
               </Button>
-              <Button variant="contained" onClick={handlePermissionOpen}>
+              <Button
+                variant="contained"
+                startIcon={<CheckBoxOutlinedIcon />}
+                onClick={handlePermissionOpen}
+              >
                 Permission
               </Button>
               <Button
                 color="secondary"
                 variant="contained"
+                startIcon={<DeleteIcon />}
                 onClick={handleDelete}
               >
                 Delete
