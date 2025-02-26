@@ -8,13 +8,26 @@ body,
   font-family: "Source Sans Pro", sans-serif;
 }
 
-
 .app {
   display: flex;
   position: relative;
 }
 
-
-div{
+div {
   display: block;
+}
+.custom-pagination {
+  background-color: rgb(164, 169, 252);
+  padding: 0.7rem;
+}
+.rowClassName {
+  background-color: rgb(242, 240, 240);
+}
+
+.custom-modal .ant-modal-title {
+  font-size: 2rem;
+  color: #000;
+  font-family: "Arial", sans-serif;
+  font-weight: bold;
+  text-align: center;
 }

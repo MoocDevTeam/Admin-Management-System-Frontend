@@ -180,11 +180,11 @@ function PermissionTree({ onOpen, onClose }) {
       <Box sx={{ p: 2, width: 300, border: "1px solid #ccc", borderRadius: 2 }}>
         <SimpleTreeView>{renderTree(menuItems)}</SimpleTreeView>
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-          <Button variant="outlined" color="error" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="contained" color="success" onClick={handleSave}>
+          <Button variant="contained" color="secondary" onClick={handleSave}>
             OK
+          </Button>
+          <Button variant="contained" color="secondary" onClick={onClose}>
+            Cancel
           </Button>
           {/* <Button variant="contained" color="success" onClick={()=>onClose({status:'ok',permission:checked})}>
             OK

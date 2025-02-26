@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Stack } from "@mui/material";
 import Header from "../../components/header";
-
 import { Table, Button, Modal, Form, Input, message } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import getRequest from "../../request/getRequest";
@@ -11,6 +10,7 @@ import { TreeSelect } from "antd";
 import { Select } from "antd";
 import { InputNumber } from "antd";
 import deleteRequest from "../../request/delRequest";
+
 const { Column } = Table;
 
 function Menus() {
@@ -226,7 +226,39 @@ function Menus() {
     });
     return tmpMenuList;
   }
-
+  const customFooter = [
+    <Button
+      key="save"
+      type="primary"
+      style={{
+        backgroundColor: "#4CCEAC",
+        color: "#000",
+        padding: "1rem",
+        ":hover": {
+          backgroundColor: "#359078",
+        },
+        boxShadow: "0 4px 5px rgba(0,0,0,0.2)",
+      }}
+      onClick={handleSave}
+    >
+      SAVE
+    </Button>,
+    <Button
+      key="cancel"
+      style={{
+        backgroundColor: "#4CCEAC",
+        color: "#000",
+        padding: "1rem",
+        ":hover": {
+          backgroundColor: "#359078",
+        },
+        boxShadow: "0 4px 5px rgba(0,0,0,0.2)",
+      }}
+      onClick={() => setIsModalOpen(false)}
+    >
+      CANCEL
+    </Button>,
+  ];
   return (
     <Box m="20px">
       <Header title="Menus" subtitle="Managing the menus" />
@@ -235,7 +267,7 @@ function Menus() {
           <Button
             variant="contained"
             type="primary"
-            //icon={<PlusOutlined />}
+            icon={<PlusOutlined />}
             onClick={handleAdd}
             style={{
               marginBottom: 16,
@@ -257,6 +289,11 @@ function Menus() {
           defaultExpandAllRows: false,
           defaultExpandParent: true,
         }}
+        pagination={{
+          className: "custom-pagination",
+          pageSize: 5,
+        }}
+        rowClassName={"rowClassName"}
       >
         <Column
           title="Menu Name"
@@ -304,10 +341,12 @@ function Menus() {
         />
       </Table>
       <Modal
-        title={editingKey ? "Edit Menu" : "Add Menu"}
+        title={editingKey ? "EDIT MENU" : "CREATE MENU"}
         visible={isModalOpen}
         onOk={handleSave}
         onCancel={() => setIsModalOpen(false)}
+        footer={customFooter}
+        className="custom-modal"
       >
         <Form
           form={form}
