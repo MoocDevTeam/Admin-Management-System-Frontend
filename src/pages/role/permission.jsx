@@ -86,7 +86,7 @@ function PermissionTree({ onOpen, onClose }) {
       return;
     }
     console.log("in handle save, all button ids:", allButtonIds);
-    onClose();
+    onClose({ status: "ok", permission: checked });
   };
 
   const updateChildren = (node, isChecked, checkedSet) => {
