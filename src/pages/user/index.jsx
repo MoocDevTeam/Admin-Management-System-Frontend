@@ -23,6 +23,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
 import { UpdateUser } from "./updateUser";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import AuthButton from "../../components/authButton/authButton";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 export default function User() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [open, setOpen] = useState(false);
@@ -49,7 +52,7 @@ export default function User() {
 
   const baseUrl = process.env.REACT_APP_BASE_API_URL;
   const columns = [
-    { field: "id", headerName: "ID" },
+    // { field: "id", headerName: "ID" },
     {
       field: "userName",
       headerName: "Name",
@@ -91,10 +94,7 @@ export default function User() {
       flex: 1,
       renderCell: (row) => {
         return (
-          <Avatar
-            // src={baseUrl + row.row.avatar}
-            sx={{ width: 50, height: 50 }}
-          ></Avatar>
+          <Avatar src={row.row.avatar} sx={{ width: 50, height: 50 }}></Avatar>
         );
       },
     },
@@ -324,16 +324,25 @@ export default function User() {
                   ),
                 }}
               />
-              <Button variant="contained" onClick={handleAddUser}>
+              {/* <AuthButton permission="Admin.User.Add"> */}
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleAddUser}
+              >
                 Add User
               </Button>
+              {/* </AuthButton> */}
+              {/* <AuthButton permission="Admin.User.Delete"> */}
               <Button
                 color="secondary"
                 variant="contained"
+                startIcon={<DeleteIcon />}
                 onClick={handleDelete}
               >
                 Delete
               </Button>
+              {/* </AuthButton> */}
             </Stack>
           </Box>
           <UserList
