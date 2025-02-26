@@ -8,6 +8,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { toast } from "react-hot-toast";
+import WarningIcon from "@mui/icons-material/Warning";
 import colors, { theme } from "../../theme";
 import {
   Box,
@@ -23,11 +24,13 @@ import {
   Popover,
   CircularProgress,
 } from "@mui/material";
+import WinDialog from "../../components/winDialog";
+import deleteRequest from "../../request/delRequest";
 
 export const AssignCourseInstance = () => {
   const location = useLocation();
   const teacherId = location.state?.teacherId;
-  const [courseInstanceDetail, setCourseInstanceDetail] = useState([]);
+  const [teacherCourseInstanceDetail, setTeacherCourseInstanceDetail] = useState([]);
   const [courses, setCourses] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [searchText, setSearchText] = useState(null);
@@ -35,6 +38,8 @@ export const AssignCourseInstance = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeCourseId, setActiveCourseId] = useState(null);
   const [instances, setInstances] = useState([]);
+  const [winDialog, setWinDialog] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
 
   console.log("filtered course", filteredCourses);
   console.log("course", courses);
@@ -52,13 +57,13 @@ export const AssignCourseInstance = () => {
   //Get assigned courses section
   const getAssignedCourses = async (id) => {
     let result = await getRequest(
-      `teachercourseInstance/getallcourseinstancebyteacherid?id=${id}`
+      `/TeacherCourseInstance/GetTeacherCourseInstancesByTeacherId?id=${id}`
     );
     if (result.isSuccess) {
       console.log(result.data);
-      setCourseInstanceDetail(result.data);
+      setTeacherCourseInstanceDetail(result.data);
     } else {
-      setCourseInstanceDetail([]);
+      setTeacherCourseInstanceDetail([]);
     }
   };
 
@@ -137,6 +142,20 @@ export const AssignCourseInstance = () => {
     }
   };
 
+  //handle remove course
+  const handleRemoveCourse = async (courseInstanceId) => {
+    let result = await deleteRequest(`/TeacherCourseInstance/Delete?id=${courseInstanceId}`);
+    if (result.isSuccess) {
+      console.log("course removed successfully");
+      toast.success("Course removed successfully!");
+      getAssignedCourses(teacherId);
+    } else {
+      console.log("Failed to remove course");
+      toast.error("Failed to remove course!");
+    }
+  }
+
+
   return (
     <>
       <Box m="20px">
@@ -156,7 +175,7 @@ export const AssignCourseInstance = () => {
           </Box>
 
           <Box>
-            {courseInstanceDetail.length === 0 ? (
+            {teacherCourseInstanceDetail.length === 0 ? (
               "No course assigned to this teacher!"
             ) : (
               <TableContainer component={Paper} sx={{ minWidth: 650 }}>
@@ -172,7 +191,7 @@ export const AssignCourseInstance = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {courseInstanceDetail?.map((item) => (
+                    {teacherCourseInstanceDetail?.map((item) => (
                       <TableRow
                         key={item.id}
                         sx={{
@@ -182,8 +201,8 @@ export const AssignCourseInstance = () => {
                         <TableCell component="th" scope="row">
                           {item.moocCourseTitle}
                         </TableCell>
-                        <TableCell align="right">{item.description}</TableCell>
-                        <TableCell align="right">{item.status}</TableCell>
+                        <TableCell align="right">{item.courseInstance.description}</TableCell>
+                        <TableCell align="right">{item.courseInstance.status}</TableCell>
                         <TableCell align="right">
                           {dayjs(item.startDate).format("lll")}
                         </TableCell>
@@ -195,6 +214,11 @@ export const AssignCourseInstance = () => {
                             color="error"
                             variant="contained"
                             startIcon={<DeleteIcon />}
+                            onClick={ () => {
+                              setWinDialog(true); 
+                              setIdToDelete(item.id);
+                              console.log("id to delete", idToDelete);
+                            }}
                           >
                             Remove
                           </Button>
@@ -334,6 +358,19 @@ export const AssignCourseInstance = () => {
           </Box>
         </Box>
       </Box>
+      <WinDialog
+        title="Remove Course"
+        open={winDialog}
+        onClose={() => setWinDialog(false)}
+        onOK={() => {
+          handleRemoveCourse(idToDelete);
+          setWinDialog(false);
+          setIdToDelete(null);
+        }}
+        icon= {<WarningIcon  color="warning"/>}
+      >
+        <p>Are you sure you want to remove this course?</p> 
+      </WinDialog>
     </>
   );
 };
