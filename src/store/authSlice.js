@@ -5,9 +5,9 @@ const initialState = {
   token: localStorage.getItem("access_token") || null,
   status: "idle",
   userName: "",
-  error: null,
-  permissions: []
+  error: null
 };
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -25,17 +25,9 @@ const authSlice = createSlice({
       state.userName = "";
       localStorage.removeItem("access_token"); // Remove token from localStorage
       localStorage.removeItem("userName"); // Remove username from localStorage
-    },
-    setPermissions: (state, action) => {
-      state.permissions = action.payload;
-      let user_permissions=JSON.stringify(action.payload);
-      localStorage.setItem("user_permissions", user_permissions);
-    },
-    clearPermissons: (state, action) => {
-      state.permissions = [];
-      localStorage.clear("user_permissions");
     }
+   
   },
 });
-export const { setAuthenticated, clearAuthentication, setPermissions, clearPermissons } = authSlice.actions;
+export const { setAuthenticated, clearAuthentication } = authSlice.actions;
 export default authSlice.reducer;
