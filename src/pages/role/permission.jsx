@@ -87,9 +87,7 @@ function PermissionTree({ onOpen, onClose, rowSelectionId }) {
     // if (addedNodes.length === 0 && removedNodes.length === 0) {
     //   return;
     // }
-    console.log("in handle save rowSelectionId:", rowSelectionId);
     let result;
-    console.log("in handle save checked is", checked);
     try {
       result = postRequest("Role/RolePermission", {
         id: rowSelectionId[0],

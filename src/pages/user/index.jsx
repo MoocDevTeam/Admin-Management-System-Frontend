@@ -24,8 +24,6 @@ import { setRoleNames } from "../../store/roleSlice";
 import { UpdateUser } from "./updateUser";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import AuthButton from "../../components/authButton/authButton";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
 export default function User() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [open, setOpen] = useState(false);
@@ -94,7 +92,10 @@ export default function User() {
       flex: 1,
       renderCell: (row) => {
         return (
-          <Avatar src={row.row.avatar} sx={{ width: 50, height: 50 }}></Avatar>
+          <Avatar
+            src={row.row.avatar}
+            sx={{ width: 50, height: 50 }}
+          ></Avatar>
         );
       },
     },
@@ -105,14 +106,16 @@ export default function User() {
       renderCell: (params) => {
         return (
           <Box>
-            <Button
-              color="success"
-              startIcon={<ModeEditIcon />}
-              variant="text"
-              onClick={(e) => handleOpenUpdateDialog(e, params.row)}
-            >
-              Update
-            </Button>
+            <AuthButton permission="Admin.User.Update">
+              <Button
+                color="success"
+                startIcon={<ModeEditIcon />}
+                variant="text"
+                onClick={(e) => handleOpenUpdateDialog(e, params.row)}
+              >
+                Update
+              </Button>
+            </AuthButton>
           </Box>
         );
       },
@@ -229,8 +232,7 @@ export default function User() {
       return;
     }
     setAlertMessage(
-      `Are you sure to delete ${rowSelectionModel.length} ${
-        rowSelectionModel.length > 1 ? "users" : "user"
+      `Are you sure to delete ${rowSelectionModel.length} ${rowSelectionModel.length > 1 ? "users" : "user"
       } ?`
     );
     setOpen(true);
@@ -238,6 +240,7 @@ export default function User() {
 
   const handleWinClose = async (data) => {
     console.log("handleWinClose", data);
+
     let result;
     setOpen(false);
     if (!data.isOk || rowSelectionModel.length === 0) {
@@ -324,25 +327,20 @@ export default function User() {
                   ),
                 }}
               />
-              {/* <AuthButton permission="Admin.User.Add"> */}
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={handleAddUser}
-              >
-                Add User
-              </Button>
-              {/* </AuthButton> */}
-              {/* <AuthButton permission="Admin.User.Delete"> */}
-              <Button
-                color="secondary"
-                variant="contained"
-                startIcon={<DeleteIcon />}
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
-              {/* </AuthButton> */}
+              <AuthButton permission="Admin.User.Add">
+                <Button variant="contained" onClick={handleAddUser}>
+                  Add User
+                </Button>
+              </AuthButton>
+              <AuthButton permission="Admin.User.Delete">
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              </AuthButton>
             </Stack>
           </Box>
           <UserList
