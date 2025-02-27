@@ -11,7 +11,10 @@ import {
   ListItemText,
   Checkbox,
   OutlinedInput,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 import { useFormik } from "formik";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
@@ -26,6 +29,11 @@ export default function AddUser() {
   const [avatarData, setAvatarData] = useState("");
   const [roles, setRoles] = useState([]);
   const [selectRoles, setSelectRoles] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => {
+      setShowPassword(!showPassword);
+    }
+  
   const roleNames = useSelector((state) => state.role.roleNames);
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -147,7 +155,7 @@ export default function AddUser() {
           <TextField
             fullWidth
             variant="filled"
-            type="text"
+            type={showPassword? "text" : "password"}
             label="Password"
             name="password"
             onChange={formik.handleChange}
@@ -157,11 +165,22 @@ export default function AddUser() {
             autoComplete="current-password"
             autoFocus
             sx={{ gridColumn: "span 4" }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                  onClick={handleClickShowPassword}
+                  edge="end">
+                    {showPassword ? <VisibilityOff/> : <Visibility/>}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
           <TextField
             fullWidth
             variant="filled"
-            type="text"
+            type="password"
             label="Confirmed Password"
             name="confirmpassword"
             onChange={formik.handleChange}
@@ -176,6 +195,17 @@ export default function AddUser() {
             autoComplete="current-password"
             autoFocus
             sx={{ gridColumn: "span 4" }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                  onClick={handleClickShowPassword}
+                  edge="end">
+                    {showPassword ? <VisibilityOff/> : <Visibility/>}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
           <TextField
             fullWidth
