@@ -30,9 +30,13 @@ export default function AddUser() {
   const [roles, setRoles] = useState([]);
   const [selectRoles, setSelectRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const handleClickShowPassword = () => {
       setShowPassword(!showPassword);
     }
+  const handleClickShowConfirmPassword = () => {
+      setShowConfirmPassword(!showConfirmPassword);
+    };
   
   const roleNames = useSelector((state) => state.role.roleNames);
   const ITEM_HEIGHT = 48;
@@ -180,7 +184,7 @@ export default function AddUser() {
           <TextField
             fullWidth
             variant="filled"
-            type="password"
+            type={showConfirmPassword? "text" : "password"}
             label="Confirmed Password"
             name="confirmpassword"
             onChange={formik.handleChange}
@@ -199,9 +203,9 @@ export default function AddUser() {
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
-                  onClick={handleClickShowPassword}
+                  onClick={handleClickShowConfirmPassword}
                   edge="end">
-                    {showPassword ? <VisibilityOff/> : <Visibility/>}
+                    {showConfirmPassword ? <VisibilityOff/> : <Visibility/>}
                   </IconButton>
                 </InputAdornment>
               )

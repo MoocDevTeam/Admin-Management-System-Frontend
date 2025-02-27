@@ -28,6 +28,7 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
       address: data?.address || "",
       age: data?.age || 0,
       gender: data?.gender ?? 0,
+      role: data?.role || ""
     },
     validationSchema: Yup.object({
       userName: Yup.string().required("username is required"),
@@ -38,6 +39,7 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
         .max(120, "max age is 120")
         .required("age is required"),
       gender: Yup.number().oneOf([0, 1, 2]).required("gender is required"),
+      role: Yup.string().required("role is required")
     }),
     onSubmit: async (values) => {
       console.log("values", values);
@@ -48,6 +50,7 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
         address: values.address,
         gender: values.gender,
         age: values.age,
+        role: values.role
       };
       console.log("Update payload:", payload);
 
@@ -71,6 +74,7 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
                 address: data.address || "",
                 gender: data.gender ?? 0,
                 age: data.age || 0,
+                role: data.role || ""
             });
         }
     },[data]);
@@ -163,6 +167,23 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
                      value={formik.values.gender}
                      onChange={formik.handleChange}
                      error={formik.touched.gender && Boolean(formik.errors.gender)}
+                     >
+                        <MenuItem value={0}>Other</MenuItem>
+                        <MenuItem value={1}>Male</MenuItem>
+                        <MenuItem value={2}>Female</MenuItem>
+                     </Select>
+                    </FormControl>
+                    <FormControl
+                    fullWidth
+                    sx={{gridColumn: "span 2"}}
+                    >
+                     <InputLabel>ROLE</InputLabel>   
+                     <Select
+                     name="role"
+                     label="ROLE" 
+                     value={formik.values.role}
+                     onChange={formik.handleChange}
+                     error={formik.touched.role && Boolean(formik.errors.role)}
                      >
                         <MenuItem value={0}>Other</MenuItem>
                         <MenuItem value={1}>Male</MenuItem>
