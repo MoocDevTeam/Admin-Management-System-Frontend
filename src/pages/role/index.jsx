@@ -35,6 +35,7 @@ import PermissionTree from "./permission";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
+import { renderMultiSectionDigitalClockTimeView } from "@mui/x-date-pickers";
 export default function Role() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -188,31 +189,35 @@ export default function Role() {
       pageSize: e.pageSize,
     }));
   };
-  async function handlePermissionClose(data) {
-    debugger;
-    if (data.status == "ok") {
-      const res = await postRequest(`role/RolePermission`, {
-        id: rowSelectionModel[0],
-        menuIds: data.permission,
-      });
-      if (res.isSuccess) {
-        //setRefresh(!refresh);
-        //message.success("Delete Success !");
-      } else {
-        // message.error(res.message);
-      }
-    }
+  // async function handlePermissionClose(data) {
+  //   debugger;
+  //   if (data.status == "ok") {
+  //     const res = await postRequest(`role/RolePermission`, {
+  //       id: rowSelectionModel[0],
+  //       menuIds: data.permission,
+  //     });
+  //     if (res.isSuccess) {
+  //       //setRefresh(!refresh);
+  //       //message.success("Delete Success !");
+  //     } else {
+  //       // message.error(res.message);
+  //     }
+  //   }
+  //   setIsPermissionOpen(false);
+  //   console.log("in handle permission close");
+  // }
+  function handlePermissionClose() {
     setIsPermissionOpen(false);
-    console.log("in handle permission open");
+    console.log("in handle permission close");
   }
   function handlePermissionOpen() {
     if (rowSelectionModel.length === 0 || rowSelectionModel.length > 1) {
-      setAlertMessage("Please select one role to Permission");
+      setAlertMessage("Please select one role to give permission");
       setAlertOpen(true);
+      console.log("");
       return;
     }
     setIsPermissionOpen(true);
-    console.log("in handle permission close");
   }
   function handleAddRole() {
     navigate("/role/add");
@@ -452,6 +457,7 @@ export default function Role() {
           <PermissionTree
             onOpen={handlePermissionOpen}
             onClose={handlePermissionClose}
+            rowSelectionId={rowSelectionModel}
           />
         )}
       </Box>
