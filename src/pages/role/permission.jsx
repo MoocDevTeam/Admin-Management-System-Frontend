@@ -3,7 +3,9 @@ import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { Box, Button, Checkbox, Dialog } from "@mui/material";
 import getRequest from "../../request/getRequest";
-function PermissionTree({ onOpen, onClose }) {
+import postRequest from "../../request/postRequest";
+import toast from "react-hot-toast";
+function PermissionTree({ onOpen, onClose, rowSelectionId }) {
   const [checked, setChecked] = useState([]);
   const [indeterminate, setIndeterminate] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
@@ -54,7 +56,7 @@ function PermissionTree({ onOpen, onClose }) {
               return false;
             }
             const permissionArray = node.permission.split(".");
-            console.log("permission array is:", permissionArray);
+            // console.log("permission array is:", permissionArray);
             if (node.title === permissionArray[permissionArray.length - 1]) {
               return true;
             } else {
@@ -78,15 +80,24 @@ function PermissionTree({ onOpen, onClose }) {
     return { addedNodes, removedNodes };
   };
 
-  const handleSave = () => {
-    const { addedNodes, removedNodes } = getChangedNodes();
-    console.log("Added Nodes:", addedNodes);
-    console.log("Removed Nodes:", removedNodes);
-    if (addedNodes.length === 0 && removedNodes.length === 0) {
-      return;
+  const handleSave = async () => {
+    // const { addedNodes, removedNodes } = getChangedNodes();
+    // console.log("Added Nodes:", addedNodes);
+    // console.log("Removed Nodes:", removedNodes);
+    // if (addedNodes.length === 0 && removedNodes.length === 0) {
+    //   return;
+    // }
+    let result;
+    try {
+      result = postRequest("Role/RolePermission", {
+        id: rowSelectionId[0],
+        menuIds: checked,
+      });
+      toast.success("Give permission success!");
+    } catch (error) {
+      toast.error(result.message);
     }
-    console.log("in handle save, all button ids:", allButtonIds);
-    onClose({ status: "ok", permission: checked });
+    onClose();
   };
 
   const updateChildren = (node, isChecked, checkedSet) => {
