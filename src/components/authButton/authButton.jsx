@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 export default function AuthButton(props) {
+  
   const userPermission = useSelector((state) => state.permission);
   if (
     props.permission === undefined ||

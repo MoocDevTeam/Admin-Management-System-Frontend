@@ -1,7 +1,9 @@
-import { useFormik } from "formik";
+
 import React from "react";
+import { useFormik } from "formik";
 import { useEffect } from "react";
 import * as Yup from "yup";
+import { useState } from "react";
 import colors, { theme } from "../../theme";
 import {
   Box,
@@ -14,10 +16,14 @@ import {
   Stack,
   Dialog,
   DialogTitle,
+  ListItemText,
+  Checkbox,
+  OutlinedInput,
 } from "@mui/material";
 import postRequest from "../../request/postRequest";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import getRequest from "../../request/getRequest";
 
 export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
   const formik = useFormik({
@@ -50,34 +56,85 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
         address: values.address,
         gender: values.gender,
         age: values.age,
-        role: values.role
+        roleIds:selectRoles
       };
       console.log("Update payload:", payload);
 
-            const result = await postRequest("/User/Update", payload);
-            if(result.isSuccess){
-                toast.success("user updated successfully");
-                onUserUpdated({...values}); //callback to userIndex to update parent state
-                formik.resetForm();
-            }else{
-                toast.error(result.message || "failed to update user");
-            }
-        },
-    });
-    // If data changes while dialog is open, update form values
-    useEffect(() => {
-        if(data){
-            formik.setValues({
-                id: data.id || "",
-                userName: data.userName || "",
-                email: data.email || "",
-                address: data.address || "",
-                gender: data.gender ?? 0,
-                age: data.age || 0,
-                role: data.role || ""
-            });
+      const result = await postRequest("/User/Update", payload);
+      if (result.isSuccess) {
+        toast.success("user updated successfully");
+        onUserUpdated({ ...values }); //callback to userIndex to update parent state
+        formik.resetForm();
+      } else {
+        toast.error(result.message || "failed to update user");
+      }
+    },
+  });
+
+  const [roles, setRoles] = useState([]);
+  const [selectRoles, setSelectRoles] = useState([]);
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+
+
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+  const renderValueRole = (valueArray) => {
+    return roles
+      .filter((x) => valueArray.indexOf(x.id) !== -1)
+      .map((x) => x.roleName)
+      .join(", ");
+    //return roles.map((value) => valueArray.find(x=>x===value.id)).map(x=>x.name).join(', ')
+  };
+
+  const handleChangeRole = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectRoles(
+      //On autofill we get a stringified value.
+      typeof value === "string" ? value.split(",") : value
+    );
+  };
+  // If data changes while dialog is open, update form values
+  useEffect(() => {
+
+    if (data.id) {
+
+      const getRoles = async () => {
+        let result = await getRequest('/role/GetbyPage?page=1&pageSize=9999999');
+        if (result.isSuccess) {
+          setRoles(result.data.items);
         }
-    },[data]);
+      }
+
+      let getUserById = async () => {
+        let result = await getRequest(`user/GetUserById/${data.id}`);
+        if (result.isSuccess) {
+          let user = result.data;
+          formik.setValues({
+            id: user.id || "",
+            userName: user.userName || "",
+            email: user.email || "",
+            address: user.address || "",
+            gender: user.gender ?? 0,
+            age: user.age || 0,
+          });
+          setSelectRoles(user.roleIds);
+        }
+      };
+
+      getRoles().then(x => {
+        getUserById();
+      });
+    }
+  }, [data.id]);
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -156,52 +213,55 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
               sx={{ gridColumn: "span 2" }}
             ></TextField>
 
-                    <FormControl
-                    fullWidth
-                    sx={{gridColumn: "span 2"}}
-                    >
-                     <InputLabel>GENDER</InputLabel>   
-                     <Select
-                     name="gender"
-                     label="GENDER" // corresponds to <InputLabel> for accessibility
-                     value={formik.values.gender}
-                     onChange={formik.handleChange}
-                     error={formik.touched.gender && Boolean(formik.errors.gender)}
-                     >
-                        <MenuItem value={0}>Other</MenuItem>
-                        <MenuItem value={1}>Male</MenuItem>
-                        <MenuItem value={2}>Female</MenuItem>
-                     </Select>
-                    </FormControl>
-                    <FormControl
-                    fullWidth
-                    sx={{gridColumn: "span 2"}}
-                    >
-                     <InputLabel>ROLE</InputLabel>   
-                     <Select
-                     name="role"
-                     label="ROLE" 
-                     value={formik.values.role}
-                     onChange={formik.handleChange}
-                     error={formik.touched.role && Boolean(formik.errors.role)}
-                     >
-                        <MenuItem value={0}>Other</MenuItem>
-                        <MenuItem value={1}>Male</MenuItem>
-                        <MenuItem value={2}>Female</MenuItem>
-                     </Select>
-                    </FormControl>
-                   </Box>
-                   <Stack
-                   direction="row"
-                   spacing={2}
-                   justifyContent="flex-end"
-                   mt={3}
-                   >
-                    <Button variant="outlined" onClick={onClose}>CANCEL</Button>
-                    <Button variant="contained" type="submit" color="primary">UPDATE</Button>
-                   </Stack>
-                </form>
-            </Box>
-        </Dialog>
-    );
-  }
+            <Select
+              labelId="demo-multiple-checkbox-label"
+              id="demo-multiple-checkbox"
+              multiple
+              value={selectRoles}
+              onChange={handleChangeRole}
+              input={<OutlinedInput label="Roles" />}
+              renderValue={renderValueRole}
+              MenuProps={MenuProps}
+            >
+              {roles.map((item) => (
+                <MenuItem key={item.id} value={item.id}>
+                  <Checkbox checked={selectRoles.includes(item.id)} />
+                  <ListItemText primary={item.roleName} />
+                </MenuItem>
+              ))}
+            </Select>
+
+
+            <FormControl
+              fullWidth
+              sx={{ gridColumn: "span 2" }}
+            >
+              <InputLabel>GENDER</InputLabel>
+              <Select
+                name="gender"
+                label="GENDER" // corresponds to <InputLabel> for accessibility
+                value={formik.values.gender}
+                onChange={formik.handleChange}
+                error={formik.touched.gender && Boolean(formik.errors.gender)}
+              >
+                <MenuItem value={0}>Other</MenuItem>
+                <MenuItem value={1}>Male</MenuItem>
+                <MenuItem value={2}>Female</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Stack
+            direction="row"
+            spacing={2}
+            justifyContent="flex-end"
+            mt={3}
+          >
+            <Button variant="outlined" onClick={onClose}>CANCEL</Button>
+            <Button variant="contained" type="submit" color="primary">UPDATE</Button>
+          </Stack>
+        </form>
+      </Box>
+    </Dialog>
+  );
+}

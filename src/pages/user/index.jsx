@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setRoleNames } from "../../store/roleSlice";
 import { UpdateUser } from "./updateUser";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import AuthButton from "../../components/authButton/authButton";
 export default function User() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [open, setOpen] = useState(false);
@@ -105,14 +106,16 @@ export default function User() {
       renderCell: (params) => {
         return (
           <Box>
-            <Button
-              color="success"
-              startIcon={<ModeEditIcon />}
-              variant="text"
-              onClick={(e) => handleOpenUpdateDialog(e, params.row)}
-            >
-              Update
-            </Button>
+            <AuthButton permission="Admin.User.Update">
+              <Button
+                color="success"
+                startIcon={<ModeEditIcon />}
+                variant="text"
+                onClick={(e) => handleOpenUpdateDialog(e, params.row)}
+              >
+                Update
+              </Button>
+            </AuthButton>
           </Box>
         );
       },
@@ -229,8 +232,7 @@ export default function User() {
       return;
     }
     setAlertMessage(
-      `Are you sure to delete ${rowSelectionModel.length} ${
-        rowSelectionModel.length > 1 ? "users" : "user"
+      `Are you sure to delete ${rowSelectionModel.length} ${rowSelectionModel.length > 1 ? "users" : "user"
       } ?`
     );
     setOpen(true);
@@ -238,6 +240,7 @@ export default function User() {
 
   const handleWinClose = async (data) => {
     console.log("handleWinClose", data);
+
     let result;
     setOpen(false);
     if (!data.isOk || rowSelectionModel.length === 0) {
@@ -324,16 +327,20 @@ export default function User() {
                   ),
                 }}
               />
-              <Button variant="contained" onClick={handleAddUser}>
-                Add User
-              </Button>
-              <Button
-                color="secondary"
-                variant="contained"
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
+              <AuthButton permission="Admin.User.Add">
+                <Button variant="contained" onClick={handleAddUser}>
+                  Add User
+                </Button>
+              </AuthButton>
+              <AuthButton permission="Admin.User.Delete">
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              </AuthButton>
             </Stack>
           </Box>
           <UserList

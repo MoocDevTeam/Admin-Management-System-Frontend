@@ -5,8 +5,9 @@ const initialState = {
   token: localStorage.getItem("access_token") || null,
   status: "idle",
   userName: "",
-  error: null,
+  error: null
 };
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -24,7 +25,8 @@ const authSlice = createSlice({
       state.userName = "";
       localStorage.removeItem("access_token"); // Remove token from localStorage
       localStorage.removeItem("userName"); // Remove username from localStorage
-    },
+    }
+   
   },
 });
 export const { setAuthenticated, clearAuthentication } = authSlice.actions;
