@@ -439,15 +439,15 @@ export default function Role() {
                 />
               </DialogContent>
               <DialogActions>
+                <Button type="submit" color="primary" variant="contained">
+                  UPDATE
+                </Button>
                 <Button
                   onClick={() => setUpdateOpen(false)}
                   variant="contained"
-                  sx={{ bgcolor: "#fff", color: "#000" }}
+                  color="secondary"
                 >
                   CANCEL
-                </Button>
-                <Button type="submit" color="primary" variant="contained">
-                  UPDATE
                 </Button>
               </DialogActions>
             </Form>

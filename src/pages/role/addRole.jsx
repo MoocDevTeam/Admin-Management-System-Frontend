@@ -123,8 +123,8 @@ export default function AddRole() {
         </Box>
         <Box display="flex" justifyContent="end" mt="20px">
           <Stack direction="row" spacing={2}>
-            <Button type="submit" color="secondary" variant="contained">
-              Create New Role
+            <Button type="submit" color="primary" variant="contained">
+              Create Role
             </Button>
             <Button
               type="cancel"

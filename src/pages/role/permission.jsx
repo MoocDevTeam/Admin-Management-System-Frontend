@@ -202,8 +202,8 @@ function PermissionTree({ onOpen, onClose, rowSelectionId }) {
       <Box sx={{ p: 2, width: 300, border: "1px solid #ccc", borderRadius: 2 }}>
         <SimpleTreeView>{renderTree(menuItems)}</SimpleTreeView>
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-          <Button variant="contained" color="secondary" onClick={handleSave}>
-            OK
+          <Button variant="contained" color="primary" onClick={handleSave}>
+            Save
           </Button>
           <Button variant="contained" color="secondary" onClick={onClose}>
             Cancel
