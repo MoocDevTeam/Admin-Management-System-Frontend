@@ -33,6 +33,7 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
       address: data?.address || "",
       age: data?.age || 0,
       gender: data?.gender ?? 0,
+      role: data?.role || ""
     },
     validationSchema: Yup.object({
       userName: Yup.string().required("username is required"),
@@ -43,6 +44,7 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
         .max(120, "max age is 120")
         .required("age is required"),
       gender: Yup.number().oneOf([0, 1, 2]).required("gender is required"),
+      role: Yup.string().required("role is required")
     }),
     onSubmit: async (values) => {
       console.log("values", values);

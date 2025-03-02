@@ -105,7 +105,7 @@ export default function User() {
       renderCell: (params) => {
         return (
           <Box>
-            <AuthButton permission="Admin.User.Update">
+            {/* <AuthButton permission="Admin.User.Update"> */}
               <Button
                 color="success"
                 startIcon={<ModeEditIcon />}
@@ -114,7 +114,7 @@ export default function User() {
               >
                 Update
               </Button>
-            </AuthButton>
+            {/* </AuthButton> */}
           </Box>
         );
       },
@@ -331,16 +331,12 @@ export default function User() {
                   ),
                 }}
               />
-              <AuthButton permission="Admin.User.Add">
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={handleAddUser}
-                >
+              {/* <AuthButton permission="Admin.User.Add"> */}
+                <Button variant="contained" onClick={handleAddUser}>
                   Add User
                 </Button>
-              </AuthButton>
-              <AuthButton permission="Admin.User.Delete">
+              {/* </AuthButton> */}
+              {/* <AuthButton permission="Admin.User.Delete"> */}
                 <Button
                   color="secondary"
                   variant="contained"
@@ -349,7 +345,7 @@ export default function User() {
                 >
                   Delete
                 </Button>
-              </AuthButton>
+              {/* </AuthButton> */}
             </Stack>
           </Box>
           <UserList
