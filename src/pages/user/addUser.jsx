@@ -11,8 +11,10 @@ import {
   ListItemText,
   Checkbox,
   OutlinedInput,
+  InputAdornment,
   IconButton,
 } from "@mui/material";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 import { useFormik } from "formik";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
@@ -22,13 +24,21 @@ import { useState } from "react";
 import getRequest from "../../request/getRequest";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+
 
 export default function AddUser() {
   const [avatarData, setAvatarData] = useState("");
   const [roles, setRoles] = useState([]);
   const [selectRoles, setSelectRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const handleClickShowPassword = () => {
+      setShowPassword(!showPassword);
+    }
+  const handleClickShowConfirmPassword = () => {
+      setShowConfirmPassword(!showConfirmPassword);
+    };
+  
   const roleNames = useSelector((state) => state.role.roleNames);
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -149,7 +159,7 @@ export default function AddUser() {
           <TextField
             fullWidth
             variant="filled"
-            type={showPassword ? "text" : "password"}
+            type={showPassword? "text" : "password"}
             label="Password"
             name="password"
             onChange={formik.handleChange}
@@ -160,31 +170,21 @@ export default function AddUser() {
             autoFocus
             sx={{ gridColumn: "span 4" }}
             InputProps={{
-              sx: {
-                input: {
-                  color: "#000",
-                  fontSize: "1rem",
-                  "&::placeholder": {
-                    fontSize: "1rem",
-                    color: "#FFFBCA",
-                    fontWeight: "bold",
-                  },
-                },
-              },
               endAdornment: (
-                <IconButton
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              ),
+                <InputAdornment position="end">
+                  <IconButton
+                  onClick={handleClickShowPassword}
+                  edge="end">
+                    {showPassword ? <VisibilityOff/> : <Visibility/>}
+                  </IconButton>
+                </InputAdornment>
+              )
             }}
           />
           <TextField
             fullWidth
             variant="filled"
-            type={showPassword ? "text" : "password"}
+            type={showConfirmPassword? "text" : "password"}
             label="Confirmed Password"
             name="confirmpassword"
             onChange={formik.handleChange}
@@ -200,25 +200,15 @@ export default function AddUser() {
             autoFocus
             sx={{ gridColumn: "span 4" }}
             InputProps={{
-              sx: {
-                input: {
-                  color: "#000",
-                  fontSize: "1rem",
-                  "&::placeholder": {
-                    fontSize: "1rem",
-                    color: "#FFFBCA",
-                    fontWeight: "bold",
-                  },
-                },
-              },
               endAdornment: (
-                <IconButton
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              ),
+                <InputAdornment position="end">
+                  <IconButton
+                  onClick={handleClickShowConfirmPassword}
+                  edge="end">
+                    {showConfirmPassword ? <VisibilityOff/> : <Visibility/>}
+                  </IconButton>
+                </InputAdornment>
+              )
             }}
           />
           <TextField
