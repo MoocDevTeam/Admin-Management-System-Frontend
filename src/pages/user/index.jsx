@@ -205,6 +205,11 @@ export default function User() {
   // This function is triggered when the user clicks "UPDATE"
   const handleOpenUpdateDialog = (event, rowData) => {
     event.stopPropagation(); // prevents row selection triggered by the DataGrid
+    if (rowSelectionModel.length === 0 || rowSelectionModel.length > 1) {
+      setAlertMessage("Please select one user to update");
+      setOpen(true);
+      return;
+    }
     setSelectedUser(rowData); // store the user data to pass to the dialog
     setIsUpdateDialogOpen(true); // open the dialog
   };
@@ -240,7 +245,6 @@ export default function User() {
 
   const handleWinClose = async (data) => {
     console.log("handleWinClose", data);
-
     let result;
     setOpen(false);
     if (!data.isOk || rowSelectionModel.length === 0) {
