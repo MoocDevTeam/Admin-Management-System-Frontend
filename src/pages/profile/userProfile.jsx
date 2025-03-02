@@ -264,7 +264,7 @@ export default function UserProfile() {
             {isEditMode && (
               <Stack direction="row" spacing={2} justifyContent="end">
                 <Button
-                  color="secondary"
+                  color="primary"
                   variant="contained"
                   sx={{ m: "24px 0 0 0" }}
                   type="submit"

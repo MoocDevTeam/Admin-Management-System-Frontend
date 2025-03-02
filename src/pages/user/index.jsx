@@ -24,6 +24,8 @@ import { setRoleNames } from "../../store/roleSlice";
 import { UpdateUser } from "./updateUser";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import AuthButton from "../../components/authButton/authButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 export default function User() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [open, setOpen] = useState(false);
@@ -92,10 +94,7 @@ export default function User() {
       flex: 1,
       renderCell: (row) => {
         return (
-          <Avatar
-            src={row.row.avatar}
-            sx={{ width: 50, height: 50 }}
-          ></Avatar>
+          <Avatar src={row.row.avatar} sx={{ width: 50, height: 50 }}></Avatar>
         );
       },
     },
@@ -206,6 +205,11 @@ export default function User() {
   // This function is triggered when the user clicks "UPDATE"
   const handleOpenUpdateDialog = (event, rowData) => {
     event.stopPropagation(); // prevents row selection triggered by the DataGrid
+    if (rowSelectionModel.length === 0 || rowSelectionModel.length > 1) {
+      setAlertMessage("Please select one user to update");
+      setOpen(true);
+      return;
+    }
     setSelectedUser(rowData); // store the user data to pass to the dialog
     setIsUpdateDialogOpen(true); // open the dialog
   };
@@ -232,7 +236,8 @@ export default function User() {
       return;
     }
     setAlertMessage(
-      `Are you sure to delete ${rowSelectionModel.length} ${rowSelectionModel.length > 1 ? "users" : "user"
+      `Are you sure to delete ${rowSelectionModel.length} ${
+        rowSelectionModel.length > 1 ? "users" : "user"
       } ?`
     );
     setOpen(true);
@@ -240,7 +245,6 @@ export default function User() {
 
   const handleWinClose = async (data) => {
     console.log("handleWinClose", data);
-
     let result;
     setOpen(false);
     if (!data.isOk || rowSelectionModel.length === 0) {
@@ -336,6 +340,7 @@ export default function User() {
                 <Button
                   color="secondary"
                   variant="contained"
+                  startIcon={<DeleteIcon />}
                   onClick={handleDelete}
                 >
                   Delete

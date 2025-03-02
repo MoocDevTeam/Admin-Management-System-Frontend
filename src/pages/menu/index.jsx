@@ -231,8 +231,8 @@ function Menus() {
       key="save"
       type="primary"
       style={{
-        backgroundColor: "#4CCEAC",
-        color: "#000",
+        backgroundColor: "#000",
+        color: "#fff",
         padding: "1rem",
         ":hover": {
           backgroundColor: "#359078",

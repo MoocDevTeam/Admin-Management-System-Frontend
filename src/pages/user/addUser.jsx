@@ -24,6 +24,7 @@ import { useState } from "react";
 import getRequest from "../../request/getRequest";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 export default function AddUser() {
   const [avatarData, setAvatarData] = useState("");
@@ -134,7 +135,6 @@ export default function AddUser() {
         subtitle="Create a New User Profile"
         url="/user"
         urltitle={"UserList"}
-        
       />
       <form onSubmit={formik.handleSubmit}>
         <Box
@@ -296,7 +296,7 @@ export default function AddUser() {
         </Box>
         <Box display="flex" justifyContent="end" mt="20px">
           <Stack direction="row" spacing={2}>
-            <Button type="submit" color="secondary" variant="contained">
+            <Button type="submit" color="primary" variant="contained">
               Create New User
             </Button>
             <Button
