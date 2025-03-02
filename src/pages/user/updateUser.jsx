@@ -1,9 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { useEffect } from "react";
 import * as Yup from "yup";
-import { useState } from "react";
-import colors, { theme } from "../../theme";
 import {
   Box,
   Button,
@@ -19,12 +16,19 @@ import {
   Checkbox,
   OutlinedInput,
 } from "@mui/material";
-import postRequest from "../../request/postRequest";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+
+// Your custom request helpers (adjust paths as needed)
+import postRequest from "../../request/postRequest";
 import getRequest from "../../request/getRequest";
 
+// Example theme import (adjust if needed)
+import { theme } from "../../theme";
+
 export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
+  const [roles, setRoles] = useState([]);
+
+  // 1) Formik Setup
   const formik = useFormik({
     initialValues: {
       id: data?.id || "",
@@ -33,7 +37,8 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
       address: data?.address || "",
       age: data?.age || 0,
       gender: data?.gender ?? 0,
-      role: data?.role || ""
+      // Store the array of selected role IDs in Formik's state
+      roles: data?.roleIds || [], 
     },
     validationSchema: Yup.object({
       userName: Yup.string().required("username is required"),
@@ -44,10 +49,16 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
         .max(120, "max age is 120")
         .required("age is required"),
       gender: Yup.number().oneOf([0, 1, 2]).required("gender is required"),
-      role: Yup.string().required("role is required")
+
+      // 2) Validate roles: array of numbers, at least one item
+      roles: Yup.array()
+        .of(Yup.number())
+        .min(1, "Please select at least one role"),
     }),
     onSubmit: async (values) => {
       console.log("values", values);
+
+      // 3) Build payload using formik.values.roles
       const payload = {
         id: values.id,
         userName: values.userName,
@@ -55,14 +66,15 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
         address: values.address,
         gender: values.gender,
         age: values.age,
-        roleIds: selectRoles,
+        roleIds: values.roles, // formik holds the selected role IDs
       };
+
       console.log("Update payload:", payload);
 
       const result = await postRequest("/User/Update", payload);
       if (result.isSuccess) {
         toast.success("user updated successfully");
-        onUserUpdated({ ...values }); //callback to userIndex to update parent state
+        onUserUpdated({ ...values });
         formik.resetForm();
       } else {
         toast.error(result.message || "failed to update user");
@@ -70,49 +82,27 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
     },
   });
 
-  const [roles, setRoles] = useState([]);
-  const [selectRoles, setSelectRoles] = useState([]);
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-  const renderValueRole = (valueArray) => {
-    return roles
-      .filter((x) => valueArray.indexOf(x.id) !== -1)
-      .map((x) => x.roleName)
-      .join(", ");
-    //return roles.map((value) => valueArray.find(x=>x===value.id)).map(x=>x.name).join(', ')
-  };
-
+  // 4) Handle multiple-select for roles
   const handleChangeRole = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectRoles(
-      //On autofill we get a stringified value.
+    const { value } = event.target;
+    // On autofill we get a stringified value, so split if it's a string
+    formik.setFieldValue(
+      "roles",
       typeof value === "string" ? value.split(",") : value
     );
   };
-  // If data changes while dialog is open, update form values
+
+  // 5) On component mount or when `data.id` changes, fetch roles & user details
   useEffect(() => {
     if (data.id) {
-      const getRoles = async () => {
-        let result = await getRequest(
-          "/role/GetbyPage?page=1&pageSize=9999999"
-        );
+      const getRolesList = async () => {
+        let result = await getRequest("/role/GetbyPage?page=1&pageSize=9999999");
         if (result.isSuccess) {
           setRoles(result.data.items);
         }
       };
 
-      let getUserById = async () => {
+      const getUserById = async () => {
         let result = await getRequest(`user/GetUserById/${data.id}`);
         if (result.isSuccess) {
           let user = result.data;
@@ -123,16 +113,35 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
             address: user.address || "",
             gender: user.gender ?? 0,
             age: user.age || 0,
+            roles: user.roleIds || [], // Update roles in Formik
           });
-          setSelectRoles(user.roleIds);
         }
       };
 
-      getRoles().then((x) => {
+      getRolesList().then(() => {
         getUserById();
       });
     }
   }, [data.id]);
+
+  // 6) UI for roles multiple-select
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  const renderValueRole = (valueArray) => {
+    return roles
+      .filter((roleItem) => valueArray.includes(roleItem.id))
+      .map((x) => x.roleName)
+      .join(", ");
+  };
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -144,6 +153,7 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
         Update User
       </DialogTitle>
       <Box m="20px">
+        {/* 7) Bind formik's handleSubmit */}
         <form onSubmit={formik.handleSubmit}>
           <Box
             mb={"40px"}
@@ -151,36 +161,38 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
             gap={"30px"}
             gridTemplateColumns="repeat(4,minmax(0, 1fr))"
           >
-            <TextField
-              fullWidth //be responsive and align with other elements in a grid or flex layout
-              variant="filled"
-              type="text"
-              label="USERNAME" //The visible label for the field
-              name="userName" //Maps the input to "userName" in initialValues
-              onChange={formik.handleChange}
-              autoComplete="off"
-              autoFocus
-              value={formik.values.userName} // formik.values is part of Formik's internal state; holds the values of all input fields in the form; Reads the "userName" value
-              error={formik.touched.userName && Boolean(formik.errors.userName)} //Determines whether the input field should visually indicate an error.
-              helperText={formik.touched.userName && formik.errors.userName} //Displays a helper message (e.g., validation error) below the input field.
-              sx={{ gridColumn: "span 4" }}
-            ></TextField>
-
+            {/* USERNAME */}
             <TextField
               fullWidth
               variant="filled"
-              type="email" //for built-in validation for email format
+              type="text"
+              label="USERNAME"
+              name="userName"
+              onChange={formik.handleChange}
+              autoComplete="off"
+              autoFocus
+              value={formik.values.userName}
+              error={formik.touched.userName && Boolean(formik.errors.userName)}
+              helperText={formik.touched.userName && formik.errors.userName}
+              sx={{ gridColumn: "span 4" }}
+            />
+
+            {/* EMAIL */}
+            <TextField
+              fullWidth
+              variant="filled"
+              type="email"
               label="EMAIL"
               name="email"
               onChange={formik.handleChange}
               autoComplete="off"
-              autoFocus
               value={formik.values.email}
               error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}
               sx={{ gridColumn: "span 4" }}
-            ></TextField>
+            />
 
+            {/* ADDRESS */}
             <TextField
               fullWidth
               variant="filled"
@@ -189,17 +201,15 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
               name="address"
               onChange={formik.handleChange}
               autoComplete="off"
-              autoFocus
               value={formik.values.address}
               error={formik.touched.address && Boolean(formik.errors.address)}
               helperText={formik.touched.address && formik.errors.address}
               sx={{ gridColumn: "span 4" }}
-            ></TextField>
+            />
 
+            {/* AGE */}
             <TextField
               fullWidth
-              autoFocus
-              autoComplete="off"
               variant="filled"
               type="number"
               label="AGE"
@@ -209,31 +219,44 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
               error={formik.touched.age && Boolean(formik.errors.age)}
               helperText={formik.touched.age && formik.errors.age}
               sx={{ gridColumn: "span 2" }}
-            ></TextField>
+            />
 
-            <Select
-              labelId="demo-multiple-checkbox-label"
-              id="demo-multiple-checkbox"
-              multiple
-              value={selectRoles}
-              onChange={handleChangeRole}
-              input={<OutlinedInput label="Roles" />}
-              renderValue={renderValueRole}
-              MenuProps={MenuProps}
-            >
-              {roles.map((item) => (
-                <MenuItem key={item.id} value={item.id}>
-                  <Checkbox checked={selectRoles.includes(item.id)} />
-                  <ListItemText primary={item.roleName} />
-                </MenuItem>
-              ))}
-            </Select>
+            {/* ROLES Multiple Select */}
+            <FormControl sx={{ gridColumn: "span 2" }}>
+              <InputLabel>Roles</InputLabel>
+              <Select
+                labelId="demo-multiple-checkbox-label"
+                id="demo-multiple-checkbox"
+                multiple
+                name="roles" // Not strictly necessary if we use handleChangeRole
+                value={formik.values.roles}
+                onChange={handleChangeRole}
+                input={<OutlinedInput label="Roles" />}
+                renderValue={renderValueRole}
+                MenuProps={MenuProps}
+                error={formik.touched.roles && Boolean(formik.errors.roles)}
+              >
+                {roles.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    <Checkbox checked={formik.values.roles.includes(item.id)} />
+                    <ListItemText primary={item.roleName} />
+                  </MenuItem>
+                ))}
+              </Select>
+              {/* Display roles validation error if any */}
+              {formik.touched.roles && formik.errors.roles && (
+                <Box sx={{ color: "red", fontSize: 12, mt: 1 }}>
+                  {formik.errors.roles}
+                </Box>
+              )}
+            </FormControl>
 
+            {/* GENDER */}
             <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
               <InputLabel>GENDER</InputLabel>
               <Select
                 name="gender"
-                label="GENDER" // corresponds to <InputLabel> for accessibility
+                label="GENDER"
                 value={formik.values.gender}
                 onChange={formik.handleChange}
                 error={formik.touched.gender && Boolean(formik.errors.gender)}
