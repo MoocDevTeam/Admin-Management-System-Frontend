@@ -36,6 +36,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import { renderMultiSectionDigitalClockTimeView } from "@mui/x-date-pickers";
+import AuthButton from "../../components/authButton/authButton";
+
 export default function Role() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -123,14 +125,16 @@ export default function Role() {
       renderCell: (params) => {
         return (
           <Box>
-            <Button
-              variant="outlined"
-              color="success"
-              startIcon={<ModeEditIcon />}
-              onClick={(e) => handleUpdate(e, params.row)}
-            >
-              Update
-            </Button>
+            <AuthButton permission="Admin.Role.Update">
+              <Button
+                variant="outlined"
+                color="success"
+                startIcon={<ModeEditIcon />}
+                onClick={(e) => handleUpdate(e, params.row)}
+              >
+                Update
+              </Button>
+            </AuthButton>
           </Box>
         );
       },
@@ -339,14 +343,15 @@ export default function Role() {
                   ),
                 }}
               />
-
-              <Button
-                variant="contained"
-                onClick={handleAddRole}
-                startIcon={<AddIcon />}
-              >
-                Add Role
-              </Button>
+              <AuthButton permission="Admin.Role.Add">
+                <Button
+                  variant="contained"
+                  onClick={handleAddRole}
+                  startIcon={<AddIcon />}
+                >
+                  Add Role
+                </Button>
+              </AuthButton>
               <Button
                 variant="contained"
                 startIcon={<CheckBoxOutlinedIcon />}
@@ -354,14 +359,16 @@ export default function Role() {
               >
                 Permission
               </Button>
-              <Button
-                color="secondary"
-                variant="contained"
-                startIcon={<DeleteIcon />}
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
+              <AuthButton permission="Admin.Role.Delete">
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  startIcon={<DeleteIcon />}
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              </AuthButton>
             </Stack>
           </Box>
           <RoleList
