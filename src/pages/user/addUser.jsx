@@ -24,7 +24,7 @@ import { useState } from "react";
 import getRequest from "../../request/getRequest";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+
 
 export default function AddUser() {
   const [avatarData, setAvatarData] = useState("");
