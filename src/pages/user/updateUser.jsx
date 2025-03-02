@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useFormik } from "formik";
 import { useEffect } from "react";
@@ -54,7 +53,7 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
         address: values.address,
         gender: values.gender,
         age: values.age,
-        roleIds:selectRoles
+        roleIds: selectRoles,
       };
       console.log("Update payload:", payload);
 
@@ -73,7 +72,6 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
   const [selectRoles, setSelectRoles] = useState([]);
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
-
 
   const MenuProps = {
     PaperProps: {
@@ -102,15 +100,15 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
   };
   // If data changes while dialog is open, update form values
   useEffect(() => {
-
     if (data.id) {
-
       const getRoles = async () => {
-        let result = await getRequest('/role/GetbyPage?page=1&pageSize=9999999');
+        let result = await getRequest(
+          "/role/GetbyPage?page=1&pageSize=9999999"
+        );
         if (result.isSuccess) {
           setRoles(result.data.items);
         }
-      }
+      };
 
       let getUserById = async () => {
         let result = await getRequest(`user/GetUserById/${data.id}`);
@@ -128,7 +126,7 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
         }
       };
 
-      getRoles().then(x => {
+      getRoles().then((x) => {
         getUserById();
       });
     }
@@ -229,11 +227,7 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
               ))}
             </Select>
 
-
-            <FormControl
-              fullWidth
-              sx={{ gridColumn: "span 2" }}
-            >
+            <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
               <InputLabel>GENDER</InputLabel>
               <Select
                 name="gender"
@@ -249,17 +243,16 @@ export const UpdateUser = ({ open, onClose, data, onUserUpdated }) => {
             </FormControl>
           </Box>
 
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="flex-end"
-            mt={3}
-          >
-            <Button variant="outlined" onClick={onClose}>CANCEL</Button>
-            <Button variant="contained" type="submit" color="primary">UPDATE</Button>
+          <Stack direction="row" spacing={2} justifyContent="flex-end" mt={3}>
+            <Button variant="contained" type="submit" color="primary">
+              UPDATE
+            </Button>
+            <Button variant="contained" color="secondary" onClick={onClose}>
+              CANCEL
+            </Button>
           </Stack>
         </form>
       </Box>
     </Dialog>
   );
-}
+};

@@ -56,7 +56,14 @@ const LoginPage = () => {
         });
         if (res && res.isSuccess === true) {
           dispatch(
-            setAuthenticated({ token: res.data.token, userName: values.username })
+            setAuthenticated({
+              token: res.data.token,
+              userName: values.username,
+            })
+          );
+          console.log(
+            "get permission in log in, res.data.permissions",
+            res.data.permissions
           );
           dispatch(setPermissions({ permission: res.data.permissions }));
           navigate("/");
