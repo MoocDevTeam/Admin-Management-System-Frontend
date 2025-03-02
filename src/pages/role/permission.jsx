@@ -65,11 +65,22 @@ function PermissionTree({ onOpen, onClose, rowSelectionId }) {
           })
           .map((node) => node.id);
         console.log("default selected ids are:", defaultCheckedIds);
-        setChecked(defaultCheckedIds);
-        setDefaultCheckedIds(defaultCheckedIds);
+        // setChecked(defaultCheckedIds);
+        // setDefaultCheckedIds(defaultCheckedIds);
       }
     }
     getMenu();
+  }, []);
+
+  useEffect(() => {
+    async function getMenuIds() {
+      const res = await getRequest(`menu/GetMenuIdsByRoleId/${rowSelectionId}`);
+      if (res.isSuccess) {
+        let menuIds = res.data.map((item) => item.menuId);
+        setChecked(menuIds);
+      }
+    }
+    getMenuIds();
   }, []);
 
   const getChangedNodes = () => {
@@ -93,7 +104,7 @@ function PermissionTree({ onOpen, onClose, rowSelectionId }) {
         id: rowSelectionId[0],
         menuIds: checked,
       });
-      toast.success("Give permission success!");
+      toast.success("Give Role Permission Success!");
     } catch (error) {
       toast.error(result.message);
     }

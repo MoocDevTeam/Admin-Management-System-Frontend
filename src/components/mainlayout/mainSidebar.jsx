@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { Alert, Box, IconButton, Typography } from "@mui/material";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import MenuOpen from "@mui/icons-material/MenuOpen";
 import colors from "../../theme";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
@@ -25,7 +27,6 @@ export default function MainSidebar({ userName }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dispatch = useDispatch();
   const { user, status, error } = useSelector((state) => state.user);
-
 
   useEffect(() => {
     if (userName) {
@@ -72,7 +73,11 @@ export default function MainSidebar({ userName }) {
               )}
               {status === "succeeded" && (
                 <Box textAlign="center">
-                  <Box display="flex" justifyContent="center" alignItems="center">
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                  >
                     <img
                       alt="profile-user"
                       width="100px"
@@ -96,7 +101,10 @@ export default function MainSidebar({ userName }) {
             </Box>
           )}
 
-          <SubMenu icon={<PeopleOutlinedIcon />} label="People Management">
+          <SubMenu
+            icon={<SupervisedUserCircleIcon />}
+            label="Rights Management"
+          >
             <MenuItem
               icon={<PeopleOutlinedIcon />}
               component={<Link />}
@@ -104,11 +112,7 @@ export default function MainSidebar({ userName }) {
             >
               User
             </MenuItem>
-            <MenuItem
-              icon={<PeopleOutlinedIcon />}
-              component={<Link />}
-              to="role"
-            >
+            <MenuItem icon={<AccountBoxIcon />} component={<Link />} to="role">
               Role
             </MenuItem>
             <MenuItem
